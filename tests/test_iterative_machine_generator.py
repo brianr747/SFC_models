@@ -150,4 +150,82 @@ class TestIterativeMachineGenerator(TestCase):
         obj.main('output\\unittest_output_2.py')
         self.compare_files('output\\unittest_output_2.py', 'output\\unittest_target_2.py')
 
+    def test_ParseString(self):
+        obj = IterativeMachineGenerator()
+        eqns = """
+
+        # Comment
+        oops
+        x = 2*y
+        y=.5
+        z = y(t-1)
+        Exogenous = crunk
+        G = [5., 5.]
+
+        """
+        with self.assertWarns(SyntaxWarning):
+            msg = obj.ParseString(eqns)
+        self.assertTrue('oops' in msg)
+        self.assertEqual(obj.Endogenous,[('x','2*y'), ('y', '.5')])
+        self.assertEqual(obj.Lagged, [('z', 'y'), ])
+        self.assertEqual(obj.Exogenous, [('G', '[5., 5.]'), ])
+
+
+    def test_ParseString2(self):
+        obj = IterativeMachineGenerator()
+        obj.MaxTime = 0
+        eqns = """
+
+        # Comment
+
+        x = 2*y
+        z = 3 = y
+        Exogenous
+        y = [5., 5.]
+        MaxTime = 10
+        """
+        with self.assertWarns(SyntaxWarning):
+            msg = obj.ParseString(eqns)
+        self.assertTrue('z = 3 = y' in msg)
+        self.assertEqual(obj.Endogenous, [('x', '2*y'), ])
+        self.assertEqual(obj.Lagged, [])
+        self.assertEqual(obj.Exogenous, [('y', '[5., 5.]'), ])
+        self.assertEqual(obj.MaxTime, 10)
+
+    def test_BadMaxIter(self):
+        obj = IterativeMachineGenerator()
+        obj.MaxTime = 0
+        eqns = """
+
+         # Comment
+         MaxTime = 4
+
+         x = 2*y
+         z = 3
+         Exogenous
+         y = [5.,]
+         MaxTime = Kablooey
+         """
+        with self.assertRaises(ValueError):
+            msg = obj.ParseString(eqns)
+
+
+    def test_string_ctor(self):
+        eqns = """
+
+        # Comment
+
+        x = 2*y
+
+        x = y = z
+        Exogenous
+        y = [5., 5.]
+        MaxTime = 10
+        """
+        with self.assertWarns(SyntaxWarning):
+            obj = IterativeMachineGenerator(eqns)
+        self.assertEqual(obj.Endogenous, [('x', '2*y'), ])
+        self.assertEqual(obj.Lagged, [])
+        self.assertEqual(obj.Exogenous, [('y', '[5., 5.]'), ])
+        self.assertEqual(obj.MaxTime, 10)
 

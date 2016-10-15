@@ -19,7 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
+import warnings
 
 template = """
 $$$
@@ -86,10 +86,13 @@ class IterativeMachineGenerator(object):
     Generate code to solve system.
     """
 
-    def __init__(self):
+    def __init__(self, equation_string=''):
         """
-        Initial set up.
-        Need to fill in the lists of variables -
+        Instantiate object.
+        if equation_string is non-empty, automatically parses it using ParseString() to
+        generate system of equations.
+
+        :param equation_string: str
         """
         self.Endogenous = []
         self.Lagged = []
@@ -100,6 +103,60 @@ class IterativeMachineGenerator(object):
         self.FunctionText = ''
         self.MaxIterations = 100
         self.MaxTime = 0
+        if len(equation_string) > 0:
+            self.ParseString(equation_string)
+
+    def ParseString(self, equation_string):
+        """
+        Read in a mutliline string to populate variable and equation lists.
+
+        :param equation_string: str
+        :return: str
+        """
+        msg = ''
+        equation_list = equation_string.split('\n')
+        mode = 'endogenous'
+        for equation in equation_list:
+            # Any usage of 'exogenous' switches over to the Exogenous block
+            # I could skip this, but would need to use eval(), which is dangerous with
+            # untrusted inputs.
+            if 'exogenous' in equation.lower():
+                mode = 'exogenous'
+                continue
+            # Remove comments (like this one!)
+            pos = equation.find('#')
+            if pos > -1:
+                equation = equation[0:pos]
+            equation = equation.strip()
+            if len(equation) == 0:
+                continue
+            splitted = equation.split('=')
+            if len(splitted) < 2:
+                msg += 'Ignored line: "%s"\n' % (splitted[0],)
+                continue
+            if len(splitted) > 2:
+                msg += 'Line with multiple "=" - ignored: "%s"\n' % (equation,)
+                continue
+            varname = splitted[0].strip()
+            eqn = splitted[1].strip()
+            if varname == 'MaxTime':
+                try:
+                    self.MaxTime = int(eqn)
+                except ValueError:
+                    raise ValueError('Invalid MaxTime value = ' + eqn)
+                continue  # pragma: no cover   -- Seems to be a bug in the coverage report on this line...
+            if mode == 'endogenous':
+                pos = eqn.find('(t-1)')
+                if pos == -1:
+                    self.Endogenous.append((varname, eqn))
+                else:
+                    self.Lagged.append((varname, eqn[0:pos]))
+            else:
+                self.Exogenous.append((varname, eqn))
+        if len(msg) > 0:
+            warnings.warn('Could not parse some sections of input. Examine ParseString() output to view issues.',
+                          SyntaxWarning)
+        return msg
 
     def main(self, file_name):
         """
@@ -171,7 +228,7 @@ class IterativeMachineGenerator(object):
             out.append('%s = %s,\n' % (var, eqn))
         out.append('where lagged variables are:\n')
         for variable_name, name_of_var in self.Lagged:
-            out.append('%s(t) = %s(t-1)\n' % (variable_name,name_of_var))
+            out.append('%s(t) = %s(t-1)\n' % (variable_name, name_of_var))
         out.append('\n')
         out.append('\n')
         out.append('Exogenous Variables\n')
@@ -219,38 +276,10 @@ class IterativeMachineGenerator(object):
         # Doc Equations
         output = output.replace('<DOC_EQUATIONS>', self.GenerateDocEquations())
         # ITERATOR
-        output = output.replace('ITERATOR',self.FunctionText)
+        output = output.replace('ITERATOR', self.FunctionText)
         with open(file_name, 'w') as f:
             f.write(output)
 
-    # def RunStep(self):
-    #     l = [len(x[1]) for x in self.Exogenous]
-    #     if len(self.TIME) >= min(l):
-    #         raise StopIteration
-    #     orig_vector = self.GenerateEquations()
-    #     self.FunctionText = self.GenerateFunction()
-    #     print(dir())
-    #     # Extremely unsafe operation! Only use trusted inputs!
-    #     exec(self.FunctionText)
-    #     print(dir())
-    #     new_vector = Iterator(orig_vector)
-    #     err = 1.
-    #     cnt = 0
-    #     while err > .001:
-    #         new_vector = Iterator(orig_vector)
-    #         err = self.CalcError(orig_vector, new_vector)
-    #         orig_vector = new_vector
-    #         cnt += 1
-    #         if cnt > self.MaxIterations:
-    #             raise ValueError('No Convergence!')
-    #     exo_list = [x[0] for x in self.Exogenous]
-    #     for i in range(0, len(self.AllVariables)):
-    #         varname = self.AllVariables[i]
-    #         if varname in exo_list:
-    #             continue
-    #         val = orig_vector[i]
-    #         getattr(self, varname).append(val)
-    #     self.Time.append(self.Time[-1] + 1)
 
     @staticmethod
     def CalcError(vec1, vec2):
