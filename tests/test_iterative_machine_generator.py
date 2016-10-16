@@ -242,6 +242,15 @@ G = [20., ] * 20
         with self.assertRaises(ValueError):
             msg = obj.ParseString(eqns)
 
+    def test_error_toler(self):
+        obj = IterativeMachineGenerator('Err_Tolerance = 0.4')
+        self.assertEqual(obj.Err_Tolerance,'0.4')
+
+    def test_error_toler_fail(self):
+        with self.assertRaises(ValueError):
+            obj = IterativeMachineGenerator('Err_Tolerance = SNORTLOO')
+
+
     def test_string_ctor(self):
         eqns = """
 

@@ -1,16 +1,27 @@
 """
-run_SIM_machine_generated.py
+Generate the SIM model using machine-generated code
 
-Script to generate model SIM from [G&L 2012] from text equation specification.
+Copyright 2016 Brian Romanchuk
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 """
 
-from plot_for_examples import Quick2DPlot
+from sfc_models.iterative_machine_generator import IterativeMachineGenerator
 
-import sfc_models.iterative_machine_generator as generator
-
-filename = 'SIM_model.py'
-
-eqn = """# Model SIM - Simplest model with government money.
+model_list = {
+    'TEST': """# Test model for internal testing purposes...
+t = 1.0""",
+    'SIM': """# Model SIM - Simplest model with government money.
 # Chapter 3 of [G&L 2012], pages 91-92.
 #
 # [G&L 2012] "Monetary Economics: An Integrated Approach to credit, Money, Income, Production
@@ -48,23 +59,24 @@ Hs(0) = 80.0
 # Exogenous variable
 Gd = [20., ] * 35 + [25., ] * 66
 # Length of simulation
-MaxTime = 100
-"""
-
-obj = generator.IterativeMachineGenerator(eqn)
-obj.main(filename)
-
-# Can only import now...
-import SIM_model
-obj = SIM_model.SFCModel()
-obj.main()
-
-# Lop off t = 0 because it represents hard-coded initial conditions
-Quick2DPlot(obj.t[1:], obj.Y[1:], 'Y - National Production')
-Quick2DPlot(obj.t[1:], obj.Y[1:], 'G - Government Consumption')
-print("Validate that Hh = Hs")
-Quick2DPlot(obj.t[1:], obj.Hh[1:], 'Hh - Household Money Holdings')
-Quick2DPlot(obj.t[1:], obj.Hs[1:], 'Hs - Money Supplied by the Gummint')
+MaxTime = 100""",
+}
 
 
+def get_models():
+    kys = list(model_list.keys())
+    kys.remove('TEST')
+    out = ''
+    for k in kys:
+        description = model_list[k].split('\n')[0]
+        out += '[%s] %s\n' % (k, description)
+    return out
 
+
+def build_model(model_name):
+    try:
+        eqn = model_list[model_name]
+    except KeyError:
+        raise ValueError('Unknown model - "' + model_name + '"; run get_models() for list')
+    obj = IterativeMachineGenerator(eqn)
+    return obj

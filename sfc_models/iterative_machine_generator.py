@@ -220,7 +220,7 @@ class IterativeMachineGenerator(object):
             init_cond = '0.'
             try:
                 dummy = float(eqn.strip())
-                init_cond = eqn
+                init_cond = eqn        #  pragma: no cover   [Problem in the coverage report; we have to hit this!]
             except ValueError:
                 try:
                     init_cond = self.InitialConditions[variable_name]
