@@ -1,8 +1,10 @@
 
 """
-FNAME
+output\unittest_output_2.py
 
 Machine-generated model code
+
+
 """
 
 
@@ -17,24 +19,29 @@ class SFCModel(object):
     ===================================
     x = y + 2,
     y = alpha * x + dummy,
-    alpha = .5,
-    where lagged variables are:
-    LAG_x(t) = x(t-1)
+    alpha = .5.
+    Where lagged variables are:
+    LAG_x(t) = x(t-1),
     
     
     Exogenous Variables
     ===================
-    dummy
+    dummy,
 
     """
     def __init__(self):
-        self.MaxIterations = 100
+        self.MaxIterations = 400
         self.MaxTime = 3
-        self.T = 0
-        self.x = [0.000000,]
-        self.y = [0.000000,]
-        self.alpha = [0.500000,]
+        # Current time step. Call this "STEP" and not time so that users
+        # can create a custom time axis variable.
+        self.STEP = 0
+        self.Err_Tolerance = .001
+        self.x = [0., ]
+        self.y = [0., ]
+        self.alpha = [.5, ]
         self.dummy = [0., 1., 2.]
+        #  Make sure exogenous variables are not longer than time frame
+        self.dummy = self.dummy[0:4]
 
 
     def Iterator(self, in_vec):
@@ -48,21 +55,21 @@ class SFCModel(object):
 
 
     def main(self):
-        for t in range(0, self.MaxTime):
-            self.T = t
+        while self.STEP < self.MaxTime:
             self.RunOneStep()
 
     def RunOneStep(self):
+        self.STEP += 1
         x = self.x[-1]
         y = self.y[-1]
         alpha = self.alpha[-1]
-        LAG_x = self.x[self.T -1]
-        dummy = self.dummy[self.T]
+        LAG_x = self.x[self.STEP -1]
+        dummy = self.dummy[self.STEP]
 
         orig_vector = (x, y, alpha, LAG_x, dummy)
         err = 1.
         cnt = 0
-        while err > .001:
+        while err > self.Err_Tolerance:
             new_vector = self.Iterator(orig_vector)
             err = self.CalcError(orig_vector, new_vector)
             orig_vector = new_vector
