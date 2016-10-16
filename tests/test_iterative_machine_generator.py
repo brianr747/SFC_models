@@ -2,15 +2,18 @@ from unittest import TestCase
 
 from sfc_models.iterative_machine_generator import IterativeMachineGenerator
 
+
 class TestIterativeMachineGenerator(TestCase):
-    def create_example1(self):
+    @staticmethod
+    def create_example1():
         obj = IterativeMachineGenerator()
         obj.Endogenous = [('x', 'y + 2'), ('y', '.5 * x')]
         obj.Lagged = [('LAG_x', 'x')]
         obj.Exogenous = [('dummy', '[1., 1., 1.]')]
         return obj
 
-    def create_example2(self):
+    @staticmethod
+    def create_example2():
         obj = IterativeMachineGenerator()
         obj.Endogenous = [('x', 'y + 2'), ('y', 'alpha * x + dummy'), ('alpha', '.5')]
         obj.Lagged = [('LAG_x', 'x')]
@@ -24,8 +27,6 @@ class TestIterativeMachineGenerator(TestCase):
         :param f2: str
         :return: bool
         """
-        txt1 = ''
-        txt2 = ''
         with open(f1, 'r') as h_1:
             txt1 = h_1.read()
         with open(f2, 'r') as h_2:
@@ -48,19 +49,17 @@ class TestIterativeMachineGenerator(TestCase):
         for l1, l2 in zip(t1, t2):
             self.assertEqual(l1.rstrip(), l2.rstrip())
 
-
-
     def test_GenerateEquations(self):
         obj = self.create_example1()
         obj.GenerateEquations()
         self.assertEqual(obj.AllVariables, ['x', 'y', 'LAG_x', 'dummy'])
-        self.assertEqual(obj.EquationList, ['y + 2', '.5 * x', 'LAG_x', 'dummy' ])
+        self.assertEqual(obj.EquationList, ['y + 2', '.5 * x', 'LAG_x', 'dummy'])
 
     def test_GenerateFunction(self):
         obj = self.create_example1()
         obj.GenerateEquations()
         out = obj.GenerateFunction()
-        target = """    def Iterator(self, in_vec):
+        target = """    @staticmethod\n    def Iterator(in_vec):
         x, y, LAG_x, dummy = in_vec
         NEW_x = y + 2
         NEW_y = .5 * x
@@ -76,7 +75,6 @@ class TestIterativeMachineGenerator(TestCase):
     def test_CalcError(self):
         self.assertEqual(1., IterativeMachineGenerator.CalcError([.5, .5], [0., 1]))
 
-
     def test_GenerateVarDeclaration(self):
         obj = self.create_example1()
         out = obj.GenerateVarDeclaration()
@@ -88,7 +86,6 @@ class TestIterativeMachineGenerator(TestCase):
 """
         target = target.replace('[indent]', ' ' * 8)
         self.compare_text_blocks(out, target)
-
 
     def test_Orig_Vector(self):
         obj = self.create_example1()
@@ -106,7 +103,7 @@ class TestIterativeMachineGenerator(TestCase):
     x = y + 2,
     y = .5 * x.
     Where lagged variables are:
-    LAG_x(t) = x(t-1).
+    LAG_x(t) = x(k-1).
 
 
     Exogenous Variables
@@ -136,10 +133,7 @@ class TestIterativeMachineGenerator(TestCase):
     Exogenous Variables
     ===================
 """
-        print(out)
-        print(target)
         self.compare_text_blocks(out, target)
-
 
     def test_GeneratePackVars(self):
         obj = self.create_example1()
@@ -174,8 +168,18 @@ class TestIterativeMachineGenerator(TestCase):
 
 
     def test_main(self):
-        obj = self.create_example2()
-        obj.MaxTime = 3
+        eqns = """
+# Test system used in unit tests.
+x = y
+LAG_x = x(t-1)
+y = t + 2.0
+z = LAG_x + 1.0
+oops
+# Exogenous
+G = [20., ] * 20
+        """
+        with self.assertWarns(SyntaxWarning):
+            obj = IterativeMachineGenerator(eqns)
         obj.main('output\\unittest_output_2.py')
         self.compare_files('output\\unittest_output_2.py', 'output\\unittest_target_2.py')
 
@@ -195,9 +199,10 @@ class TestIterativeMachineGenerator(TestCase):
         with self.assertWarns(SyntaxWarning):
             msg = obj.ParseString(eqns)
         self.assertTrue('oops' in msg)
-        self.assertEqual(obj.Endogenous,[('x','2*y'), ('y', '.5'), ('t', 't_minus_1 + 1.')])
+        self.assertEqual(obj.Endogenous, [('x', '2*y'), ('y', '.5'), ('t', 't_minus_1 + 1.0')])
         self.assertEqual(obj.Lagged, [('z', 'y'), ('t_minus_1', 't')])
         self.assertEqual(obj.Exogenous, [('G', '[5., 5.]'), ])
+        self.assertTrue('Ignored' in obj.GeneratedBy)
 
     def test_ParseString2(self):
         obj = IterativeMachineGenerator()
@@ -237,7 +242,6 @@ class TestIterativeMachineGenerator(TestCase):
         with self.assertRaises(ValueError):
             msg = obj.ParseString(eqns)
 
-
     def test_string_ctor(self):
         eqns = """
 
@@ -256,7 +260,6 @@ class TestIterativeMachineGenerator(TestCase):
         self.assertEqual(obj.Lagged, [])
         self.assertEqual(obj.Exogenous, [('t', '[5., 5.]'), ])
         self.assertEqual(obj.MaxTime, 10)
-
 
     def test_initial_conditions(self):
         obj = IterativeMachineGenerator()

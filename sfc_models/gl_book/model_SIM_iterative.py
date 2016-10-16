@@ -69,23 +69,24 @@ end
 
 """
 
+
 class ModelSIMiterative(object):
     def __init__(self):
         self.T = 1
-        self.theta = 0.2; # taxrate
-        self.alpha1 = 0.6; # marginal propensity
-        self.alpha2 = 0.4; # marginal
+        self.theta = 0.2  # taxrate
+        self.alpha1 = 0.6  # marginal propensity
+        self.alpha2 = 0.4  # marginal
         self.time_axis = [0., ]
-        self.C = [0., ] # Stock of wealth
-        self.H = [80., ] #  Stock of wealth
-        self.Y = [0., ] # Gross Output/Income (expenditure defition)
-        self.YD = [0., ] # Disposable income
-        self.tax = [0., ] # Tax revenue
-        self.dHs = [0., ] # Financial assets - supply  flow
-        self.dHh = [0., ] # Financial assets - holding flow
-        self.dH = [0., ] # Financial assets - actual change
+        self.C = [0., ]  # Stock of wealth
+        self.H = [80., ]  # Stock of wealth
+        self.Y = [0., ]  # Gross Output/Income (expenditure defition)
+        self.YD = [0., ]  # Disposable income
+        self.tax = [0., ]  # Tax revenue
+        self.dHs = [0., ]  # Financial assets - supply  flow
+        self.dHh = [0., ]  # Financial assets - holding flow
+        self.dH = [0., ]  # Financial assets - actual change
         # Exogenous variable - preallocate...
-        self.G = [20., ] * 5 + [25., ] * 60 #  Government expenditure
+        self.G = [20., ] * 5 + [25., ] * 60  # Government expenditure
 
     def RunStep(self):
         """
@@ -157,17 +158,9 @@ class ModelSIMiterative(object):
         G_n = G
         return tax_n, YD_n, C_n, Y_n, dHs_n, dHh_n, dH_n, H_n, G_n, H_LAG_n
 
-
     def main(self):
         while True:
             try:
                 self.RunStep()
             except StopIteration:
                 return
-
-
-
-
-
-
-

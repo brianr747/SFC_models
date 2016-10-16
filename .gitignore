@@ -8,6 +8,8 @@ __pycache__/
 
 # Unittest output files
 tests/output/unittest_output*.py
+# Unfortunately, replicated the directory, as we can run from two points
+output/unittest_output*.py
 
 # C extensions
 *.so

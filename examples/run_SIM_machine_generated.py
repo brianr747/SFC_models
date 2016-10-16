@@ -25,9 +25,9 @@ Nd = Y/W                             # (3.11)
 alpha1 = 0.6
 alpha2 = 0.4
 theta = 0.2
-W = 1
+W = 1.0
 # Initial condition
-Hh(0) = 80.
+Hh(0) = 80.0
 # Exogenous variable
 Gd = [20., ] * 35 + [25., ] * 66
 # Length of simulation
