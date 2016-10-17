@@ -12,13 +12,13 @@ class TestIterativeMachineGenerator(TestCase):
         obj.Exogenous = [('dummy', '[1., 1., 1.]')]
         return obj
 
-    @staticmethod
-    def create_example2():
-        obj = IterativeMachineGenerator()
-        obj.Endogenous = [('x', 'y + 2'), ('y', 'alpha * x + dummy'), ('alpha', '.5')]
-        obj.Lagged = [('LAG_x', 'x')]
-        obj.Exogenous = [('dummy', '[0., 1., 2.]')]
-        return obj
+    # @staticmethod
+    # def create_example2():
+    #     obj = IterativeMachineGenerator()
+    #     obj.Endogenous = [('x', 'y + 2'), ('y', 'alpha * x + dummy'), ('alpha', '.5')]
+    #     obj.Lagged = [('LAG_x', 'x')]
+    #     obj.Exogenous = [('dummy', '[0., 1., 2.]')]
+    #     return obj
 
     def compare_files(self, f1, f2):
         """
