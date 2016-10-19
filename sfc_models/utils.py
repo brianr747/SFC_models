@@ -41,8 +41,8 @@ def replace_token(s, target, replacement):
     >>> replace_token('a = "a fool and his money"', 'a', 'x')
     'x ="a fool and his money"'
 
-    (Note that spacing can be affected, as seen in these examples. Spacing may be cleaned up in later revisions of
-    this function.)
+    (Note that spacing can be affected, as seen in these examples. Do not rely upon any particular behaviour for
+    spaces.)
 
     :param s: str
     :param target: str

@@ -1,5 +1,5 @@
 """
-plot_for_examples.py
+extras.py
 
 Plotting class to generate 2-D charts for examples. This file is the only one (other than another example)
 that depends upon matplotlib. If matplotlib is not imported (that is, not installed), does
@@ -11,6 +11,10 @@ I have isolated this so that it is possible to run examples with no external dep
 To install matplotlib, running "pip install matplotlib" in the approppriate Python "Scripts" directory
 should do the job. Unfortunately, it can sometimes fail. There is up-to-date documentation on the internet;
 I do not want to attempt to cover the details here.
+
+This nodule will not be covered by unit tests, as it is interactive. It should be moved elsewhere, but
+putting it within sfc_models makes installation instructions simpler. (Users will still need to install matlibplot,
+which can be a tricky install.)
 
 Copyright 2016 Brian Romanchuk
 
