@@ -1,6 +1,16 @@
 from unittest import TestCase
+import doctest
 
 from sfc_models.iterative_machine_generator import IterativeMachineGenerator
+import sfc_models.iterative_machine_generator as iterative_machine_generator
+
+
+def load_tests(loader, tests, ignore):
+    """
+    Load doctests, so unittest discovery can find them.
+    """
+    tests.addTests(doctest.DocTestSuite(iterative_machine_generator))
+    return tests
 
 
 class TestIterativeMachineGenerator(TestCase):
