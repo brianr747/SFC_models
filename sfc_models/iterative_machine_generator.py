@@ -170,6 +170,7 @@ class IterativeMachineGenerator(object):
                     self.InitialConditions[varname] = eqn
                     continue
                 eqn = eqn.replace('(t-1)', '(k-1)')
+                eqn = eqn.replace(' (k -1 )', '(k-1)')
                 pos = eqn.find('(k-1)')
                 if pos == -1:
                     self.Endogenous.append((varname, eqn))

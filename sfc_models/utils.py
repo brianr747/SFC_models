@@ -64,3 +64,24 @@ def replace_token(s, target, replacement):
         else:
             result.append((toknum, tokval))
     return untokenize(result).decode('utf-8')
+
+
+def replace_token_from_lookup(s, lookup):
+    """
+    Replace tokens using a lookup dictionary.
+
+    >>> replace_token_from_lookup('y = x', {'y': 'H_y', 'x': 'H_x'})
+    'H_y =H_x '
+
+    :param s: str
+    :param lookup: dict
+    :return: str
+    """
+    result = []
+    g = tokenize(BytesIO(s.encode('utf-8')).readline)  # tokenize the string
+    for toknum, tokval, _, _, _ in g:
+        if toknum == NAME and tokval in lookup:  # replace NAME tokens
+            result.append((NAME, lookup[tokval]))
+        else:
+            result.append((toknum, tokval))
+    return untokenize(result).decode('utf-8')

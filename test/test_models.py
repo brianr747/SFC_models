@@ -93,7 +93,7 @@ class TestDoNothingGovernment(TestCase):
         can = Country(mod, 'Canada', 'Eh')
         gov = DoNothingGovernment(can, 'Government', 'GOV')
         gov.GenerateEquations()
-        self.assertEqual(gov.Equations['G'], '0.0')
+        self.assertEqual(gov.Equations['DEM_GOOD'], '0.0')
 
 
 class TestCountry(TestCase):

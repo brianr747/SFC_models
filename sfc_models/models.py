@@ -6,7 +6,7 @@ models.py
 Core classes for machine-generated equations.
 """
 
-from sfc_models.utils import LogicError
+from sfc_models.utils import LogicError, replace_token_from_lookup
 
 class Entity(object):
     """
@@ -34,6 +34,7 @@ class Model(Entity):
     def __init__(self):
         Entity.__init__(self)
         self.CountryList = []
+        self.Exogenous = []
 
     def AddCountry(self, country):
         """
@@ -57,6 +58,24 @@ class Model(Entity):
                 else:
                     sector.FullCode = sector.Code
 
+    def LookupSector(self, fullcode):
+        for cntry in self.CountryList:
+            try:
+                s = cntry.LookupSector(fullcode, is_full_code=True)
+                return s
+            except KeyError:
+                pass
+        raise KeyError('Sector with FullCode does not exist: ' + fullcode)
+
+    def ForceExogenous(self):
+        for sector_code, varname, eqn in self.Exogenous:
+            sector = self.LookupSector(sector_code)
+            if varname not in sector.Equations:
+                raise KeyError('Sector %s does not have variable %s' % (sector_code, varname))
+            # Need to mark exogenous variables
+            sector.Equations[varname] = 'EXOGENOUS '+eqn
+
+
     def GenerateEquations(self):
         for cntry in self.CountryList:
             for sector in cntry.SectorList:
@@ -74,6 +93,34 @@ class Model(Entity):
                     sector.GenerateIncomeEquations()
 
 
+    def CreateFinalEquations(self):
+        """
+        Create Final equations.
+
+        Final output, which is a text block of equations
+        :return: str
+        """
+        out = []
+        for cntry in self.CountryList:
+            for sector in cntry.SectorList:
+                out.extend(sector.CreateFinalEquations())
+        endo = []
+        exo = []
+        for row in out:
+            if 'EXOGENOUS' in row[1]:
+                new_eqn = row[1].replace('EXOGENOUS', '')
+                exo.append((row[0], new_eqn, row[2]))
+            else:
+                endo.append(row)
+        max0 = max([len(x[0]) for x in out])
+        max1 = max([len(x[1]) for x in out])
+        formatter = '%<max0>s = %-<max1>s  # %s'
+        formatter = formatter.replace('<max0>', str(max0))
+        formatter = formatter.replace('<max1>', str(max1))
+        endo = [formatter % x for x in endo]
+        exo = [formatter % x for x in exo]
+        s = '\n'.join(endo) + '\n\n# Exogenous Variables\n\n' + '\n'.join(exo)
+        return s
 
 
 class Country(Entity):
@@ -91,15 +138,21 @@ class Country(Entity):
     def AddSector(self, sector):
         self.SectorList.append(sector)
 
-    def LookupSector(self, code):
+    def LookupSector(self, code, is_full_code=False):
         """
-        Get the sector object via code
+        Get the sector object via code or fullcode
         :param code: str
+        :param is_full_code: bool
         :return: Sector
         """
-        for s in self.SectorList:
-            if s.Code == code:
-                return s
+        if is_full_code:
+            for s in self.SectorList:
+                if s.FullCode == code:
+                    return s
+        else:
+            for s in self.SectorList:
+                if s.Code == code:
+                    return s
         raise KeyError('Sector does not exist - ' + code)
 
 
@@ -176,10 +229,10 @@ class Sector(Entity):
     def GenerateIncomeEquations(self):
         if not self.HasSectorVariables:
             raise LogicError('Does not have income equations')
-        self.GenerateIncomeLowLevel('INC', self.INC)
-        self.GenerateIncomeLowLevel('NET', self.NET)
+        self.CreateEquationFromTerms('INC', self.INC)
+        self.CreateEquationFromTerms('NET', self.NET)
 
-    def GenerateIncomeLowLevel(self, varname, terms):
+    def CreateEquationFromTerms(self, varname, terms):
         if len(terms) == 0:
             self.Equations[varname] = ''
             return
@@ -187,6 +240,21 @@ class Sector(Entity):
             terms[0] = terms[0].replace('+', '')
         eqn = ''.join(terms)
         self.Equations[varname] = eqn
+
+    def CreateFinalEquations(self):
+        out = []
+        lookup = {}
+        if self.Code == 'HH':
+            print('in')
+        for varname in self.Equations:
+            lookup[varname] = self.GetVariableName(varname)
+        for varname in self.Equations:
+            out.append((self.GetVariableName(varname),
+                        replace_token_from_lookup(self.Equations[varname], lookup),
+                        self.VariableDescription[varname]))
+        return out
+
+
 
 
 
@@ -197,7 +265,7 @@ class Household(Sector):
         self.AlphaFin = alpha_fin
         self.AddVariable('AlphaIncome', 'Parameter for consumption out of income', '%0.4f' % (self.AlphaIncome,))
         self.AddVariable('AlphaFin', 'Parameter for consumption out of financial assets', '%0.4f' % (self.AlphaFin,))
-        self.AddVariable('DEM_GOOD', 'Expenditure on goods consumption', 'alphaIncome * NET + alphaFin * LAG_F')
+        self.AddVariable('DEM_GOOD', 'Expenditure on goods consumption', 'AlphaIncome * NET + AlphaFin * LAG_F')
         self.AddVariable('SUP_LAB', 'Supply of Labour', '<To be determined>')
 
     def GenerateEquations(self):
@@ -205,7 +273,7 @@ class Household(Sector):
         Set up the equations for the household
         :return: None
         """
-        self.Equations['SUP_LAB'] = 'INFINITY!'
+        pass
 
 class DoNothingGovernment(Sector):
     def __init__(self, country, long_name, code):
@@ -217,6 +285,7 @@ class DoNothingGovernment(Sector):
         Set up the equations for the household
         :return: None
         """
+        pass
 
 
 
@@ -235,9 +304,9 @@ class TaxFlow(Sector):
         self.AddVariable('TaxRate', 'Tax rate', '%0.4f' % (self.TaxRate,))
         self.AddVariable('T', 'Taxes Paid', 'TaxRate * %s' % (hh_name, ))
         tax_fullname = self.GetVariableName('T')
-        hh.AddCashFlow('-T', affects_net=True)
+        hh.AddCashFlow('-' + tax_fullname, affects_net=True)
         gov = self.Parent.LookupSector('GOV')
-        gov.AddCashFlow('T', affects_net=True)
+        gov.AddCashFlow(tax_fullname, affects_net=True)
 
 
 class Market(Sector):
@@ -248,28 +317,56 @@ class Market(Sector):
     def __init__(self, country, long_name, code):
         Sector.__init__(self, country, long_name, code, has_sector_variables=False)
         self.IsMarket = True
+        self.AffectsNet = True
+        self.NumSupply = 0
 
     def GenerateEquations(self):
+        self.NumSupply = 0
         self.GenerateTermsLowLevel('SUP', 'Supply')
+        if self.NumSupply == 0:
+            raise ValueError('No supply for market: ' + self.FullCode)
+        if self.NumSupply > 1:
+            raise NotImplementedError('More than one supply for a market is not yet supported: ' + self.Code)
         self.GenerateTermsLowLevel('DEM', 'Demand')
-        # Cash flows...
-
-
+        if self.NumSupply == 1:
+            self.FixSingleSupply()
 
     def GenerateTermsLowLevel(self, prefix, long_desc):
+        if prefix not in ('SUP', 'DEM'):
+            raise LogicError('Input to function must be "SUP" or "DEM"')
         country = self.Parent
         var_name = prefix + '_' + self.Code
-        self.AddVariable(var_name,long_desc + ' for Market ' + self.Code, '')
+        self.AddVariable(var_name, long_desc + ' for Market ' + self.Code, '')
         term_list = []
         for s in country.SectorList:
             if s.ID == self.ID:
                 continue
             try:
-                supply = s.GetVariableName(var_name)
+                term = s.GetVariableName(var_name)
             except KeyError:
                 continue
-            term_list.append('+ ' + supply)
-        self.GenerateIncomeLowLevel(var_name, term_list)
+            term_list.append('+ ' + term)
+            if prefix == 'SUP':
+                s.AddCashFlow(term, affects_net=True)
+                self.NumSupply += 1
+            else:
+                s.AddCashFlow('-' + term, affects_net=self.AffectsNet)
+        self.CreateEquationFromTerms(var_name, term_list)
+
+    def FixSingleSupply(self):
+        if self.NumSupply != 1:
+            raise LogicError('Can only call this function with a single supply source!')
+        country = self.Parent
+        sup_name = 'SUP_' + self.Code
+        dem_name = 'DEM_' + self.Code
+        self.Equations[sup_name] = dem_name
+        for s in country.SectorList:
+            if s.ID == self.ID:
+                continue
+            if sup_name in s.Equations:
+                s.Equations[sup_name] = self.Equations[dem_name]
+                return
+
 
 
 
