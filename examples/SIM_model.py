@@ -79,8 +79,8 @@ class SFCModel(object):
     t_minus_1(t) = t(k-1).
     
     Initial Conditions:
-    Hs(0) = 80.0,
-    Hh(0) = 80.0.
+    Hh(0) = 80.0,
+    Hs(0) = 80.0.
     
     Exogenous Variables
     ===================

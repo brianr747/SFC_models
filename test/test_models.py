@@ -1,6 +1,7 @@
 from unittest import TestCase
 
-from sfc_models.models import Entity, Model, Country, Sector
+from sfc_models.models import *
+
 
 class TestEntity(TestCase):
     def test_ctor(self):
@@ -34,7 +35,7 @@ class TestModel(TestCase):
 class TestSector(TestCase):
     def test_ctor_chain(self):
         mod = Model()
-        country = Country(mod, 'USA!', 'US')
+        country = Country(mod, 'USA! USA!', 'US')
         household = Sector(country, 'Household', 'HH')
         self.assertEqual(household.Parent.Code, 'US')
         self.assertEqual(household.Parent.Parent.Code, '')
@@ -45,7 +46,73 @@ class TestSector(TestCase):
         can_hh = Sector(can, 'Household', 'HH')
         can_hh.AddVariable('y', 'Vertical axis', '2.0')
         can_hh.AddVariable('x', 'Horizontal axis', 'y - t')
-        self.assertEqual(can_hh.GetVariables(), ['x', 'y'])
+        self.assertEqual(can_hh.GetVariables(), ['F', 'INC', 'LAG_F', 'NET', 'x', 'y'])
+
+    def test_GetVariableName_2(self):
+        mod = Model()
+        us = Country(mod, 'USA', 'US')
+        can = Country(mod, 'Canada', 'Eh?')
+        household = Household(us, 'Household', 'HH', .9, .2)
+        mod.GenerateFullSectorCodes()
+        household.GenerateEquations()
+        self.assertEqual(household.GetVariableName('AlphaFin'), 'US_HH_AlphaFin')
+
+
+    def test_GetVariableName_1(self):
+        mod = Model()
+        us = Country(mod, 'USA', 'US')
+        household = Household(us, 'Household', 'HH', .9, .2)
+        mod.GenerateFullSectorCodes()
+        household.GenerateEquations()
+        self.assertEqual(household.GetVariableName('AlphaFin'), 'HH_AlphaFin')
+
+    def test_AddCashFlow(self):
+        mod = Model()
+        us = Country(mod, 'USA', 'US')
+        s = Sector(us, 'Household', 'HH')
+        s.AddCashFlow('A', True)
+        s.AddCashFlow('- B', False)
+        s.AddCashFlow(' - C', True)
+        self.assertEqual(s.INC, ['+A', '- B','- C'])
+        self.assertEqual(s.NET, ['+A', '- C'])
+
+
+class TestHouseHold(TestCase):
+    def test_GenerateEquations_alpha(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'Eh')
+        hh = Household(can, 'Household', 'HH', alpha_fin=.2, alpha_income=.9)
+        hh.GenerateEquations()
+        self.assertEqual(hh.Equations['AlphaFin'], '0.2000')
+        self.assertEqual(hh.Equations['AlphaIncome'], '0.9000')
+
+
+class TestDoNothingGovernment(TestCase):
+    def test_GenerateEquations(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'Eh')
+        gov = DoNothingGovernment(can, 'Government', 'GOV')
+        gov.GenerateEquations()
+        self.assertEqual(gov.Equations['G'], '0.0')
+
+
+class TestCountry(TestCase):
+    def test_AddSector(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'Eh')
+        gov = DoNothingGovernment(can, 'Government', 'GOV')
+        self.assertEqual(can.SectorList[0].ID, gov.ID)
+
+
+    def test_LookupSector(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'Eh')
+        gov = DoNothingGovernment(can, 'Government', 'GOV')
+        hh = Household(can, 'Household', 'HH', .9, .2)
+        self.assertEqual(can.LookupSector('HH').ID, hh.ID)
+        self.assertEqual(can.LookupSector('GOV').ID, gov.ID)
+        with self.assertRaises(KeyError):
+            can.LookupSector('Smurf')
 
 
 

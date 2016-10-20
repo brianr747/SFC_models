@@ -22,6 +22,13 @@ from tokenize import tokenize, untokenize, NAME
 from io import BytesIO
 
 
+class LogicError(ValueError):
+    """
+    Throw this when code logic is broken.
+    """
+    pass
+
+
 def replace_token(s, target, replacement):
     """
     replace_token
