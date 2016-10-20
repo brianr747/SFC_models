@@ -4,6 +4,20 @@ models.py
 
 
 Core classes for machine-generated equations.
+
+Copyright 2016 Brian Romanchuk
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 """
 
 from sfc_models.utils import LogicError, replace_token_from_lookup
@@ -300,7 +314,7 @@ class TaxFlow(Sector):
 
     def GenerateEquations(self):
         hh = self.Parent.LookupSector('HH')
-        hh_name = hh.GetVariableName('INC')
+        hh_name = hh.GetVariableName('SUP_LAB')
         self.AddVariable('TaxRate', 'Tax rate', '%0.4f' % (self.TaxRate,))
         self.AddVariable('T', 'Taxes Paid', 'TaxRate * %s' % (hh_name, ))
         tax_fullname = self.GetVariableName('T')

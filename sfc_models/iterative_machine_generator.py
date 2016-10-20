@@ -30,9 +30,10 @@ Machine-generated model code
 <GENERATED_BY>
 $$$
 
+from sfc_models.base_solver import BaseSolver
 
 
-class SFCModel(object):
+class SFCModel(BaseSolver):
     $$$
     Model
 
@@ -41,6 +42,7 @@ class SFCModel(object):
 <DOC_EQUATIONS>
     $$$
     def __init__(self):
+        BaseSolver.__init__(self, <VARIABLE_LIST>)
         self.MaxIterations = <MAXITERATIONS>
         self.MaxTime = MAXTIME
         # Current time step. Call this "STEP" and not time so that users
@@ -101,6 +103,7 @@ class IterativeMachineGenerator(object):
         self.Exogenous = []
         self.TIME = [0, ]
         self.AllVariables = []
+        self.NonLagged = []
         self.EquationList = []
         self.FunctionText = ''
         self.MaxIterations = '400'
@@ -201,15 +204,18 @@ class IterativeMachineGenerator(object):
         self.EquationList = []
         self.AllVariables = []
         initial_conditions = []
+        self.NonLagged = []
         for variable_name, eqn in self.Endogenous:
             self.AllVariables.append(variable_name)
             self.EquationList.append(eqn)
+            self.NonLagged.append(variable_name)
             initial_conditions.append(0.)
         for variable_name, name_of_var in self.Lagged:
             self.AllVariables.append(variable_name)
             self.EquationList.append(variable_name)
         for variable_name, value in self.Exogenous:
             self.AllVariables.append(variable_name)
+            self.NonLagged.append(variable_name)
             self.EquationList.append(variable_name)
 
     def GenerateVarDeclaration(self):
@@ -348,6 +354,8 @@ class IterativeMachineGenerator(object):
         output = output.replace('<UNPACK_VARS>', self.GenerateUnpackVars())
         # Doc Equations
         output = output.replace('<DOC_EQUATIONS>', self.GenerateDocEquations())
+        # Variable list for base class
+        output = output.replace('<VARIABLE_LIST>', repr(self.NonLagged))
         # ITERATOR
         output = output.replace('ITERATOR', self.FunctionText)
         output = output.replace('<MAXITERATIONS>', self.MaxIterations)

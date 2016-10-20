@@ -22,9 +22,10 @@ Ignored line: "oops"
 
 """
 
+from sfc_models.base_solver import BaseSolver
 
 
-class SFCModel(object):
+class SFCModel(BaseSolver):
     """
     Model
 
@@ -47,6 +48,7 @@ class SFCModel(object):
 
     """
     def __init__(self):
+        BaseSolver.__init__(self, ['x', 'y', 'z', 't', 'G'])
         self.MaxIterations = 400
         self.MaxTime = 0
         # Current time step. Call this "STEP" and not time so that users
