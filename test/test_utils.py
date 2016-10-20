@@ -2,7 +2,7 @@ from unittest import TestCase
 import doctest
 
 import sfc_models.utils as utils
-from sfc_models.utils import replace_token
+
 
 def load_tests(loader, tests, ignore):
     """
@@ -14,7 +14,8 @@ def load_tests(loader, tests, ignore):
 
 class TestReplace_token(TestCase):
     def test_replace_token_1(self):
-        self.assertEqual(utils.replace_token('','foo','bar'), '')
+        self.assertEqual(utils.replace_token('', 'foo', 'bar'), '')
+
 
 class TestReplaceTokenLookup(TestCase):
     def test_replace_1(self):
@@ -23,4 +24,9 @@ class TestReplaceTokenLookup(TestCase):
     def test_replace_block(self):
         eqns = 'y = x + 1\nx = t'
         lookup = {'y': 'H_y', 'x': 'H_x'}
-        self.assertEqual('H_y =H_x +1 \n'+'H_x =t ', utils.replace_token_from_lookup(eqns, lookup))
+        self.assertEqual('H_y =H_x +1 \n' + 'H_x =t ', utils.replace_token_from_lookup(eqns, lookup))
+
+
+class TestCreate_equation_from_terms(TestCase):
+    def test_create_equation_from_terms_1(self):
+        self.assertEqual('', utils.create_equation_from_terms([]))

@@ -85,3 +85,28 @@ def replace_token_from_lookup(s, lookup):
         else:
             result.append((toknum, tokval))
     return untokenize(result).decode('utf-8')
+
+
+def create_equation_from_terms(terms):
+    """
+    Create a string equation (right hand side) from a list of terms.
+
+    >>> create_equation_from_terms(['x','y'])
+    'x+y'
+    >>> create_equation_from_terms(['-x', 'y', '-z'])
+    '-x+y-z'
+
+    :param terms: list
+    :return: str
+    """
+    if len(terms) == 0:
+        return ''
+    for i in range(0, len(terms)):
+        term = terms[i].strip()
+        if not term[0] in ('+', '-'):
+            term = '+' + term
+        terms[i] = term
+    if terms[0][0] == '+':
+        terms[0] = terms[0].replace('+', '')
+    eqn = ''.join(terms)
+    return eqn

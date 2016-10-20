@@ -20,7 +20,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from sfc_models.utils import LogicError, replace_token_from_lookup
+from sfc_models.utils import LogicError, replace_token_from_lookup, create_equation_from_terms
 
 class Entity(object):
     """
@@ -103,8 +103,7 @@ class Model(Entity):
     def GenerateIncomeEquations(self):
         for cntry in self.CountryList:
             for sector in cntry.SectorList:
-                if sector.HasSectorVariables:
-                    sector.GenerateIncomeEquations()
+                sector.GenerateIncomeEquations()
 
 
     def CreateFinalEquations(self):
@@ -185,13 +184,9 @@ class Sector(Entity):
         self.LongName = long_name
         self.VariableDescription = {}
         self.Equations = {}
-        if has_sector_variables:
-            self.AddVariable('INC', 'Income', '<TO BE GENERATED>')
-            self.AddVariable('NET', 'Net Income', '<TO BE GENERATED>')
-            self.AddVariable('F', 'Financial assets', 'LAG_F + INC')
-            self.AddVariable('LAG_F', 'Previous period''s financial assets.', 'F(k-1)')
-            self.INC = []
-            self.NET = []
+        self.AddVariable('F', 'Financial assets', '<TO BE GENERATED>')
+        self.AddVariable('LAG_F', 'Previous period''s financial assets.', 'F(k-1)')
+        self.CashFlows = []
 
     def AddVariable(self, varname, desc, eqn):
         self.VariableDescription[varname] = desc
@@ -221,15 +216,23 @@ class Sector(Entity):
             raise KeyError('Variable %s not in sector %s' % (varname, self.FullCode))
         return self.FullCode + '_' + varname
 
-    def AddCashFlow(self, term, affects_net):
+    def AddCashFlow(self, term, eqn, desc):
         term = term.strip()
         if len(term) == 0:
             return
+        term = term.replace(' ', '')
         if not (term[0] in ('+', '-')):
             term = '+' + term
-        self.INC.append(term)
-        if affects_net:
-            self.NET.append(term)
+        if len(term) < 2:
+            raise ValueError('Invalid cash flow term')
+        self.CashFlows.append(term)
+        # Remove the +/- from the term
+        term = term[1:]
+        if term in self.Equations:
+            if len(self.Equations[term]) == 0:
+                self.Equations[term] = eqn
+        else:
+            self.AddVariable(term, desc, eqn)
 
     def GenerateEquations(self):
         pass
@@ -239,14 +242,17 @@ class Sector(Entity):
         for var in self.Equations:
             print('%s = %s' % (var, self.Equations[var]))
 
-
     def GenerateIncomeEquations(self):
-        if not self.HasSectorVariables:
-            raise LogicError('Does not have income equations')
-        self.CreateEquationFromTerms('INC', self.INC)
-        self.CreateEquationFromTerms('NET', self.NET)
+        if len(self.CashFlows) == 0:
+            self.Equations['F'] = ''
+            self.Equations['LAG_F'] = ''
+            return
+        self.CashFlows = ['LAG_F', ] + self.CashFlows
+        eqn = create_equation_from_terms(self.CashFlows)
+        self.Equations['F'] = eqn
 
     def CreateEquationFromTerms(self, varname, terms):
+        raise LogicError('Function deprecated')
         if len(terms) == 0:
             self.Equations[varname] = ''
             return
@@ -258,14 +264,14 @@ class Sector(Entity):
     def CreateFinalEquations(self):
         out = []
         lookup = {}
-        if self.Code == 'HH':
-            print('in')
         for varname in self.Equations:
             lookup[varname] = self.GetVariableName(varname)
         for varname in self.Equations:
+            if len(self.Equations[varname].strip()) == 0:
+                continue
             out.append((self.GetVariableName(varname),
                         replace_token_from_lookup(self.Equations[varname], lookup),
-                        self.VariableDescription[varname]))
+                        '[%s] %s' % (varname, self.VariableDescription[varname])))
         return out
 
 
@@ -279,8 +285,11 @@ class Household(Sector):
         self.AlphaFin = alpha_fin
         self.AddVariable('AlphaIncome', 'Parameter for consumption out of income', '%0.4f' % (self.AlphaIncome,))
         self.AddVariable('AlphaFin', 'Parameter for consumption out of financial assets', '%0.4f' % (self.AlphaFin,))
-        self.AddVariable('DEM_GOOD', 'Expenditure on goods consumption', 'AlphaIncome * NET + AlphaFin * LAG_F')
+        self.AddVariable('DEM_GOOD', 'Expenditure on goods consumption', 'AlphaIncome * AfterTax + AlphaFin * LAG_F')
         self.AddVariable('SUP_LAB', 'Supply of Labour', '<To be determined>')
+        self.AddVariable('PreTax', 'Pretax income', 'SUP_LAB')
+        self.AddVariable('AfterTax', 'Aftertax income', 'PreTax - T')
+        self.AddVariable('T', 'Taxes paid.', '')
 
     def GenerateEquations(self):
         """
@@ -317,10 +326,11 @@ class TaxFlow(Sector):
         hh_name = hh.GetVariableName('SUP_LAB')
         self.AddVariable('TaxRate', 'Tax rate', '%0.4f' % (self.TaxRate,))
         self.AddVariable('T', 'Taxes Paid', 'TaxRate * %s' % (hh_name, ))
+        # work on other sectors
         tax_fullname = self.GetVariableName('T')
-        hh.AddCashFlow('-' + tax_fullname, affects_net=True)
+        hh.AddCashFlow('-T', tax_fullname, 'Taxes paid.')
         gov = self.Parent.LookupSector('GOV')
-        gov.AddCashFlow(tax_fullname, affects_net=True)
+        gov.AddCashFlow('T', tax_fullname, 'Tax revenue received.')
 
 
 class Market(Sector):
@@ -331,7 +341,6 @@ class Market(Sector):
     def __init__(self, country, long_name, code):
         Sector.__init__(self, country, long_name, code, has_sector_variables=False)
         self.IsMarket = True
-        self.AffectsNet = True
         self.NumSupply = 0
 
     def GenerateEquations(self):
@@ -361,11 +370,12 @@ class Market(Sector):
                 continue
             term_list.append('+ ' + term)
             if prefix == 'SUP':
-                s.AddCashFlow(term, affects_net=True)
+                s.AddCashFlow(var_name, self.GetVariableName(var_name), long_desc)
                 self.NumSupply += 1
             else:
-                s.AddCashFlow('-' + term, affects_net=self.AffectsNet)
-        self.CreateEquationFromTerms(var_name, term_list)
+                s.AddCashFlow('-' + var_name, self.GetVariableName(var_name), long_desc)
+        eqn = create_equation_from_terms(term_list)
+        self.Equations[var_name] = eqn
 
     def FixSingleSupply(self):
         if self.NumSupply != 1:

@@ -46,7 +46,7 @@ class TestSector(TestCase):
         can_hh = Sector(can, 'Household', 'HH')
         can_hh.AddVariable('y', 'Vertical axis', '2.0')
         can_hh.AddVariable('x', 'Horizontal axis', 'y - t')
-        self.assertEqual(can_hh.GetVariables(), ['F', 'INC', 'LAG_F', 'NET', 'x', 'y'])
+        self.assertEqual(can_hh.GetVariables(), ['F', 'LAG_F', 'x', 'y'])
 
     def test_GetVariableName_2(self):
         mod = Model()
@@ -70,11 +70,10 @@ class TestSector(TestCase):
         mod = Model()
         us = Country(mod, 'USA', 'US')
         s = Sector(us, 'Household', 'HH')
-        s.AddCashFlow('A', True)
-        s.AddCashFlow('- B', False)
-        s.AddCashFlow(' - C', True)
-        self.assertEqual(s.INC, ['+A', '- B','- C'])
-        self.assertEqual(s.NET, ['+A', '- C'])
+        s.AddCashFlow('A', 'H_A', 'Desc A')
+        s.AddCashFlow('- B', 'H_B', 'Desc B')
+        s.AddCashFlow(' - C', 'H_C', 'Desc C')
+        self.assertEqual(['+A','-B','-C'], s.CashFlows)
 
 
 class TestHouseHold(TestCase):
