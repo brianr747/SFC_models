@@ -22,6 +22,7 @@ limitations under the License.
 
 from sfc_models.utils import LogicError, replace_token_from_lookup, create_equation_from_terms
 
+
 class Entity(object):
     """
     Entity class
@@ -31,7 +32,7 @@ class Entity(object):
     """
     ID = 0
 
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         self.ID = Entity.ID
         Entity.ID += 1
         self.Parent = parent
@@ -64,7 +65,7 @@ class Model(Entity):
         Equals the sector code otherwise.
         :return: None
         """
-        add_country_code =  len(self.CountryList) > 1
+        add_country_code = len(self.CountryList) > 1
         for cntry in self.CountryList:
             for sector in cntry.SectorList:
                 if add_country_code:
@@ -87,8 +88,7 @@ class Model(Entity):
             if varname not in sector.Equations:
                 raise KeyError('Sector %s does not have variable %s' % (sector_code, varname))
             # Need to mark exogenous variables
-            sector.Equations[varname] = 'EXOGENOUS '+eqn
-
+            sector.Equations[varname] = 'EXOGENOUS ' + eqn
 
     def GenerateEquations(self):
         for cntry in self.CountryList:
@@ -105,7 +105,6 @@ class Model(Entity):
             for sector in cntry.SectorList:
                 sector.GenerateIncomeEquations()
 
-
     def CreateFinalEquations(self):
         """
         Create Final equations.
@@ -117,6 +116,10 @@ class Model(Entity):
         for cntry in self.CountryList:
             for sector in cntry.SectorList:
                 out.extend(sector.CreateFinalEquations())
+        return self.FinalEquationFormatting(out)
+
+    @staticmethod
+    def FinalEquationFormatting(out):
         endo = []
         exo = []
         for row in out:
@@ -173,6 +176,7 @@ class Sector(Entity):
     """
     All sectors derive from this class.
     """
+
     def __init__(self, country, long_name, code, has_sector_variables=True):
         Entity.__init__(self, country)
         self.HasSectorVariables = has_sector_variables
@@ -209,7 +213,6 @@ class Sector(Entity):
         :param varname: str
         :return: str
         """
-
         if self.FullCode == '':
             raise LogicError('Must generate FullCode before calling GetVariableName')
         if varname not in self.Equations:
@@ -235,7 +238,7 @@ class Sector(Entity):
             self.AddVariable(term, desc, eqn)
 
     def GenerateEquations(self):
-        pass
+        return
 
     def DumpEquations(self):  # pragma: no cover
         print('[%s - %s]' % (self.Code, self.LongName))
@@ -275,9 +278,6 @@ class Sector(Entity):
         return out
 
 
-
-
-
 class Household(Sector):
     def __init__(self, country, long_name, code, alpha_income, alpha_fin):
         Sector.__init__(self, country, long_name, code)
@@ -298,6 +298,7 @@ class Household(Sector):
         """
         pass
 
+
 class DoNothingGovernment(Sector):
     def __init__(self, country, long_name, code):
         Sector.__init__(self, country, long_name, code)
@@ -309,7 +310,6 @@ class DoNothingGovernment(Sector):
         :return: None
         """
         pass
-
 
 
 class TaxFlow(Sector):
@@ -325,7 +325,7 @@ class TaxFlow(Sector):
         hh = self.Parent.LookupSector('HH')
         hh_name = hh.GetVariableName('SUP_LAB')
         self.AddVariable('TaxRate', 'Tax rate', '%0.4f' % (self.TaxRate,))
-        self.AddVariable('T', 'Taxes Paid', 'TaxRate * %s' % (hh_name, ))
+        self.AddVariable('T', 'Taxes Paid', 'TaxRate * %s' % (hh_name,))
         # work on other sectors
         tax_fullname = self.GetVariableName('T')
         hh.AddCashFlow('-T', tax_fullname, 'Taxes paid.')
@@ -390,27 +390,3 @@ class Market(Sector):
             if sup_name in s.Equations:
                 s.Equations[sup_name] = self.Equations[dem_name]
                 return
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
