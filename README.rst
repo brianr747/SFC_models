@@ -15,7 +15,7 @@ multiple countries), and the high-level description will be parsed to generate t
 
 For another take on SFC models in Python see: https://github.com/kennt/monetary-economics
 
-Developed under Python 3.4; might work under Python 2.X.
+Developed under Python 3.4, and is compatible with Python 2.7.
 
 Sub-package: gl_book
 --------------------
