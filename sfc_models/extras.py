@@ -12,7 +12,7 @@ To install matplotlib, running "pip install matplotlib" in the approppriate Pyth
 should do the job. Unfortunately, it can sometimes fail. There is up-to-date documentation on the internet;
 I do not want to attempt to cover the details here.
 
-This nodule will not be covered by unit tests, as it is interactive. It should be moved elsewhere, but
+This nodule is largely uncovered by unit tests, as it is interactive. It should be moved elsewhere, but
 putting it within sfc_models makes installation instructions simpler. (Users will still need to install matlibplot,
 which can be a tricky install.)
 
@@ -32,10 +32,12 @@ limitations under the License.
 
 """
 
+from pprint import pprint
+
 try:
     import matplotlib.pyplot as plt
-except ImportError:
-    print("Unable to load matplotlib; no graphing output is possible!")
+except ImportError:  # pragma: no cover
+    pprint("Unable to load matplotlib; no graphing output is possible!")
     plt = None
 
 
@@ -50,12 +52,12 @@ class Quick2DPlot(object):
         if run_now:
             self.DoPlot()
 
-    def DoPlot(self):
+    def DoPlot(self):  # pragma: no cover
         if plt is None:
-            print('Attempted to plot the following data; cannot to do because cannot import matplotlib')
-            print('%s %20s' % ('X', 'Y'))
+            pprint('Attempted to plot the following data; cannot to do because cannot import matplotlib')
+            pprint('%s %20s' % ('X', 'Y'))
             for i in range(0, len(self.X)):
-                print('%f %20f', (self.X[i], self.Y[i]))
+                pprint('%f %20f' % (self.X[i], self.Y[i]))
             return
         if type(self.X[0]) == list:
             plt.plot(self.X[0], self.Y[0], self.X[1], self.Y[1], marker='o')

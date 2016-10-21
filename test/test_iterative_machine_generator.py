@@ -1,9 +1,13 @@
 from unittest import TestCase
 import doctest
+import sys
 
 from sfc_models.iterative_machine_generator import IterativeMachineGenerator
 import sfc_models.iterative_machine_generator as iterative_machine_generator
 
+
+# assertWarns does not exist in Python 2.7...
+is_python_3 = sys.version_info[0] == 3
 
 def load_tests(loader, tests, ignore):
     """
@@ -176,8 +180,9 @@ class TestIterativeMachineGenerator(TestCase):
     #     obj.GenerateFile('output\\unittest_output_1.py')
     #     self.compare_files('output\\unittest_output_1.py', 'output\\unittest_target_1.py')
 
-
     def test_main(self):
+        if not is_python_3:  # pragma: no cover
+            return
         eqns = """
 # Test system used in unit tests.
 x = y
@@ -194,6 +199,8 @@ G = [20., ] * 20
         self.compare_files('output\\unittest_output_2.py', 'output\\unittest_target_2.py')
 
     def test_ParseString(self):
+        if not is_python_3:  # pragma: no cover
+            return
         obj = IterativeMachineGenerator()
         eqns = """
 
@@ -215,6 +222,8 @@ G = [20., ] * 20
         self.assertTrue('Ignored' in obj.GeneratedBy)
 
     def test_ParseString2(self):
+        if not is_python_3:  # pragma: no cover
+            return
         obj = IterativeMachineGenerator()
         obj.MaxTime = 0
         eqns = """
@@ -262,6 +271,8 @@ G = [20., ] * 20
 
 
     def test_string_ctor(self):
+        if not is_python_3:  # pragma: no cover
+            return
         eqns = """
 
         # Comment

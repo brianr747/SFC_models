@@ -18,8 +18,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from tokenize import tokenize, untokenize, NAME
+import sys
+import tokenize
+from tokenize import untokenize, NAME
 from io import BytesIO
+
+
+is_python_3 = sys.version_info[0] == 3
 
 
 class LogicError(ValueError):
@@ -57,13 +62,23 @@ def replace_token(s, target, replacement):
     :return: str
     """
     result = []
-    g = tokenize(BytesIO(s.encode('utf-8')).readline)  # tokenize the string
-    for toknum, tokval, _, _, _ in g:
-        if toknum == NAME and tokval == target:  # replace NAME tokens
-            result.append((NAME, replacement))
-        else:
-            result.append((toknum, tokval))
-    return untokenize(result).decode('utf-8')
+    if is_python_3:
+        g = tokenize.tokenize(BytesIO(s.encode('utf-8')).readline)  # tokenize the string
+        for toknum, tokval, _, _, _ in g:
+            if toknum == NAME and tokval == target:  # replace NAME tokens
+                result.append((NAME, replacement))
+            else:
+                result.append((toknum, tokval))
+        return untokenize(result).decode('utf-8')
+    else:  # pragma: no cover   [Do my coverage on Python 3]
+        g = tokenize.generate_tokens(BytesIO(s.encode('utf-8')).readline)  # tokenize the string
+        for toknum, tokval, _, _, _ in g:
+            if toknum == NAME and tokval == target:  # replace NAME tokens
+                result.append((NAME, replacement))
+            else:
+                result.append((toknum, tokval))
+        return untokenize(result).decode('utf-8')
+
 
 
 def replace_token_from_lookup(s, lookup):
@@ -78,14 +93,22 @@ def replace_token_from_lookup(s, lookup):
     :return: str
     """
     result = []
-    g = tokenize(BytesIO(s.encode('utf-8')).readline)  # tokenize the string
-    for toknum, tokval, _, _, _ in g:
-        if toknum == NAME and tokval in lookup:  # replace NAME tokens
-            result.append((NAME, lookup[tokval]))
-        else:
-            result.append((toknum, tokval))
-    return untokenize(result).decode('utf-8')
-
+    if is_python_3:
+        g = tokenize.tokenize(BytesIO(s.encode('utf-8')).readline)  # tokenize the string
+        for toknum, tokval, _, _, _ in g:
+            if toknum == NAME and tokval in lookup:  # replace NAME tokens
+                result.append((NAME, lookup[tokval]))
+            else:
+                result.append((toknum, tokval))
+        return untokenize(result).decode('utf-8')
+    else:  # pragma: no cover   [Do my coverage on Python 3]
+        g = tokenize.generate_tokens(BytesIO(s.encode('utf-8')).readline)  # tokenize the string
+        for toknum, tokval, _, _, _ in g:
+            if toknum == NAME and tokval in lookup:  # replace NAME tokens
+                result.append((NAME, lookup[tokval]))
+            else:
+                result.append((toknum, tokval))
+        return untokenize(result).decode('utf-8')
 
 def create_equation_from_terms(terms):
     """

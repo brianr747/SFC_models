@@ -19,6 +19,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+from pprint import pprint
+
 
 from sfc_models.utils import LogicError, replace_token_from_lookup, create_equation_from_terms
 
@@ -177,10 +179,8 @@ class Sector(Entity):
     All sectors derive from this class.
     """
 
-    def __init__(self, country, long_name, code, has_sector_variables=True):
+    def __init__(self, country, long_name, code):
         Entity.__init__(self, country)
-        self.HasSectorVariables = has_sector_variables
-        self.IsMarket = False
         country.AddSector(self)
         self.Code = code
         # This is calculated by the Model
@@ -241,9 +241,9 @@ class Sector(Entity):
         return
 
     def DumpEquations(self):  # pragma: no cover
-        print('[%s - %s]' % (self.Code, self.LongName))
+        pprint('[%s - %s]' % (self.Code, self.LongName))
         for var in self.Equations:
-            print('%s = %s' % (var, self.Equations[var]))
+            pprint('%s = %s' % (var, self.Equations[var]))
 
     def GenerateIncomeEquations(self):
         if len(self.CashFlows) == 0:
@@ -254,22 +254,13 @@ class Sector(Entity):
         eqn = create_equation_from_terms(self.CashFlows)
         self.Equations['F'] = eqn
 
-    def CreateEquationFromTerms(self, varname, terms):
-        raise LogicError('Function deprecated')
-        if len(terms) == 0:
-            self.Equations[varname] = ''
-            return
-        if terms[0][0] == '+':
-            terms[0] = terms[0].replace('+', '')
-        eqn = ''.join(terms)
-        self.Equations[varname] = eqn
-
     def CreateFinalEquations(self):
         out = []
         lookup = {}
         for varname in self.Equations:
             lookup[varname] = self.GetVariableName(varname)
-        for varname in self.Equations:
+        # Use GetVariables() so that we re always sorted; needed for unit tests
+        for varname in self.GetVariables():
             if len(self.Equations[varname].strip()) == 0:
                 continue
             out.append((self.GetVariableName(varname),
@@ -278,69 +269,13 @@ class Sector(Entity):
         return out
 
 
-class Household(Sector):
-    def __init__(self, country, long_name, code, alpha_income, alpha_fin):
-        Sector.__init__(self, country, long_name, code)
-        self.AlphaIncome = alpha_income
-        self.AlphaFin = alpha_fin
-        self.AddVariable('AlphaIncome', 'Parameter for consumption out of income', '%0.4f' % (self.AlphaIncome,))
-        self.AddVariable('AlphaFin', 'Parameter for consumption out of financial assets', '%0.4f' % (self.AlphaFin,))
-        self.AddVariable('DEM_GOOD', 'Expenditure on goods consumption', 'AlphaIncome * AfterTax + AlphaFin * LAG_F')
-        self.AddVariable('SUP_LAB', 'Supply of Labour', '<To be determined>')
-        self.AddVariable('PreTax', 'Pretax income', 'SUP_LAB')
-        self.AddVariable('AfterTax', 'Aftertax income', 'PreTax - T')
-        self.AddVariable('T', 'Taxes paid.', '')
-
-    def GenerateEquations(self):
-        """
-        Set up the equations for the household
-        :return: None
-        """
-        pass
-
-
-class DoNothingGovernment(Sector):
-    def __init__(self, country, long_name, code):
-        Sector.__init__(self, country, long_name, code)
-        self.AddVariable('DEM_GOOD', 'Government Consumption of Goods', '0.0')
-
-    def GenerateEquations(self):
-        """
-        Set up the equations for the household
-        :return: None
-        """
-        pass
-
-
-class TaxFlow(Sector):
-    """
-    TaxFlow: Not really a sector, but keep it in the same list
-    """
-
-    def __init__(self, country, long_name, code, taxrate):
-        Sector.__init__(self, country, long_name, code, has_sector_variables=False)
-        self.TaxRate = taxrate
-
-    def GenerateEquations(self):
-        hh = self.Parent.LookupSector('HH')
-        hh_name = hh.GetVariableName('SUP_LAB')
-        self.AddVariable('TaxRate', 'Tax rate', '%0.4f' % (self.TaxRate,))
-        self.AddVariable('T', 'Taxes Paid', 'TaxRate * %s' % (hh_name,))
-        # work on other sectors
-        tax_fullname = self.GetVariableName('T')
-        hh.AddCashFlow('-T', tax_fullname, 'Taxes paid.')
-        gov = self.Parent.LookupSector('GOV')
-        gov.AddCashFlow('T', tax_fullname, 'Tax revenue received.')
-
-
 class Market(Sector):
     """
     Market Not really a sector, but keep it in the same list
     """
 
     def __init__(self, country, long_name, code):
-        Sector.__init__(self, country, long_name, code, has_sector_variables=False)
-        self.IsMarket = True
+        Sector.__init__(self, country, long_name, code)
         self.NumSupply = 0
 
     def GenerateEquations(self):
@@ -370,10 +305,13 @@ class Market(Sector):
                 continue
             term_list.append('+ ' + term)
             if prefix == 'SUP':
+                # Since we assume that there is a single supplier, we can set the supply equation to
+                # point to the equation in the market.
                 s.AddCashFlow(var_name, self.GetVariableName(var_name), long_desc)
                 self.NumSupply += 1
             else:
-                s.AddCashFlow('-' + var_name, self.GetVariableName(var_name), long_desc)
+                # Must fill in demand equation in sectors.
+                s.AddCashFlow('-' + var_name, 'Error: must fill in demand equation', long_desc)
         eqn = create_equation_from_terms(term_list)
         self.Equations[var_name] = eqn
 

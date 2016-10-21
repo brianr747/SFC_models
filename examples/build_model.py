@@ -1,6 +1,9 @@
-from sfc_models.models import *
-from sfc_models.iterative_machine_generator import IterativeMachineGenerator
+from pprint import pprint
+
 from sfc_models.extras import Quick2DPlot
+from sfc_models.iterative_machine_generator import IterativeMachineGenerator
+from sfc_models.models import *
+from sfc_models.sectors import Household, DoNothingGovernment, TaxFlow
 
 
 def main():
@@ -26,7 +29,7 @@ def main():
     #mod.DumpEquations()
     eqns = mod.CreateFinalEquations()
     eqns += '\n\nMaxTime = 100\nErr_Tolerance=0.001'
-    print(eqns)
+    pprint(eqns)
     generator = IterativeMachineGenerator(eqns)
     generator.main('SIM_Machine_Model.py')
 
