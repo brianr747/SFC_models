@@ -5,7 +5,8 @@ with open('README.rst', 'r') as f:
 
 setup(
     name='sfc_models',
-    packages=['sfc_models', 'sfc_models.gl_book'],
+    packages=['sfc_models', 'sfc_models.gl_book', 'sfc_models.examples',
+              'sfc_models.examples.scripts'],
     version='0.2',
     description='Stock-Flow Consistent (SFC) model generation',
     long_description=long_desc,

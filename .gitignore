@@ -13,6 +13,9 @@ output/unittest_output*.py
 
 # C extensions
 *.so
+# Brian's scripts...
+*.bat
+sfc_models/examples/scripts/*.csv
 
 # Distribution / packaging
 .Python

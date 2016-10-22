@@ -24,7 +24,8 @@ The subpackage sfc_models.gl_book contains code to generate models from the text
 by Wynne Godley and Marc Lavoie. Since the ultimate objective is to generate the equations algorithmically,
 these models are only used for comparative purposes.
 
-The previously mentioned GitHub package by "kennt" consists of well-documented solutions of those models.
+The previously mentioned GitHub package by "kennt" consists of well-documented solutions of those models in IPython
+notebooks.
 
 Solution Method
 ---------------
@@ -36,8 +37,7 @@ At present, the machine-generated code uses an iterative approach to solve *x = 
 We just passing an initial guess vector trhough *f(x)* and hope it converges.
 
 This works for the simple models tested so far. The objective is to augment this by a brute-force search technique that
-relies upon economic intuition to reduce the dimension of the search space. The margins in this file are too small to
-write a proof of this technique.
+relies upon economic intuition to reduce the dimension of the search space.
 
 Dependencies
 ------------
@@ -45,16 +45,21 @@ Dependencies
 
 Documentation will be placed in the "docs" directory.
 
-Examples are in the "examples" directory.
-
-(Please note that *setup.py* - which is invoked by *pip install* - currently does not install those directories.
-The user will need to go to GitHub to get them, as well as the unit tests (and doctests) found in the *tests/*
-directory.)
+Examples are in the *examples* sub-package. Currently, in the form of scripts in *examples.scripts*; will develop a
+deployment function later.
 
 The test coverage on the "master" branch is 100%, and the objective is to hold that standard. (There are some
 sections that are effectively untestable, and there appears to be issues with some lines that are undoubtedly hit
 as being marked as unreached; they have been eliminated with::
 #  pragma: no cover
+
+Change Log
+----------
+
+- Version 0.2  (Should have been 0.2.0 - oops)
+  First deployment of package to PyPi. Base functionality operational, little documentation.
+- Earlier versions: Only available as source on Github.
+
 
 License/Disclaimer
 ------------------

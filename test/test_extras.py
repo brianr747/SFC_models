@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-import sfc_models.extras as extras
+import sfc_models.examples.Quick2DPlot as extras
 
 
 class TestQuick2DPlot(TestCase):

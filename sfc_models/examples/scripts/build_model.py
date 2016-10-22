@@ -1,6 +1,4 @@
-from pprint import pprint
-
-from sfc_models.extras import Quick2DPlot
+from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models.iterative_machine_generator import IterativeMachineGenerator
 from sfc_models.models import *
 from sfc_models.sectors import Household, DoNothingGovernment, TaxFlow
