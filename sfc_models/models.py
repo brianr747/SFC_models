@@ -20,9 +20,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 from pprint import pprint
-
+import traceback
 
 from sfc_models.utils import LogicError, replace_token_from_lookup, create_equation_from_terms
+import sfc_models.iterative_machine_generator as iterative_machine_generator
 
 
 class Entity(object):
@@ -46,12 +47,84 @@ class Model(Entity):
     """
     Model class.
     All other entities live within a model.
+
+
     """
 
     def __init__(self):
         Entity.__init__(self)
         self.CountryList = []
         self.Exogenous = []
+        self.FinalEquations = '<To be generated>'
+
+    def main(self, base_file_name=None):  # pragma: no cover
+        """
+        Builds model, once all sector and exogenous definitions are in place.
+        :return: str
+        """
+        # Excluded from unit test coverage for now. The components are all tested; this function is really a
+        # end-to-end test. Only include in coverage once output file format is finalised.
+        if base_file_name is not None:
+            log_file = base_file_name + '_log.txt'
+        else:
+            log_file = None
+        try:
+            self.GenerateFullSectorCodes()
+            self.GenerateEquations()
+            self.GenerateIncomeEquations()
+            self.ProcessExogenous()
+            self.FinalEquations = self.CreateFinalEquations()
+            if base_file_name is not None:
+                model_file = base_file_name + '.py'
+                obj = iterative_machine_generator.IterativeMachineGenerator(self.FinalEquations)
+                obj.main(model_file)
+                self.LogInfo(log_file)
+        except Exception as e:
+            self.LogInfo(log_file, e)
+            raise
+        return self.FinalEquations
+
+    def AddExogenous(self, sector_fullcode, varname, value):
+        """
+        Add an exogenous variable to the model. Overwrites an existing variable definition.
+        Need to use the full sector code.
+
+        :param sector_fullcode: str
+        :param varname: str
+        :param value: str
+        :return:
+        """
+        self.Exogenous.append((sector_fullcode, varname, value))
+
+    def LogInfo(self, file_name, generate_full_codes=True, ex=None):  # pragma: no cover
+        """
+        Write information to a file; if there is an exception, dump the trace.
+        The log will normally generate the full sector codes; set generate_full_codes=False
+        to leave the Model full codes untouched.
+
+        :param file_name: str
+        :param generate_full_codes: bool
+        :param ex: Exception
+        :return:
+        """
+        # Not covered with unit tests [for now]. Output format will change a lot.
+        if file_name is None:
+            return
+        if generate_full_codes:
+            self.GenerateFullSectorCodes()
+        with open(file_name, 'w') as f:
+            for c in self.CountryList:
+                f.write('Country: Code= "%s" %s\n' % (c.Code, c.LongName))
+                f.write('='*60 + '\n\n')
+                for s in c.SectorList:
+                    f.write(s.Dump() + '\n')
+            f.write('\n\nFinal Equations:\n')
+            f.write(self.FinalEquations + '\n')
+            if ex is not None:
+                f.write('\n\nError raised:\n')
+                traceback.print_exc(file=f)
+
+
 
     def AddCountry(self, country):
         """
@@ -84,7 +157,7 @@ class Model(Entity):
                 pass
         raise KeyError('Sector with FullCode does not exist: ' + fullcode)
 
-    def ForceExogenous(self):
+    def ProcessExogenous(self):
         for sector_code, varname, eqn in self.Exogenous:
             sector = self.LookupSector(sector_code)
             if varname not in sector.Equations:
@@ -97,10 +170,12 @@ class Model(Entity):
             for sector in cntry.SectorList:
                 sector.GenerateEquations()
 
-    def DumpEquations(self):  # pragma: no cover
+    def DumpEquations(self):
+        out = ''
         for cntry in self.CountryList:
             for sector in cntry.SectorList:
-                sector.DumpEquations()
+                out += sector.Dump()
+        return out
 
     def GenerateIncomeEquations(self):
         for cntry in self.CountryList:
@@ -138,6 +213,7 @@ class Model(Entity):
         endo = [formatter % x for x in endo]
         exo = [formatter % x for x in exo]
         s = '\n'.join(endo) + '\n\n# Exogenous Variables\n\n' + '\n'.join(exo)
+        s += '\n\nMaxTime = 100\nErr_Tolerance=0.001'
         return s
 
 
@@ -240,10 +316,12 @@ class Sector(Entity):
     def GenerateEquations(self):
         return
 
-    def DumpEquations(self):  # pragma: no cover
-        pprint('[%s - %s]' % (self.Code, self.LongName))
+    def Dump(self):
+        out = '[%s] %s. FullCode = "%s" \n' % (self.Code, self.LongName, self.FullCode)
+        out += '-' * 60 + '\n'
         for var in self.Equations:
-            pprint('%s = %s' % (var, self.Equations[var]))
+            out += '%s = %s\n' % (var, self.Equations[var])
+        return out
 
     def GenerateIncomeEquations(self):
         if len(self.CashFlows) == 0:

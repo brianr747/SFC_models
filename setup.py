@@ -7,7 +7,7 @@ setup(
     name='sfc_models',
     packages=['sfc_models', 'sfc_models.gl_book', 'sfc_models.examples',
               'sfc_models.examples.scripts'],
-    version='0.2',
+    version='0.2.1',
     description='Stock-Flow Consistent (SFC) model generation',
     long_description=long_desc,
     author='Brian Romanchuk',
@@ -31,5 +31,5 @@ setup(
                  'Programming Language :: Python :: 3.6',
                  'Topic :: Other/Nonlisted Topic'
     ],
-    url='https://github.com/brianr747/SFC_models',
+    url='https://github.com/brianr747/SFC_models'
 )

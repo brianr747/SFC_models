@@ -40,6 +40,18 @@ class DoNothingGovernment(Sector):
     def __init__(self, country, long_name, code):
         Sector.__init__(self, country, long_name, code)
         self.AddVariable('DEM_GOOD', 'Government Consumption of Goods', '0.0')
+        self.AddVariable('FISC_BAL', 'Government Fiscal Balance', 'T - DEM_GOOD')
+
+
+class FixedMarginBusiness(Sector):
+    def __init__(self, country, long_name, code, profit_margin=0.0):
+        Sector.__init__(self, country, long_name, code)
+        self.AddVariable('SUP_GOOD', 'Supply of goods', '<TO BE DETERMINED>')
+        wage_share = 1.0 - profit_margin
+        if profit_margin == 0:
+            self.AddVariable('DEM_LAB', 'Demand for labour', 'GOOD_SUP_GOOD')
+        else:
+            self.AddVariable('DEM_LAB', 'Demand for labour', '%0.3f * GOOD_SUP_GOOD' % (wage_share,))
 
 
 class TaxFlow(Sector):

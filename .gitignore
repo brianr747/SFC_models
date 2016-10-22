@@ -8,14 +8,15 @@ __pycache__/
 
 # Unittest output files
 tests/output/unittest_output*.py
-# Unfortunately, replicated the directory, as we can run from two points
-output/unittest_output*.py
 
 # C extensions
 *.so
 # Brian's scripts...
 *.bat
+# Machine-generated files in examples/scripts
 sfc_models/examples/scripts/*.csv
+sfc_models/examples/scripts/*_log.txt
+sfc_models/examples/scripts/out_*.py
 
 # Distribution / packaging
 .Python

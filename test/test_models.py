@@ -62,13 +62,19 @@ class TestModel(TestCase):
         with self.assertRaises(KeyError):
             mod.LookupSector('HH')
 
-    def test_ForceExogenous(self):
+    def test_AddExogenous(self):
+        mod = Model()
+        # Does not validate that the sector exists (until we call ProcessExogenous)
+        mod.AddExogenous('code','varname', 'val')
+        self.assertEqual([('code', 'varname', 'val')], mod.Exogenous)
+
+    def test_ProcessExogenous(self):
         mod = Model()
         us = Country(mod, 'USA', 'US')
         household = Sector(us, 'Household', 'HH')
         mod.GenerateFullSectorCodes()
         mod.Exogenous = [('HH', 'F', 'TEST')]
-        mod.ForceExogenous()
+        mod.ProcessExogenous()
         self.assertEqual('EXOGENOUS TEST', household.Equations['F'])
 
     def test_ForceExogenous2(self):
@@ -78,7 +84,7 @@ class TestModel(TestCase):
         mod.GenerateFullSectorCodes()
         mod.Exogenous = [('HH', 'Foo', 'TEST')]
         with self.assertRaises(KeyError):
-            mod.ForceExogenous()
+            mod.ProcessExogenous()
 
     def test_GenerateEquations(self):
         # Just count the number if times the stub is called
@@ -121,8 +127,19 @@ class TestModel(TestCase):
         out = Model.FinalEquationFormatting(eq)
         # Remove spaces; what matters is the content
         out = out.replace(' ', '').split('\n')
-        target = ['x=y+1#comment_x', 'z=d#comment_z', '', '#ExogenousVariables', '', 'y=20#comment_y']
+        target = ['x=y+1#comment_x', 'z=d#comment_z', '', '#ExogenousVariables', '', 'y=20#comment_y',
+                  '', 'MaxTime=100','Err_Tolerance=0.001']
         self.assertEqual(target, out)
+
+    def test_dumpequations(self):
+        # Since dump format will change, keep this as a very loose test. We can tighten the testing
+        # on Sector.Dump() later
+        mod = Model()
+        country = Country(mod, 'USA! USA!', 'US')
+        household = Sector(country, 'Household', 'HH')
+        hh_dump = household.Dump()
+        mod_dump = mod.DumpEquations()
+        self.assertEqual(hh_dump, mod_dump)
 
 
 class TestSector(TestCase):

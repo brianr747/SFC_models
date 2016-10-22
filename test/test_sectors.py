@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from sfc_models.models import Model, Country
-from sfc_models.sectors import Household, DoNothingGovernment, TaxFlow
+from sfc_models.sectors import *
 
 
 class TestHouseHold(TestCase):
@@ -35,10 +35,24 @@ class TestTaxFlow(TestCase):
         mod.GenerateFullSectorCodes()
         tf.GenerateEquations()
         self.assertEqual('0.1000', tf.Equations['TaxRate'])
-        self.assertEqual('TaxRate*HH_SUP_LAB',tf.Equations['T'].replace(' ',''))
+        self.assertEqual('TaxRate*HH_SUP_LAB', tf.Equations['T'].replace(' ', ''))
         self.assertEqual(['-T', ], hh.CashFlows)
         self.assertEqual('Tax_T', hh.Equations['T'])
         self.assertEqual(['+T', ], gov.CashFlows)
         self.assertEqual('Tax_T', gov.Equations['T'])
+
+
+class TestFixedMarginBusiness(TestCase):
+    def test_ctor_default(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'Eh')
+        bus = FixedMarginBusiness(can, 'Business', 'BUS')
+        self.assertEqual('GOOD_SUP_GOOD', bus.Equations['DEM_LAB'])
+
+    def test_ctor_nonzero_profit(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'Eh')
+        bus = FixedMarginBusiness(can, 'Business', 'BUS', profit_margin=0.1)
+        self.assertEqual('0.900*GOOD_SUP_GOOD', bus.Equations['DEM_LAB'].replace(' ',''))
 
 
