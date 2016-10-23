@@ -20,9 +20,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 from sfc_models.models import Sector
+import sfc_models.utils as utils
 
 
-class Household(Sector):
+class BaseHousehold(Sector):
+    """
+    Base class for all household sectors
+    """
     def __init__(self, country, long_name, code, alpha_income, alpha_fin):
         Sector.__init__(self, country, long_name, code)
         self.AlphaIncome = alpha_income
@@ -30,10 +34,23 @@ class Household(Sector):
         self.AddVariable('AlphaIncome', 'Parameter for consumption out of income', '%0.4f' % (self.AlphaIncome,))
         self.AddVariable('AlphaFin', 'Parameter for consumption out of financial assets', '%0.4f' % (self.AlphaFin,))
         self.AddVariable('DEM_GOOD', 'Expenditure on goods consumption', 'AlphaIncome * AfterTax + AlphaFin * LAG_F')
-        self.AddVariable('SUP_LAB', 'Supply of Labour', '<To be determined>')
-        self.AddVariable('PreTax', 'Pretax income', 'SUP_LAB')
+        self.AddVariable('PreTax', 'Pretax income', 'SET IN DERIVED CLASSES')
         self.AddVariable('AfterTax', 'Aftertax income', 'PreTax - T')
         self.AddVariable('T', 'Taxes paid.', '')
+
+
+class Household(BaseHousehold):
+    def __init__(self, country, long_name, code, alpha_income, alpha_fin):
+        BaseHousehold.__init__(self, country, long_name, code, alpha_income, alpha_fin)
+        self.AddVariable('SUP_LAB', 'Supply of Labour', '<To be determined>')
+        self.Equations['PreTax'] = 'SUP_LAB'
+
+
+class Capitalists(BaseHousehold):
+    def __init__(self, country, long_name, code, alpha_income, alpha_fin):
+        BaseHousehold.__init__(self, country, long_name, code, alpha_income, alpha_fin)
+        self.AddVariable('DIV', 'Dividends', '')
+        self.Equations['PreTax'] = 'DIV'
 
 
 class DoNothingGovernment(Sector):
@@ -46,12 +63,25 @@ class DoNothingGovernment(Sector):
 class FixedMarginBusiness(Sector):
     def __init__(self, country, long_name, code, profit_margin=0.0):
         Sector.__init__(self, country, long_name, code)
+        self.ProfitMargin = profit_margin
         self.AddVariable('SUP_GOOD', 'Supply of goods', '<TO BE DETERMINED>')
-        wage_share = 1.0 - profit_margin
-        if profit_margin == 0:
-            self.AddVariable('DEM_LAB', 'Demand for labour', 'GOOD_SUP_GOOD')
+        self.AddVariable('PROF', 'Profits', 'SUP_GOOD - DEM_LAB')
+
+
+    def GenerateEquations(self):
+        wage_share = 1.0 - self.ProfitMargin
+        market_sup_good = self.Parent.LookupSector('GOOD').GetVariableName('SUP_GOOD')
+        if self.ProfitMargin == 0:
+            self.AddVariable('DEM_LAB', 'Demand for labour', market_sup_good)
+            self.Equations['PROF'] = ''
         else:
-            self.AddVariable('DEM_LAB', 'Demand for labour', '%0.3f * GOOD_SUP_GOOD' % (wage_share,))
+            self.AddVariable('DEM_LAB', 'Demand for labour', '%0.3f * %s' % (wage_share, market_sup_good))
+            self.Equations['PROF'] = '%0.3f * %s' % (self.ProfitMargin, market_sup_good)
+        for s in self.Parent.SectorList:
+            if 'DIV' in s.Equations:
+                self.AddCashFlow('-DIV', 'PROF', 'Dividends paid')
+                s.AddCashFlow('DIV', self.GetVariableName('PROF'), 'Dividends received')
+                break
 
 
 class TaxFlow(Sector):
@@ -65,11 +95,18 @@ class TaxFlow(Sector):
         self.AddVariable('T', 'Taxes Paid', '<To be determined>')
 
     def GenerateEquations(self):
-        hh = self.Parent.LookupSector('HH')
-        hh_name = hh.GetVariableName('SUP_LAB')
-        self.Equations['T'] = 'TaxRate * %s' % (hh_name, )
+        terms = []
+        # Find all sector that are taxable
+        taxrate_name = self.GetVariableName('TaxRate')
+        for s in self.Parent.SectorList:
+            if s.ID == self.ID:
+                continue
+            if 'PreTax' in s.Equations:
+                term = '%s * %s' % (taxrate_name, s.GetVariableName('PreTax'))
+                s.AddCashFlow('-T', term, 'Taxes paid.')
+                terms.append('+' + term)
+        self.Equations['T'] = utils.create_equation_from_terms(terms)
         # work on other sectors
         tax_fullname = self.GetVariableName('T')
-        hh.AddCashFlow('-T', tax_fullname, 'Taxes paid.')
         gov = self.Parent.LookupSector('GOV')
         gov.AddCashFlow('T', tax_fullname, 'Tax revenue received.')

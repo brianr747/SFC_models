@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from sfc_models.models import Model, Country
+from sfc_models.models import Model, Country, Market
 from sfc_models.sectors import *
 
 
@@ -35,9 +35,9 @@ class TestTaxFlow(TestCase):
         mod.GenerateFullSectorCodes()
         tf.GenerateEquations()
         self.assertEqual('0.1000', tf.Equations['TaxRate'])
-        self.assertEqual('TaxRate*HH_SUP_LAB', tf.Equations['T'].replace(' ', ''))
+        self.assertEqual('Tax_TaxRate*HH_PreTax', tf.Equations['T'].replace(' ', ''))
         self.assertEqual(['-T', ], hh.CashFlows)
-        self.assertEqual('Tax_T', hh.Equations['T'])
+        self.assertEqual('Tax_TaxRate * HH_PreTax', hh.Equations['T'])
         self.assertEqual(['+T', ], gov.CashFlows)
         self.assertEqual('Tax_T', gov.Equations['T'])
 
@@ -47,12 +47,29 @@ class TestFixedMarginBusiness(TestCase):
         mod = Model()
         can = Country(mod, 'Canada', 'Eh')
         bus = FixedMarginBusiness(can, 'Business', 'BUS')
-        self.assertEqual('GOOD_SUP_GOOD', bus.Equations['DEM_LAB'])
+        self.assertEqual(0., bus.ProfitMargin)
+        mar = Market(can, 'market', 'GOOD')
+        mod.GenerateFullSectorCodes()
+        bus.GenerateEquations()
+        self.assertEqual('GOOD_SUP_GOOD', bus.Equations['DEM_LAB'].replace(' ', ''))
 
-    def test_ctor_nonzero_profit(self):
+    def test_GenerateEquations(self):
         mod = Model()
         can = Country(mod, 'Canada', 'Eh')
         bus = FixedMarginBusiness(can, 'Business', 'BUS', profit_margin=0.1)
+        mar = Market(can, 'market', 'GOOD')
+        mod.GenerateFullSectorCodes()
+        bus.GenerateEquations()
         self.assertEqual('0.900*GOOD_SUP_GOOD', bus.Equations['DEM_LAB'].replace(' ',''))
 
-
+class TestCapitalists(TestCase):
+    def test_dividend(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'CA')
+        us = Country(mod, 'US of A', 'US')
+        bus = FixedMarginBusiness(can, 'Business', 'BUS', profit_margin=.1)
+        mar = Market(can, 'market', 'GOOD')
+        cap = Capitalists(can, 'Capitalists', 'CAP', .4, .4)
+        mod.GenerateFullSectorCodes()
+        bus.GenerateEquations()
+        self.assertEqual('CA_BUS_PROF', cap.Equations['DIV'])

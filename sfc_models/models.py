@@ -355,6 +355,8 @@ class Market(Sector):
     def __init__(self, country, long_name, code):
         Sector.__init__(self, country, long_name, code)
         self.NumSupply = 0
+        self.AddVariable('SUP_' + code, 'Supply for market ' + code, '')
+        self.AddVariable('DEM_' + code, 'Demand for market ' + code, '')
 
     def GenerateEquations(self):
         self.NumSupply = 0
