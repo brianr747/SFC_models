@@ -26,6 +26,12 @@ class TestReplaceTokenLookup(TestCase):
         lookup = {'y': 'H_y', 'x': 'H_x'}
         self.assertEqual('H_y =H_x +1 \n' + 'H_x =t ', utils.replace_token_from_lookup(eqns, lookup))
 
+class TestGetValid(TestCase):
+    def test_list(self):
+        bad = utils.get_invalid_variable_names()
+        self.assertIn('self', bad)
+        self.assertIn('import', bad)
+
 
 class TestCreate_equation_from_terms(TestCase):
     def test_create_equation_from_terms_1(self):

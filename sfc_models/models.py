@@ -76,7 +76,7 @@ class Model(Entity):
             self.FinalEquations = self.CreateFinalEquations()
             if base_file_name is not None:
                 model_file = base_file_name + '.py'
-                obj = iterative_machine_generator.IterativeMachineGenerator(self.FinalEquations)
+                obj = iterative_machine_generator.IterativeMachineGenerator(self.FinalEquations, run_equation_reduction=True)
                 obj.main(model_file)
                 self.LogInfo(log_file)
         except Exception as e:

@@ -57,6 +57,7 @@ def main():
     import out_SIM_Model_With_Capitalists as SIM_Capitalist
     obj = SIM_Capitalist.SFCModel()
     obj.MaxTime = 20
+    obj.PrintIterations = True
     obj.main()
     obj.WriteCSV('out_SIM_Model_With_Capitalists.csv')
 
