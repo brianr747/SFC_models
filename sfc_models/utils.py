@@ -21,6 +21,7 @@ limitations under the License.
 import sys
 import tokenize
 import keyword
+import math
 from tokenize import untokenize, NAME
 from io import BytesIO
 
@@ -81,6 +82,7 @@ def replace_token(s, target, replacement):
     'Little Bunny Foofoo says hello to you '
 
     Note that the function looks at tokens that could be variables; the contents of strings are not touched.
+    
     >>> replace_token('a = "a fool and his money"', 'a', 'x')
     'x ="a fool and his money"'
 
@@ -169,6 +171,9 @@ def create_equation_from_terms(terms):
 def get_invalid_variable_names():
     """
     Get a list of invalid variable names for use in sfc_model equations.
+
+    Includes mathematical operators in module 'math'.
+
     :return: list
     """
     internal = ['self', 'None']
@@ -177,7 +182,12 @@ def get_invalid_variable_names():
         built = dir(builtins)
     else:  # pragma: no cover
         built = dir(__builtin__)
-    return internal + kw + built
+    out = internal + kw + built + dir(math)
+    # Add back in mathematical operators
+    excludes = {'min', 'max', 'pow', 'abs', 'round', 'sum', 'float'}
+    out = (x for x in out if x not in excludes)
+    return list(out)
+
 
 class EquationParser(object):
     def __init__(self):

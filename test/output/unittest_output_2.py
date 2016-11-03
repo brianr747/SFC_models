@@ -22,6 +22,10 @@ Ignored line: "oops"
 
 """
 
+from pprint import pprint
+# Bring in all the math functions by default.
+from math import *
+
 from sfc_models.base_solver import BaseSolver
 
 
@@ -54,6 +58,7 @@ class SFCModel(BaseSolver):
         # Current time step. Call this "STEP" and not time so that users
         # can create a custom time axis variable.
         self.STEP = 0
+        self.PrintIterations = False
         self.Err_Tolerance = .001
         self.x = [0., ]
         self.y = [0., ]
@@ -101,6 +106,8 @@ class SFCModel(BaseSolver):
             cnt += 1
             if cnt > self.MaxIterations:
                 raise ValueError('No Convergence!')
+        if self.PrintIterations:
+            pprint(cnt)
         x = orig_vector[0]
         self.x.append(x)
         y = orig_vector[1]

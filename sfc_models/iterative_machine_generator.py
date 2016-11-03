@@ -33,6 +33,8 @@ Machine-generated model code
 $$$
 
 from pprint import pprint
+# Bring in all the math functions by default.
+from math import *
 
 from sfc_models.base_solver import BaseSolver
 

@@ -26,13 +26,54 @@ class TestReplaceTokenLookup(TestCase):
         lookup = {'y': 'H_y', 'x': 'H_x'}
         self.assertEqual('H_y =H_x +1 \n' + 'H_x =t ', utils.replace_token_from_lookup(eqns, lookup))
 
+
 class TestGetValid(TestCase):
     def test_list(self):
         bad = utils.get_invalid_variable_names()
         self.assertIn('self', bad)
         self.assertIn('import', bad)
+        # We allow some builtin mathematical operators
+        # Full list in the source code.
+        self.assertNotIn('max', bad)
+        # Also: functions in "math"
+        self.assertIn('sqrt', bad)
 
 
 class TestCreate_equation_from_terms(TestCase):
     def test_create_equation_from_terms_1(self):
         self.assertEqual('', utils.create_equation_from_terms([]))
+
+
+class TestEquationParser(TestCase):
+    """
+    Pretty much the whole class is covered by doctests.
+
+    Can fill in more tests if desired.
+    """
+    def test_ParseString(self):
+        pass
+
+    def test_GenerateTokenList(self):
+        pass
+
+    def test_ValidateInputs(self):
+        pass
+
+    def test_EquationReduction(self):
+        pass
+
+    def test_CleanupRightHandSide(self):
+        obj = utils.EquationParser()
+        self.assertEqual('', obj.CleanupRightHandSide(' '))
+        self.assertEqual('x', obj.CleanupRightHandSide('+x '))
+        self.assertEqual('x', obj.CleanupRightHandSide(' +x'))
+        self.assertEqual('-x', obj.CleanupRightHandSide('-x'))
+
+    def test_FindExactMatches(self):
+        pass
+
+    def test_RebuildEquations(self):
+        pass
+
+    def test_MoveDecorative(self):
+        pass

@@ -300,3 +300,16 @@ G = [20., ] * 20
         """
         obj.ParseString(eqns)
         self.assertEqual(obj.InitialConditions, {'y': 'FOOBAR'})
+
+    def test_ParseStringWithReduction(self):
+        obj = IterativeMachineGenerator()
+        obj.RunEquationReduction = True
+        eqns = """
+        y = x
+        x = z
+        t = y
+        """
+        obj.ParseString(eqns)
+        self.assertIn(('x', 'z'), obj.Endogenous)
+        # t= y replaced by t=x
+        self.assertIn(('t','x'), obj.Endogenous)

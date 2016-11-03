@@ -1,5 +1,5 @@
-"sfc_models" Package
-====================
+SFC Models Package Introduction
+===============================
 
 Introduction
 ------------
@@ -34,7 +34,7 @@ The single-period solution of a SFC model relies on market-clearing (not necessa
 unlike mainstream models). Market clearing relies on solving many simultaneous equations.
 
 At present, the machine-generated code uses an iterative approach to solve *x = f(x)* (where *x* is a vector).
-We just passing an initial guess vector trhough *f(x)* and hope it converges.
+We just passing an initial guess vector through *f(x)* and hope it converges.
 
 This works for the simple models tested so far. The objective is to augment this by a brute-force search technique that
 relies upon economic intuition to reduce the dimension of the search space.
@@ -48,7 +48,7 @@ Documentation will be placed in the "docs" directory.
 Examples are in the *examples* sub-package. Currently, in the form of scripts in *examples.scripts*; will develop a
 deployment function later.
 
-The test coverage on the "master" branch is 100%, and the objective is to hold that standard. (There are some
+The test coverage on the "master" branch is 100%, and the objective is to hold that standard. There are some
 sections that are effectively untestable, and there appears to be issues with some lines that are undoubtedly hit
 as being marked as unreached; they have been eliminated with::
 #  pragma: no cover
@@ -56,7 +56,8 @@ as being marked as unreached; they have been eliminated with::
 Change Log
 ----------
 
-- Version 0.2  (Should have been 0.2.0 - oops)
+- **0.2.1** Cleaned up examples layout.
+- **Version 0.2**  (Should have been 0.2.0 - oops)
   First deployment of package to PyPi. Base functionality operational, little documentation.
 - Earlier versions: Only available as source on Github.
 
