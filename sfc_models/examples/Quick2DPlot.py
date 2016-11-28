@@ -49,6 +49,7 @@ class Quick2DPlot(object):
         self.XLabel = None
         self.YLabel = None
         self.Legend = None
+        self.LegendPos = 'best'
         if run_now:
             self.DoPlot()
 
@@ -71,5 +72,5 @@ class Quick2DPlot(object):
         if self.YLabel is not None:
             plt.ylabel(self.YLabel)
         if self.Legend is not None:
-            plt.legend(self.Legend)
+            plt.legend(self.Legend, loc=self.LegendPos)
         plt.show()

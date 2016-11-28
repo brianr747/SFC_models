@@ -55,6 +55,7 @@ class Model(Entity):
         Entity.__init__(self)
         self.CountryList = []
         self.Exogenous = []
+        self.InitialConditions = []
         self.FinalEquations = '<To be generated>'
 
     def main(self, base_file_name=None):  # pragma: no cover
@@ -76,7 +77,8 @@ class Model(Entity):
             self.FinalEquations = self.CreateFinalEquations()
             if base_file_name is not None:
                 model_file = base_file_name + '.py'
-                obj = iterative_machine_generator.IterativeMachineGenerator(self.FinalEquations, run_equation_reduction=True)
+                obj = iterative_machine_generator.IterativeMachineGenerator(self.FinalEquations,
+                                                                            run_equation_reduction=True)
                 obj.main(model_file)
                 self.LogInfo(log_file)
         except Exception as e:
@@ -95,6 +97,22 @@ class Model(Entity):
         :return:
         """
         self.Exogenous.append((sector_fullcode, varname, value))
+
+    def AddInitialCondition(self, sector_fullcode, varname, value):
+        """
+        Set the initial condition for a variable. Need to use the full code of the sector.
+
+        :param sector_fullcode: str
+        :param varname: str
+        :param value: float
+        :return:
+        """
+        # Convert the "value" to a float, in case someone uses a string
+        try:
+            value = float(value)
+        except:
+            raise ValueError('The "value" parameter for initial conditions must be a float.')
+        self.InitialConditions.append((sector_fullcode, varname, str(value)))
 
     def LogInfo(self, file_name, generate_full_codes=True, ex=None):  # pragma: no cover
         """
@@ -165,6 +183,15 @@ class Model(Entity):
             # Need to mark exogenous variables
             sector.Equations[varname] = 'EXOGENOUS ' + eqn
 
+    def GenerateInitialConditions(self):
+        out = []
+        for sector_code, varname, value in self.InitialConditions:
+            sector = self.LookupSector(sector_code)
+            if varname not in sector.Equations:
+                raise KeyError('Sector %s does not have variable %s' % (sector_code, varname))
+            out.append(('%s(0)' % (sector.GetVariableName(varname),), value, 'Initial Condition'))
+        return out
+
     def GenerateEquations(self):
         for cntry in self.CountryList:
             for sector in cntry.SectorList:
@@ -193,6 +220,7 @@ class Model(Entity):
         for cntry in self.CountryList:
             for sector in cntry.SectorList:
                 out.extend(sector.CreateFinalEquations())
+        out.extend(self.GenerateInitialConditions())
         return self.FinalEquationFormatting(out)
 
     @staticmethod

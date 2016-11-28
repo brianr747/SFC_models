@@ -68,6 +68,32 @@ class TestModel(TestCase):
         mod.AddExogenous('code','varname', 'val')
         self.assertEqual([('code', 'varname', 'val')], mod.Exogenous)
 
+    def test_AddInitialCondition(self):
+        mod = Model()
+        # Does not validate that the sector exists until processing
+        mod.AddInitialCondition('code', 'varname', 0.1)
+        self.assertEqual([('code', 'varname', str(0.1))], mod.InitialConditions)
+        with self.assertRaises(ValueError):
+            mod.AddInitialCondition('code2','varname2', 'kablooie!')
+
+    def test_GenerateInitialCond(self):
+        mod = Model()
+        us = Country(mod, 'USA', 'US')
+        household = Sector(us, 'Household', 'HH')
+        mod.GenerateFullSectorCodes()
+        mod.InitialConditions = [('HH', 'F', '0.1')]
+        out = mod.GenerateInitialConditions()
+        self.assertEqual([('HH_F(0)', '0.1', 'Initial Condition')], out)
+
+    def test_GenerateInitialCondFail(self):
+        mod = Model()
+        us = Country(mod, 'USA', 'US')
+        household = Sector(us, 'Household', 'HH')
+        mod.GenerateFullSectorCodes()
+        mod.InitialConditions = [('HH', 'FooFoo', '0.1')]
+        with self.assertRaises(KeyError):
+            out = mod.GenerateInitialConditions()
+
     def test_ProcessExogenous(self):
         mod = Model()
         us = Country(mod, 'USA', 'US')

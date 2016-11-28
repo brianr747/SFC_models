@@ -87,6 +87,8 @@ class FixedMarginBusiness(Sector):
 class TaxFlow(Sector):
     """
     TaxFlow: Not really a sector, but keep it in the same list
+
+    Uses the TaxRate of this object, or the TaxRate of the sector (if it is defined).
     """
 
     def __init__(self, country, long_name, code, taxrate):
@@ -102,7 +104,13 @@ class TaxFlow(Sector):
             if s.ID == self.ID:
                 continue
             if 'PreTax' in s.Equations:
-                term = '%s * %s' % (taxrate_name, s.GetVariableName('PreTax'))
+                # If the sector has a tax rate defined for it, use that tax rate instead of this object's rate.
+                # Need to add support for fdiffering rates for each type of income?
+                if 'TaxRate' in s.Equations:
+                    tax_name_used = s.GetVariableName('TaxRate')
+                else:
+                    tax_name_used = taxrate_name
+                term = '%s * %s' % (tax_name_used, s.GetVariableName('PreTax'))
                 s.AddCashFlow('-T', term, 'Taxes paid.')
                 terms.append('+' + term)
         self.Equations['T'] = utils.create_equation_from_terms(terms)

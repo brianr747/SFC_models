@@ -41,6 +41,24 @@ class TestTaxFlow(TestCase):
         self.assertEqual(['+T', ], gov.CashFlows)
         self.assertEqual('Tax_T', gov.Equations['T'])
 
+    def test_GenerateEquationsSpecialised(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'Eh')
+        tf = TaxFlow(can, 'Taxation Flows', 'Tax', .1)
+        self.assertTrue('T' in tf.Equations)
+        self.assertTrue('TaxRate' in tf.Equations)
+        hh = Household(can, 'Household', 'HH', alpha_fin=.2, alpha_income=.9)
+        hh.AddVariable('TaxRate', 'Sector level tax rate', '0,2')
+        gov = DoNothingGovernment(can, 'Gummint', 'GOV')
+        mod.GenerateFullSectorCodes()
+        tf.GenerateEquations()
+        self.assertEqual('0.1000', tf.Equations['TaxRate'])
+        self.assertEqual('HH_TaxRate*HH_PreTax', tf.Equations['T'].replace(' ', ''))
+        self.assertEqual(['-T', ], hh.CashFlows)
+        self.assertEqual('HH_TaxRate * HH_PreTax', hh.Equations['T'])
+        self.assertEqual(['+T', ], gov.CashFlows)
+        self.assertEqual('Tax_T', gov.Equations['T'])
+
 
 class TestFixedMarginBusiness(TestCase):
     def test_ctor_default(self):
