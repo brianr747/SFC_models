@@ -22,7 +22,7 @@ limitations under the License.
 from pprint import pprint
 import traceback
 
-from sfc_models.utils import LogicError, replace_token_from_lookup, create_equation_from_terms
+from sfc_models.utils import LogicError, replace_token_from_lookup, create_equation_from_terms, EquationParser
 import sfc_models.iterative_machine_generator as iterative_machine_generator
 
 
@@ -57,6 +57,7 @@ class Model(Entity):
         self.Exogenous = []
         self.InitialConditions = []
         self.FinalEquations = '<To be generated>'
+        self.NumberIterations = 100
 
     def main(self, base_file_name=None):  # pragma: no cover
         """
@@ -138,6 +139,10 @@ class Model(Entity):
                     f.write(s.Dump() + '\n')
             f.write('\n\nFinal Equations:\n')
             f.write(self.FinalEquations + '\n')
+            parser = EquationParser()
+            parser.ParseString(self.FinalEquations)
+            parser.EquationReduction()
+            f.write(parser.DumpEquations())
             if ex is not None:
                 f.write('\n\nError raised:\n')
                 traceback.print_exc(file=f)
@@ -223,8 +228,7 @@ class Model(Entity):
         out.extend(self.GenerateInitialConditions())
         return self.FinalEquationFormatting(out)
 
-    @staticmethod
-    def FinalEquationFormatting(out):
+    def FinalEquationFormatting(self, out):
         endo = []
         exo = []
         for row in out:
@@ -241,7 +245,7 @@ class Model(Entity):
         endo = [formatter % x for x in endo]
         exo = [formatter % x for x in exo]
         s = '\n'.join(endo) + '\n\n# Exogenous Variables\n\n' + '\n'.join(exo)
-        s += '\n\nMaxTime = 100\nErr_Tolerance=0.001'
+        s += '\n\nMaxTime = {0}\nErr_Tolerance=0.001'.format(self.NumberIterations)
         return s
 
 
@@ -283,7 +287,7 @@ class Sector(Entity):
     All sectors derive from this class.
     """
 
-    def __init__(self, country, long_name, code):
+    def __init__(self, country, long_name, code, has_F = True):
         Entity.__init__(self, country)
         country.AddSector(self)
         self.Code = code
@@ -292,8 +296,10 @@ class Sector(Entity):
         self.LongName = long_name
         self.VariableDescription = {}
         self.Equations = {}
-        self.AddVariable('F', 'Financial assets', '<TO BE GENERATED>')
-        self.AddVariable('LAG_F', 'Previous period''s financial assets.', 'F(k-1)')
+        self.HasF = has_F
+        if has_F:
+            self.AddVariable('F', 'Financial assets', '<TO BE GENERATED>')
+            self.AddVariable('LAG_F', 'Previous period''s financial assets.', 'F(k-1)')
         self.CashFlows = []
 
     def AddVariable(self, varname, desc, eqn):
@@ -352,6 +358,8 @@ class Sector(Entity):
         return out
 
     def GenerateIncomeEquations(self):
+        if not self.HasF:
+            return
         if len(self.CashFlows) == 0:
             self.Equations['F'] = ''
             self.Equations['LAG_F'] = ''
@@ -381,7 +389,7 @@ class Market(Sector):
     """
 
     def __init__(self, country, long_name, code):
-        Sector.__init__(self, country, long_name, code)
+        Sector.__init__(self, country, long_name, code, has_F = False)
         self.NumSupply = 0
         self.AddVariable('SUP_' + code, 'Supply for market ' + code, '')
         self.AddVariable('DEM_' + code, 'Demand for market ' + code, '')
@@ -436,3 +444,16 @@ class Market(Sector):
             if sup_name in s.Equations:
                 s.Equations[sup_name] = self.Equations[dem_name]
                 return
+
+
+class FinancialAssetMarket(Market):
+    """
+    Handles the interactions for a market in a financial asset.
+    Must be a single issuer.
+    """
+    def __init__(self, country, long_name, code, issuer_short_code):
+        Market.__init__(self, country, long_name, code)
+        self.IssuerShortCode = issuer_short_code
+
+
+

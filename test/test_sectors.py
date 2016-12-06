@@ -4,6 +4,15 @@ from sfc_models.models import Model, Country, Market
 from sfc_models.sectors import *
 
 
+def kill_spaces(s):
+    """
+    remove spaces from a string; makes testing easier as white space conventions may change in equations
+    :param s:
+    :return:
+    """
+    s = s.replace(' ', '')
+    return s
+
 class TestHouseHold(TestCase):
     def test_GenerateEquations_alpha(self):
         mod = Model()
@@ -91,3 +100,43 @@ class TestCapitalists(TestCase):
         mod.GenerateFullSectorCodes()
         bus.GenerateEquations()
         self.assertEqual('CA_BUS_PROF', cap.Equations['DIV'])
+
+
+class TestMoneyMarket(TestCase):
+    def test_all(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'Eh')
+        gov = DoNothingGovernment(can, 'Government', 'GOV')
+        hou = Household(can, 'Household', 'HH', .5, .5)
+        hou2 = Household(can, 'Household2', 'HH2', .5, .5)
+        mm = MoneyMarket(can)
+        mod.GenerateFullSectorCodes()
+        mod.GenerateEquations()
+        # Supply = Demand
+        self.assertEqual('GOV_SUP_MON', mm.Equations['SUP_MON'])
+        # Demand = Demand of two sectors
+        self.assertEqual('HH_DEM_MON+HH2_DEM_MON', mm.Equations['DEM_MON'].replace(' ', ''))
+        # At the sector level, demand = F
+        self.assertEqual('HH_F', hou.Equations['DEM_MON'])
+        self.assertEqual('HH2_F', hou2.Equations['DEM_MON'])
+
+class TestDepositMarket(TestCase):
+    def test_all(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'Eh')
+        gov = DoNothingGovernment(can, 'Government', 'GOV')
+        hou = Household(can, 'Household', 'HH', .5, .5)
+        mm = MoneyMarket(can)
+        dep = DepositMarket(can)
+        # Need to add demand functions in household sector
+        mod.GenerateFullSectorCodes()
+        hou.AddVariable('DEM_MON', 'Demand for Money', '0.5 * ' + hou.GetVariableName('F'))
+        hou.AddVariable('DEM_DEP', 'Demand for Deposits', '0.5 * ' + hou.GetVariableName('F'))
+        mod.GenerateEquations()
+        # Supply = Demand
+        self.assertEqual('GOV_SUP_DEP', dep.Equations['SUP_DEP'])
+        # Demand = Demand of two sectors
+        self.assertEqual('HH_DEM_DEP', dep.Equations['DEM_DEP'].replace(' ', ''))
+        # At the sector level, demand = F
+        self.assertEqual('0.5*HH_F', kill_spaces(hou.Equations['DEM_MON']))
+        self.assertEqual('0.5*HH_F', kill_spaces(hou.Equations['DEM_DEP']))

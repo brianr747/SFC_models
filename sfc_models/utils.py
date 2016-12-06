@@ -293,6 +293,20 @@ class EquationParser(object):
             self.AllEquations['t'] = 't_minus_1 + 1.0'
         return msg
 
+    def DumpEquations(self):
+        """
+        Used for logging
+        :return: str
+        """
+        out = ''
+        for varname, rhs in self.Endogenous:
+            out += '{0} = {1}\n'.format(varname, rhs)
+        for varname, rhs in self.Lagged:
+            out += '{0} = {1}(k-1)\n'.format(varname, rhs)
+        for varname, rhs in self.Exogenous:
+            out += '{0} = {1}\n'.format(varname, rhs)
+        return out
+
     def GenerateTokenList(self):
         """
         Generate the tokens in all equations, puts then into a dictionary (with the variable as key).

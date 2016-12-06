@@ -1,7 +1,8 @@
 """
-SIM_Model_With_Capitalists.py
+ex20161128_tax_cut_comparison.py
 
-Extend the SIM model (Godley and Lavoie, Chapter 3) with a capitalist sub-sector.
+Extend the SIM model (Godley and Lavoie, Chapter 3) with a capitalist sub-sector,
+and then look at the effect of a tax cut.
 
 Copyright 2016 Brian Romanchuk
 
@@ -79,13 +80,6 @@ def main():
     p.Legend = ['Scenario #1 - Worker Tax Cut', 'Scenario #2 - Capitalist Tax Cut']
     p.LegendPos = 'center right'
     p.DoPlot()
-    # p = Quick2DPlot([obj.t, obj.t], [obj.BUS_F, obj2.BUS_F], 'Business Sector Financial Assets (F)', run_now=False)
-    # p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']
-    # p.DoPlot()
-    # p = Quick2DPlot([obj.t, obj.t], [obj.GOV_FISC_BAL, obj2.GOV_FISC_BAL], 'Government Financial Balance',
-    #                 run_now=False)
-    # p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']
-    # p.DoPlot()
 
 if __name__ == '__main__':
     main()

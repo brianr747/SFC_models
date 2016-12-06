@@ -19,7 +19,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from sfc_models.models import Sector
+from sfc_models.models import Sector, FinancialAssetMarket, Market
 import sfc_models.utils as utils
 
 
@@ -57,7 +57,7 @@ class DoNothingGovernment(Sector):
     def __init__(self, country, long_name, code):
         Sector.__init__(self, country, long_name, code)
         self.AddVariable('DEM_GOOD', 'Government Consumption of Goods', '0.0')
-        self.AddVariable('FISC_BAL', 'Government Fiscal Balance', 'T - DEM_GOOD')
+        self.AddVariable('FISC_BAL', 'Government Primary Fiscal Balance (Need to fix)', 'T - DEM_GOOD')
 
 
 class FixedMarginBusiness(Sector):
@@ -92,7 +92,7 @@ class TaxFlow(Sector):
     """
 
     def __init__(self, country, long_name, code, taxrate):
-        Sector.__init__(self, country, long_name, code)
+        Sector.__init__(self, country, long_name, code, has_F=False)
         self.AddVariable('TaxRate', 'Tax rate', '%0.4f' % (taxrate,))
         self.AddVariable('T', 'Taxes Paid', '<To be determined>')
 
@@ -118,3 +118,112 @@ class TaxFlow(Sector):
         tax_fullname = self.GetVariableName('T')
         gov = self.Parent.LookupSector('GOV')
         gov.AddCashFlow('T', tax_fullname, 'Tax revenue received.')
+
+
+class MoneyMarket(FinancialAssetMarket):
+    """
+    The class that handles "money" within the model. The assumption is that the rate of interest is zero, and so this
+    is really government money (currency). It probably should be labelled "currency," but that might be confusing.
+
+    (Note from Brian R: The name of this class is painful, as I am currently finishing off "Abolish Money (From
+    Economics)!", but this is meant to be an open source project, and ease of use trumps my analytical biases.
+
+    In order to transition cleanly simpler models that do not specify financial markets, the default behaviour is to
+    emulate the behaviour of a model without any FinancialAssetMarket classes created. This is done by creating a
+    default "demand for money" equation in each sector that is:
+            DEM_{MONEY} = F,
+    that is, money holdings at time t = financial asset holdings at time t. (The supplier, by default = 'GOV', just
+    has a open-ended supply, like other markets.)
+
+    Note that since SUP and DEM are always realised (for now), the money stock is equal to the supply by the issuer.
+    """
+
+    def __init__(self, country, long_name='Money', code='MON', issuer_short_code='GOV'):
+        FinancialAssetMarket.__init__(self, country, long_name, code, issuer_short_code)
+
+    def GenerateEquations(self):
+        """
+        Generate equation.
+         :return: None
+        """
+        country = self.Parent
+        dem_name = 'DEM_' + self.Code
+        dem_terms = []
+        for s in country.SectorList:
+            if not s.HasF:
+                continue
+            if s.Code == self.IssuerShortCode:
+                s.AddVariable('SUP_' + self.Code, 'Supply of ' + self.LongName, self.GetVariableName(dem_name))
+                self.AddVariable('SUP_' + self.Code, 'Supply of ' + self.LongName,
+                                 s.GetVariableName('SUP_' + self.Code))
+                continue
+            try:
+                term = s.GetVariableName(dem_name)
+                dem_terms.append(term)
+                continue
+            except KeyError:
+                pass
+            s.AddVariable(dem_name, 'Demand for ' + self.LongName, s.GetVariableName('F'))
+            dem_terms.append(s.GetVariableName(dem_name))
+        self.AddVariable(dem_name,'Total demand for ' + self.LongName, utils.create_equation_from_terms(dem_terms))
+
+class DepositMarket(FinancialAssetMarket):
+    """
+    An interest-bearing deposit. This will act as a stand-in for Treasury bills for now. The price is fixed at 1,
+    and pays interest based on the lagged interest rate and lagged holdings.
+
+    Interest rate convention: 0.01 = 1% interest. The variable name is 'r'; defaults to 0%. In simpler models, will be
+    an exogenous variable.
+
+    Assumed to be a single issuer; the supply equation is filled in automatically (always meets demand).
+
+    Unlike MoneyMarket, no demand is filled in. In order to use this market, need to set up a demand variable in one
+    sector (at least).
+
+    This class will automatically create interest income variables and cash flows in affected sectors.
+
+    Note that since SUP and DEM are always realised (for now), the amount oustanding is equal to the supply by the
+    issuer.
+    """
+
+    def __init__(self, country, long_name='Deposit', code='DEP', issuer_short_code='GOV'):
+        FinancialAssetMarket.__init__(self, country, long_name, code, issuer_short_code)
+        self.AddVariable('r', 'Interest rate', '0.')
+        self.AddVariable('LAG_r', 'Lagged Interest rate', 'r(k-1)')
+
+    def GenerateEquations(self):
+        """
+        Generate equations.
+ 
+        :return: None
+        """
+        country = self.Parent
+        dem_terms = []
+        dem_name = 'DEM_' + self.Code
+        for s in country.SectorList:
+            if isinstance(s, Market):
+                continue
+            if s.Code == self.IssuerShortCode:
+                sup_name = 'SUP_' + self.Code
+                s.AddVariable(sup_name, 'Supply of ' + self.LongName, self.GetVariableName('DEM_' + self.Code))
+                s.AddVariable('LAG_' + sup_name, 'Lagged Supply of ' + self.LongName, s.GetVariableName(sup_name) + '(k-1)')
+                s.AddCashFlow('-INT' + self.Code,
+                              '{0}*{1}'.format(self.GetVariableName('LAG_r'), s.GetVariableName('LAG_' + sup_name)),
+                              'Interest paid on ' + self.LongName)
+                self.AddVariable('SUP_' + self.Code, 'Supply of ' + self.LongName,
+                                 s.GetVariableName('SUP_' + self.Code))
+                continue
+            dem_name = 'DEM_' + self.Code
+            try:
+                term = s.GetVariableName(dem_name)
+            except KeyError:
+                continue
+            s.AddVariable('LAG_' + dem_name, 'Lagged demand for ' + self.LongName, s.GetVariableName(dem_name)+'(k-1)')
+            s.AddCashFlow('+INT' + self.Code,
+                          '{0}*{1}'.format(self.GetVariableName('LAG_r'), s.GetVariableName('LAG_' + dem_name)),
+                          'Interest received on ' + self.LongName)
+            dem_terms.append(s.GetVariableName(dem_name))
+        self.AddVariable(dem_name, 'Total demand for ' + self.LongName, utils.create_equation_from_terms(dem_terms))
+
+
+

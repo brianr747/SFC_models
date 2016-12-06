@@ -150,7 +150,8 @@ class TestModel(TestCase):
         eq = [('x', 'y + 1', 'comment_x'),
               ('y', 'EXOGENOUS 20', 'comment_y'),
               ('z', 'd', 'comment_z')]
-        out = Model.FinalEquationFormatting(eq)
+        mod = Model()
+        out = mod.FinalEquationFormatting(eq)
         # Remove spaces; what matters is the content
         out = out.replace(' ', '').split('\n')
         target = ['x=y+1#comment_x', 'z=d#comment_z', '', '#ExogenousVariables', '', 'y=20#comment_y',
