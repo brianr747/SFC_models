@@ -293,7 +293,7 @@ class EquationParser(object):
             self.AllEquations['t'] = 't_minus_1 + 1.0'
         return msg
 
-    def DumpEquations(self):
+    def DumpEquations(self):  # pragma: no cover    [Should be free to change format without breaking tests...
         """
         Used for logging
         :return: str

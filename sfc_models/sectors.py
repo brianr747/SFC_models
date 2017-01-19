@@ -60,6 +60,28 @@ class DoNothingGovernment(Sector):
         self.AddVariable('FISC_BAL', 'Government Primary Fiscal Balance (Need to fix)', 'T - DEM_GOOD')
 
 
+class Treasury(Sector):
+    def __init__(self, country, long_name, code):
+        Sector.__init__(self, country, long_name, code)
+        self.AddVariable('DEM_GOOD', 'Government Consumption of Goods', '0.0')
+        self.AddVariable('PRIM_BAL', 'Government Primary Fiscal Balance', 'T - DEM_GOOD')
+        # Treasury has no money holdings
+        self.AddVariable('DEM_MON', 'Demand for Money', '0.0')
+
+
+class CentralBank(Sector):
+    def __init__(self, country, long_name, code, treasury):
+        Sector.__init__(self, country, long_name, code)
+        self.Treasury = treasury
+        # Demand for deposits = F + Supply of money (Central bank net worth plus money supply)
+        self.AddVariable('DEM_DEP', 'Demand for deposits', 'F + SUP_MON')
+
+    def GenerateEquations(self):
+        self.AddCashFlow('-CBDIV', 'INTDEP', 'Dividends paid to Treasury')
+        self.Treasury.AddCashFlow('CBDIV', self.GetVariableName('CBDIV'), 'Dividends paid by the central bank')
+
+
+
 class FixedMarginBusiness(Sector):
     def __init__(self, country, long_name, code, profit_margin=0.0):
         Sector.__init__(self, country, long_name, code)
@@ -91,10 +113,11 @@ class TaxFlow(Sector):
     Uses the TaxRate of this object, or the TaxRate of the sector (if it is defined).
     """
 
-    def __init__(self, country, long_name, code, taxrate):
+    def __init__(self, country, long_name, code, taxrate, taxes_paid_to='GOV'):
         Sector.__init__(self, country, long_name, code, has_F=False)
         self.AddVariable('TaxRate', 'Tax rate', '%0.4f' % (taxrate,))
         self.AddVariable('T', 'Taxes Paid', '<To be determined>')
+        self.TaxingSector = taxes_paid_to
 
     def GenerateEquations(self):
         terms = []
@@ -116,7 +139,7 @@ class TaxFlow(Sector):
         self.Equations['T'] = utils.create_equation_from_terms(terms)
         # work on other sectors
         tax_fullname = self.GetVariableName('T')
-        gov = self.Parent.LookupSector('GOV')
+        gov = self.Parent.LookupSector(self.TaxingSector)
         gov.AddCashFlow('T', tax_fullname, 'Tax revenue received.')
 
 

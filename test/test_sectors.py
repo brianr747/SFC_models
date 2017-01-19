@@ -32,6 +32,27 @@ class TestDoNothingGovernment(TestCase):
         self.assertEqual(gov.Equations['DEM_GOOD'], '0.0')
 
 
+class TestTreasury(TestCase):
+    def test_GenerateEquations(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'Eh')
+        gov = Treasury(can, 'Government', 'GOV')
+        gov.GenerateEquations()
+        self.assertEqual(gov.Equations['DEM_GOOD'], '0.0')
+
+
+class TestCentralBank(TestCase):
+    def test_GenerateEquations(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'Eh')
+        tre = Treasury(can, 'Treasury', 'TRE')
+        cb = CentralBank(can, 'Central Bank', 'CB', tre)
+        mod.GenerateFullSectorCodes()
+        cb.GenerateEquations()
+        self.assertEqual(cb.Treasury, tre)
+
+
+
 class TestTaxFlow(TestCase):
     def test_GenerateEquations(self):
         mod = Model()
@@ -126,6 +147,7 @@ class TestDepositMarket(TestCase):
         can = Country(mod, 'Canada', 'Eh')
         gov = DoNothingGovernment(can, 'Government', 'GOV')
         hou = Household(can, 'Household', 'HH', .5, .5)
+        dummy = Sector(can, 'Dummy', 'DUM')
         mm = MoneyMarket(can)
         dep = DepositMarket(can)
         # Need to add demand functions in household sector
@@ -140,3 +162,7 @@ class TestDepositMarket(TestCase):
         # At the sector level, demand = F
         self.assertEqual('0.5*HH_F', kill_spaces(hou.Equations['DEM_MON']))
         self.assertEqual('0.5*HH_F', kill_spaces(hou.Equations['DEM_DEP']))
+        # Make sure the dummy does not have cash flows
+        self.assertEqual([], dummy.CashFlows)
+        # Household has a deposit interest cash flow
+        self.assertIn('+INTDEP', hou.CashFlows)

@@ -177,6 +177,13 @@ class TestSector(TestCase):
         self.assertEqual(household.Parent.Code, 'US')
         self.assertEqual(household.Parent.Parent.Code, '')
 
+    def test_HasNoF(self):
+        mod = Model()
+        country = Country(mod, 'name', 'code')
+        sec = Sector(country, 'Name', 'Code', has_F=False)
+        sec.GenerateIncomeEquations()
+        self.assertNotIn('F', sec.GetVariables())
+
     def test_GetVariables(self):
         mod = Model()
         can = Country(mod, 'Canada', 'Eh')
