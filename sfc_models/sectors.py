@@ -77,8 +77,9 @@ class CentralBank(Sector):
         self.AddVariable('DEM_DEP', 'Demand for deposits', 'F + SUP_MON')
 
     def GenerateEquations(self):
-        self.AddCashFlow('-CBDIV', 'INTDEP', 'Dividends paid to Treasury')
-        self.Treasury.AddCashFlow('CBDIV', self.GetVariableName('CBDIV'), 'Dividends paid by the central bank')
+        self.GetModel().RegisterCashFlow(self, self.Treasury, 'INTDEP')
+        # self.AddCashFlow('-CBDIV', 'INTDEP', 'Dividends paid to Treasury')
+        # self.Treasury.AddCashFlow('CBDIV', self.GetVariableName('CBDIV'), 'Dividends paid by the central bank')
 
 
 

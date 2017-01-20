@@ -42,6 +42,12 @@ class Entity(object):
         self.Code = ''
         self.LongName = ''
 
+    def GetModel(self):
+        obj = self
+        while obj.Parent is not None:
+            obj = obj.Parent
+        return obj
+
 
 class Model(Entity):
     """
@@ -172,8 +178,8 @@ class Model(Entity):
                     sector.FullCode = sector.Code
 
     def RegisterCashFlow(self, source_sector, target_sector, amount_variable):
-        if amount_variable not in source_sector.Equations:
-            raise KeyError('Must define the variable that is the amount of the cash flow')
+        # if amount_variable not in source_sector.Equations:
+        #     raise KeyError('Must define the variable that is the amount of the cash flow')
         self.RegisteredCashFlows.append((source_sector, target_sector, amount_variable))
 
     def GenerateRegisteredCashFlows(self):

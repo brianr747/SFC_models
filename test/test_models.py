@@ -22,6 +22,14 @@ class TestEntity(TestCase):
         self.assertEqual(b.ID, 1)
         self.assertEqual(b.Parent.ID, 0)
 
+    def test_root(self):
+        a = Entity()
+        b = Entity(a)
+        c = Entity(b)
+        self.assertEqual(a, a.GetModel())
+        self.assertEqual(a, b.GetModel())
+        self.assertEqual(a, c.GetModel())
+
 
 class Stub(object):
     """
@@ -407,11 +415,12 @@ class TestRegisterCashFlows(TestCase):
         sec2 = Sector(co, 'Sector2', 'SEC2')
         return mod, sec1, sec2
 
-    def test_fail(self):
-        mod, sec1, sec2 = self.get_objects()
-        # Fails because we did not register the 'DIV' variable first
-        with self.assertRaises( KeyError):
-            mod.RegisterCashFlow(sec1, sec2, 'DIV')
+    # Do not validate that variable exists when registering; only needs to exist when registered cash flows
+    # are processed
+    # def test_fail(self):
+    #     mod, sec1, sec2 = self.get_objects()
+    #     with self.assertRaises( KeyError):
+    #         mod.RegisterCashFlow(sec1, sec2, 'DIV')
 
     def test_OK(self):
         mod, sec1, sec2 = self.get_objects()
