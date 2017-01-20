@@ -58,6 +58,7 @@ class Model(Entity):
         self.InitialConditions = []
         self.FinalEquations = '<To be generated>'
         self.NumberIterations = 100
+        self.RegisteredCashFlows = []
 
     def main(self, base_file_name=None):  # pragma: no cover
         """
@@ -73,6 +74,7 @@ class Model(Entity):
         try:
             self.GenerateFullSectorCodes()
             self.GenerateEquations()
+            self.GenerateRegisteredCashFlows()
             self.GenerateIncomeEquations()
             self.ProcessExogenous()
             self.FinalEquations = self.CreateFinalEquations()
@@ -147,8 +149,6 @@ class Model(Entity):
                 f.write('\n\nError raised:\n')
                 traceback.print_exc(file=f)
 
-
-
     def AddCountry(self, country):
         """
         Add a country to the list.
@@ -170,6 +170,17 @@ class Model(Entity):
                     sector.FullCode = cntry.Code + '_' + sector.Code
                 else:
                     sector.FullCode = sector.Code
+
+    def RegisterCashFlow(self, source_sector, target_sector, amount_variable):
+        if amount_variable not in source_sector.Equations:
+            raise KeyError('Must define the variable that is the amount of the cash flow')
+        self.RegisteredCashFlows.append((source_sector, target_sector, amount_variable))
+
+    def GenerateRegisteredCashFlows(self):
+        for source_sector, target_sector, amount_variable in self.RegisteredCashFlows:
+            full_variable_name = source_sector.GetVariableName(amount_variable)
+            source_sector.AddCashFlow('-' + full_variable_name, eqn=None)
+            target_sector.AddCashFlow('+' + full_variable_name, eqn=None)
 
     def LookupSector(self, fullcode):
         for cntry in self.CountryList:
@@ -329,7 +340,7 @@ class Sector(Entity):
             raise KeyError('Variable %s not in sector %s' % (varname, self.FullCode))
         return self.FullCode + '_' + varname
 
-    def AddCashFlow(self, term, eqn, desc):
+    def AddCashFlow(self, term, eqn=None, desc=None):
         term = term.strip()
         if len(term) == 0:
             return
@@ -339,6 +350,8 @@ class Sector(Entity):
         if len(term) < 2:
             raise ValueError('Invalid cash flow term')
         self.CashFlows.append(term)
+        if eqn is None:
+            return
         # Remove the +/- from the term
         term = term[1:]
         if term in self.Equations:
@@ -381,6 +394,31 @@ class Sector(Entity):
                         replace_token_from_lookup(self.Equations[varname], lookup),
                         '[%s] %s' % (varname, self.VariableDescription[varname])))
         return out
+
+    def GenerateAssetWeighting(self, asset_weighting_list, residual_asset_code):
+        """
+        Generates the asset weighting/allocation equations. If there are N assets, pass N-1 in the list, the residual
+        gets the rest.
+
+        The variable asset_weighting_list is a list of pairs, of the form:
+        [('asset1code', 'weigthing equation'), ('asset2code','weighting2'), ...]
+
+        Note that weightings are (normally) from 0-1.
+        :param asset_weighting_list: list
+        :param residual_asset: str
+        :return:
+        """
+        residual_weight = '1.0'
+        for code, weight_eqn in asset_weighting_list:
+            # Weight variable = 'WGT_{CODE}'
+            weight = 'WGT_' + code
+            self.AddVariable(weight, 'Asset weight for' + code, weight_eqn)
+            self.AddVariable('DEM_'+ code, 'Demand for asset ' + code, 'F * {0}'.format(weight))
+            residual_weight += ' - ' + weight
+        self.AddVariable('WGT_' + residual_asset_code, 'Asset weight for ' + residual_asset_code, residual_weight)
+        self.AddVariable('DEM_'+ residual_asset_code, 'Demand for asset ' + residual_asset_code,
+                        'F * {0}'.format('WGT_' + residual_asset_code))
+
 
 
 class Market(Sector):

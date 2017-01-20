@@ -4,6 +4,15 @@ from sfc_models.models import *
 from sfc_models.sectors import Household, DoNothingGovernment
 
 
+def kill_spaces(s):
+    """
+    remove spaces from a string; makes testing easier as white space conventions may change in equations
+    :param s:
+    :return:
+    """
+    s = s.replace(' ', '')
+    return s
+
 class TestEntity(TestCase):
     def test_ctor(self):
         Entity.ID = 0
@@ -286,6 +295,24 @@ class TestSector(TestCase):
         out = [(x[0], x[1].replace(' ', ''), x[2]) for x in out]
         self.assertEqual(targ, out)
 
+    def test_GenerateAssetWeightings_1(self):
+        mod = Model()
+        us = Country(mod, 'USA', 'US')
+        s = Sector(us, 'Household', 'HH')
+        s.GenerateAssetWeighting((), 'MON')
+        self.assertEqual('1.0', s.Equations['WGT_MON'])
+        self.assertEqual('F*WGT_MON', kill_spaces(s.Equations['DEM_MON']))
+
+    def test_GenerateAssetWeightings_2(self):
+        mod = Model()
+        us = Country(mod, 'USA', 'US')
+        s = Sector(us, 'Household', 'HH')
+        s.GenerateAssetWeighting([('BOND', '0.5'),], 'MON')
+        self.assertEqual('0.5', s.Equations['WGT_BOND'])
+        self.assertEqual('F*WGT_BOND', kill_spaces(s.Equations['DEM_BOND']))
+        self.assertEqual('1.0-WGT_BOND', kill_spaces(s.Equations['WGT_MON']))
+        self.assertEqual('F*WGT_MON', kill_spaces(s.Equations['DEM_MON']))
+
 
 class TestCountry(TestCase):
     def test_AddSector(self):
@@ -370,3 +397,35 @@ class TestMarket(TestCase):
         mar = Market(can, 'Market', 'LAB')
         with self.assertRaises(LogicError):
             mar.FixSingleSupply()
+
+
+class TestRegisterCashFlows(TestCase):
+    def get_objects(self):
+        mod = Model()
+        co = Country(mod, 'name', 'code')
+        sec1 = Sector(co, 'Sector1', 'SEC1')
+        sec2 = Sector(co, 'Sector2', 'SEC2')
+        return mod, sec1, sec2
+
+    def test_fail(self):
+        mod, sec1, sec2 = self.get_objects()
+        # Fails because we did not register the 'DIV' variable first
+        with self.assertRaises( KeyError):
+            mod.RegisterCashFlow(sec1, sec2, 'DIV')
+
+    def test_OK(self):
+        mod, sec1, sec2 = self.get_objects()
+        sec1.AddVariable('DIV', 'desc', '$1')
+        mod.RegisterCashFlow(sec1, sec2, 'DIV')
+        mod.GenerateFullSectorCodes()
+        mod.GenerateEquations()
+        mod.GenerateRegisteredCashFlows()
+        mod.GenerateIncomeEquations()
+        self.assertEqual('LAG_F+SEC1_DIV', kill_spaces(sec2.Equations['F']))
+        self.assertEqual('LAG_F-SEC1_DIV', kill_spaces(sec1.Equations['F']))
+
+
+
+
+
+
