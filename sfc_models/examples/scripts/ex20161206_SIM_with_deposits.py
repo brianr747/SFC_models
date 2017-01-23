@@ -63,12 +63,12 @@ def main():
     # (1) [out_ex20161206_SIM_with_deposits]_log.txt:  Log file
     # (2) [out_ex20161206_SIM_with_Deposits].py:  File that solves the system of equations
     mod.NumberIterations = 100
-    eqns = mod.main('out_ex20161206_SIM_with_deposits')
+    eqns = mod.main_deprecated('out_ex20161206_SIM_with_deposits')
 
     # Only import after the file is created (which is unusual).
     import out_ex20161206_SIM_with_deposits as SFCmod
     obj = SFCmod.SFCModel()
-    obj.main()
+    obj.main_deprecated()
     obj.WriteCSV('out_ex20161206_SIM_with_deposits.csv')
     Quick2DPlot(obj.t[1:], obj.GOOD_SUP_GOOD[1:], 'Goods supplied (national production Y)')
     Quick2DPlot(obj.t[1:], obj.HH_F[1:], 'Household Financial Assets (F)')

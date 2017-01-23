@@ -63,12 +63,12 @@ def main():
     # (1) [out_YYY]_log.txt:  Log file
     # (2) [out_YYY].py:  File that solves the system of equations
     mod.NumberIterations = 100
-    eqns = mod.main('out_ex20170108_model_PC')
+    eqns = mod.main_deprecated('out_ex20170108_model_PC')
 
     # Only import after the file is created (which is unusual).
     import out_ex20170108_model_PC as SFCmod
     obj = SFCmod.SFCModel()
-    obj.main()
+    obj.main_deprecated()
     obj.WriteCSV('out_ex20170103_model_PC.csv')
     Quick2DPlot(obj.t[1:], obj.GOOD_SUP_GOOD[1:], 'Goods supplied (national production Y)')
     Quick2DPlot(obj.t[1:], obj.HH_F[1:], 'Household Financial Assets (F)')

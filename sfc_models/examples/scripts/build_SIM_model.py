@@ -18,6 +18,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import os
 
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models.models import *
@@ -40,59 +41,58 @@ def main():
     goods = Market(can, 'Goods market', 'GOOD')
     # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
     mod.AddExogenous('GOV', 'DEM_GOOD', '[20.,] * 105')
+    base_name = os.path.join('output', 'SIM_model')
     # Build the model
-    # Output is put into two files, based on the file name passed into main() ['out_SIM_Machine_Model']
-    # (1) [out_SIM_machine_Model]_log.txt:  Log file
-    # (2) [out_SIM_machine_Model].py:  File that solves the system of equations
-    eqns = mod.main('out_SIM_Machine_Model')
+    mod.main(base_name)
+    print(mod.EquationSolver.TimeSeries)
 
-    # Only import after the file is created (which is unusual).
-    import out_SIM_Machine_Model
-    obj = out_SIM_Machine_Model.SFCModel()
-    obj.main()
-    obj.WriteCSV('out_SIM_Machine_Model.csv')
-    Quick2DPlot(obj.t, obj.GOOD_SUP_GOOD, 'Goods supplied (national production Y)')
-    Quick2DPlot(obj.t, obj.HH_F, 'Household Financial Assets (F)')
-    #-------------------------------------------------------------------------------
-    # Create a second country, with non-zero profits
-    # (Could have done this within a single model, but equations would have been ridiculous.)
-    # This is a very error-prone way of building the model; if we repeat code blocks, they should be in
-    # a function. It took me 5 tries to eliminate the errors after the cut and paste...
-    mod2 = Model()
-    # Create first country - Canada. (This model only has one country.)
-    us = Country(mod2, 'United States', 'US')
-    # Create sectors
-    gov2 = DoNothingGovernment(us, 'Government', 'GOV')
-    hh2 = Household(us, 'Household', 'HH', alpha_income=.6, alpha_fin=.4)
-    # Profit margin of 10%
-    bus2 = FixedMarginBusiness(us, 'Business Sector', 'BUS', profit_margin=0.1)
-    # Create the linkages between sectors - tax flow, markets - labour ('LAB'), goods ('GOOD')
-    tax2 = TaxFlow(us, 'TaxFlow', 'TF', .2)
-    labor2 = Market(us, 'Labor market', 'LAB')
-    goods2 = Market(us, 'Goods market', 'GOOD')
-    # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
-    mod2.AddExogenous('GOV', 'DEM_GOOD', '[20.,] * 105')
-    # Build the model
-    # Output is put into two files, based on the file name passed into main() ['out_SIM_Machine_Model_2']
-    # (1) [out_SIM_machine_Model_2]_log.txt:  Log file
-    # (2) [out_SIM_machine_Model_2].py:  File that solves the system of equations
-    eqns = mod2.main('out_SIM_Machine_Model_2')
-
-    # Only import after the file is created (which is unusual).
-    import out_SIM_Machine_Model_2
-    obj2 = out_SIM_Machine_Model_2.SFCModel()
-    obj2.main()
-    obj2.WriteCSV('out_SIM_Machine_Model_2.csv')
-    p = Quick2DPlot([obj.t, obj.t], [obj.GOOD_SUP_GOOD, obj2.GOOD_SUP_GOOD], 'Output - Y', run_now=False)
-    p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']
-    p.DoPlot()
-    p = Quick2DPlot([obj.t, obj.t], [obj.BUS_F, obj2.BUS_F], 'Business Sector Financial Assets (F)', run_now=False)
-    p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']
-    p.DoPlot()
-    p = Quick2DPlot([obj.t, obj.t], [obj.GOV_FISC_BAL, obj2.GOV_FISC_BAL], 'Government Financial Balance',
-                    run_now=False)
-    p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']
-    p.DoPlot()
+    # # Only import after the file is created (which is unusual).
+    # import out_SIM_Machine_Model
+    # obj = out_SIM_Machine_Model.SFCModel()
+    # obj.main_deprecated()
+    # obj.WriteCSV('out_SIM_Machine_Model.csv')
+    # Quick2DPlot(obj.t, obj.GOOD_SUP_GOOD, 'Goods supplied (national production Y)')
+    # Quick2DPlot(obj.t, obj.HH_F, 'Household Financial Assets (F)')
+    # #-------------------------------------------------------------------------------
+    # # Create a second country, with non-zero profits
+    # # (Could have done this within a single model, but equations would have been ridiculous.)
+    # # This is a very error-prone way of building the model; if we repeat code blocks, they should be in
+    # # a function. It took me 5 tries to eliminate the errors after the cut and paste...
+    # mod2 = Model()
+    # # Create first country - Canada. (This model only has one country.)
+    # us = Country(mod2, 'United States', 'US')
+    # # Create sectors
+    # gov2 = DoNothingGovernment(us, 'Government', 'GOV')
+    # hh2 = Household(us, 'Household', 'HH', alpha_income=.6, alpha_fin=.4)
+    # # Profit margin of 10%
+    # bus2 = FixedMarginBusiness(us, 'Business Sector', 'BUS', profit_margin=0.1)
+    # # Create the linkages between sectors - tax flow, markets - labour ('LAB'), goods ('GOOD')
+    # tax2 = TaxFlow(us, 'TaxFlow', 'TF', .2)
+    # labor2 = Market(us, 'Labor market', 'LAB')
+    # goods2 = Market(us, 'Goods market', 'GOOD')
+    # # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
+    # mod2.AddExogenous('GOV', 'DEM_GOOD', '[20.,] * 105')
+    # # Build the model
+    # # Output is put into two files, based on the file name passed into main() ['out_SIM_Machine_Model_2']
+    # # (1) [out_SIM_machine_Model_2]_log.txt:  Log file
+    # # (2) [out_SIM_machine_Model_2].py:  File that solves the system of equations
+    # eqns = mod2.main_deprecated('out_SIM_Machine_Model_2')
+    #
+    # # Only import after the file is created (which is unusual).
+    # import out_SIM_Machine_Model_2
+    # obj2 = out_SIM_Machine_Model_2.SFCModel()
+    # obj2.main_deprecated()
+    # obj2.WriteCSV('out_SIM_Machine_Model_2.csv')
+    # p = Quick2DPlot([obj.t, obj.t], [obj.GOOD_SUP_GOOD, obj2.GOOD_SUP_GOOD], 'Output - Y', run_now=False)
+    # p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']
+    # p.DoPlot()
+    # p = Quick2DPlot([obj.t, obj.t], [obj.BUS_F, obj2.BUS_F], 'Business Sector Financial Assets (F)', run_now=False)
+    # p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']
+    # p.DoPlot()
+    # p = Quick2DPlot([obj.t, obj.t], [obj.GOV_FISC_BAL, obj2.GOV_FISC_BAL], 'Government Financial Balance',
+    #                 run_now=False)
+    # p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']
+    # p.DoPlot()
 
 if __name__ == '__main__':
     main()

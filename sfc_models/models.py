@@ -24,6 +24,7 @@ import traceback
 
 from sfc_models.utils import LogicError, replace_token_from_lookup, create_equation_from_terms, EquationParser
 import sfc_models.iterative_machine_generator as iterative_machine_generator
+import sfc_models.equation_solver
 
 
 class Entity(object):
@@ -65,9 +66,38 @@ class Model(Entity):
         self.FinalEquations = '<To be generated>'
         self.NumberIterations = 100
         self.RegisteredCashFlows = []
+        self.EquationSolver = sfc_models.equation_solver.EquationSolver()
 
-    def main(self, base_file_name=None):  # pragma: no cover
+    def main(self, base_file_name=None):
         """
+
+        :param base_file: str
+        :return:
+        """
+        if base_file_name is not None:
+            log_file = base_file_name + '_log.txt'
+        else:
+            log_file = None
+        try:
+            self.GenerateFullSectorCodes()
+            self.GenerateEquations()
+            self.GenerateRegisteredCashFlows()
+            self.GenerateIncomeEquations()
+            self.ProcessExogenous()
+            self.FinalEquations = self.CreateFinalEquations()
+            self.EquationSolver = sfc_models.equation_solver.EquationSolver(self.FinalEquations)
+            self.EquationSolver.SolveEquation()
+        except Exception as e:
+            self.LogInfo(log_file, ex=e)
+            raise
+        if log_file is not None:
+            self.LogInfo(log_file)
+        return self.FinalEquations
+
+    def main_deprecated(self, base_file_name=None):  # pragma: no cover
+        """
+        This method is deprecated; only keeping until examples are reworked to use new system.
+
         Builds model, once all sector and exogenous definitions are in place.
         :return: str
         """
@@ -90,8 +120,10 @@ class Model(Entity):
                                                                             run_equation_reduction=True)
                 obj.main(model_file)
                 self.LogInfo(log_file)
+            else:
+                solver = sfc_models.equation_solver.EquationSolver(self.FinalEquations)
         except Exception as e:
-            self.LogInfo(log_file, e)
+            self.LogInfo(log_file, ex=e)
             raise
         return self.FinalEquations
 

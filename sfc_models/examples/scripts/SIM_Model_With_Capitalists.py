@@ -51,12 +51,12 @@ def main():
     # Output is put into two files, based on the file name passed into main() ['ex20161128_tax_cut_comparison']
     # (1) [...]_log.txt:  Log file
     # (2) [...].py:  File that solves the system of equations
-    eqns = mod.main('ex20161128_tax_cut_comparison')
+    eqns = mod.main_deprecated('ex20161128_tax_cut_comparison')
     import ex20161128_tax_cut_comparison
     obj = SIM_Capitalist.SFCModel()
     obj.MaxTime = 20
     obj.PrintIterations = True
-    obj.main()
+    obj.main_deprecated()
     obj.WriteCSV('ex20161128_tax_cut_comparison.csv')
 
     p = Quick2DPlot([obj.t, obj.t], [obj.CA_GOOD_SUP_GOOD, obj.US_GOOD_SUP_GOOD], 'Output - Y', run_now=False)

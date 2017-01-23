@@ -174,6 +174,24 @@ def get_invalid_variable_names():
 
     Includes mathematical operators in module 'math'.
 
+    Cannot use 'k', as that is the discrete time axis step variable.
+
+    :return: list
+    """
+    internal = ['self', 'None', 'k']
+    kw = keyword.kwlist
+    if is_python_3:
+        built = dir(builtins)
+    else:  # pragma: no cover
+        built = dir(__builtin__)
+    out = internal + kw + built + dir(math)
+    return list(out)
+
+
+def get_invalid_tokens():
+    """
+    Get a list of invalid tokens that can be used inside sfc_model equations.
+
     :return: list
     """
     internal = ['self', 'None']
@@ -182,11 +200,13 @@ def get_invalid_variable_names():
         built = dir(builtins)
     else:  # pragma: no cover
         built = dir(__builtin__)
-    out = internal + kw + built + dir(math)
-    # Add back in mathematical operators
-    excludes = {'min', 'max', 'pow', 'abs', 'round', 'sum', 'float'}
-    out = (x for x in out if x not in excludes)
+    out = internal + kw + built
+    # Need to add back in some semi-mathematical operations
+    good_tokens = ('float', 'max', 'min', 'sum', 'pow', 'abs', 'round', 'pow')
+    out = (x for x in out if x not in good_tokens)
     return list(out)
+
+
 
 
 class EquationParser(object):
@@ -291,6 +311,7 @@ class EquationParser(object):
             self.Endogenous.append(('t', 't_minus_1 + 1.0'))
             self.Lagged.append(('t_minus_1', 't'))
             self.AllEquations['t'] = 't_minus_1 + 1.0'
+            self.AllEquations['t_minus_1'] = 't(k-1)'
         return msg
 
     def DumpEquations(self):  # pragma: no cover    [Should be free to change dump format without breaking tests...]
@@ -343,19 +364,20 @@ class EquationParser(object):
         >>> p.ValidateInputs()
         Traceback (most recent call last):
         ...
-        NameError: Cannot use variable name: import, as it is reserved. Call sfc_models.utils.get_invalid_variable_names() to get full list.
+        NameError: Cannot use token in equation: import, as it is reserved. Call sfc_models.utils.get_invalid_tokens() to get full list.
 
 
         :return: None
         """
-        bad_list = get_invalid_variable_names()
+        bad_variables = get_invalid_variable_names()
+        bad_tokens = get_invalid_tokens()
         self.GenerateTokenList()
         for var in self.AllEquations:
-            if var in bad_list:
+            if var in bad_variables:
                 raise NameError('Cannot use variable name: ' + var + ', as it is reserved. Call sfc_models.utils.get_invalid_variable_names() to get full list.')
             for tok in self.Tokens[var]:
-                if tok in bad_list:
-                    msg = 'Cannot use variable name: ' + tok + ', as it is reserved. Call sfc_models.utils.get_invalid_variable_names() to get full list.'
+                if tok in bad_tokens:
+                    msg = 'Cannot use token in equation: ' + tok + ', as it is reserved. Call sfc_models.utils.get_invalid_tokens() to get full list.'
                     raise NameError(msg)
 
     def EquationReduction(self):
@@ -483,6 +505,20 @@ class EquationParser(object):
         return num_found
 
 
+class Logger(object):
+    """
+    Class to handle logging.
+    """
+    # Have a single file handle for all Logger objects
+    log_file_handle = None
+    csv_handle = None
+    priority_cutoff = 1
+
+    def __init__(self, txt, priority=1):
+        if priority > Logger.priority_cutoff:
+            return
+        if Logger.log_file_handle is None:
+            return
 
 
 

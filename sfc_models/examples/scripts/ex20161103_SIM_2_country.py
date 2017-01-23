@@ -63,12 +63,12 @@ def main():
     # Output is put into two files, based on the file name passed into main() ['out_SIM_Machine_Model_2']
     # (1) [out_ex20161103]_log.txt:  Log file
     # (2) [out_ex20161103].py:  File that solves the system of equations
-    eqns = mod.main('out_ex20161103')
+    eqns = mod.main_deprecated('out_ex20161103')
 
     # Only import after the file is created (which is unusual).
     import out_ex20161103 as SFCmod
     obj = SFCmod.SFCModel()
-    obj.main()
+    obj.main_deprecated()
     obj.WriteCSV('out_ex20161103.csv')
     p = Quick2DPlot([obj.t, obj.t], [obj.CA_GOOD_SUP_GOOD, obj.US_GOOD_SUP_GOOD], 'Output - Y', run_now=False)
     p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']

@@ -32,12 +32,18 @@ class TestGetValid(TestCase):
         bad = utils.get_invalid_variable_names()
         self.assertIn('self', bad)
         self.assertIn('import', bad)
+        self.assertIn('sqrt', bad)
+
+
+    def test_token_list(self):
+        bad = utils.get_invalid_tokens()
+        self.assertIn('self', bad)
+        self.assertIn('import', bad)
         # We allow some builtin mathematical operators
         # Full list in the source code.
         self.assertNotIn('max', bad)
         # Also: functions in "math"
-        self.assertIn('sqrt', bad)
-
+        self.assertNotIn('sqrt', bad)
 
 class TestCreate_equation_from_terms(TestCase):
     def test_create_equation_from_terms_1(self):

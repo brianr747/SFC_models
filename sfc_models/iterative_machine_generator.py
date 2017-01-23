@@ -4,6 +4,8 @@ iterative_machine_generator.py
 Set up a system of equations, generates the Python module to
 solve it.
 
+This module is going to be replaced with the less crazy equation_solver.py
+
 Copyright 2016 Brian Romanchuk
 
 Licensed under the Apache License, Version 2.0 (the "License");

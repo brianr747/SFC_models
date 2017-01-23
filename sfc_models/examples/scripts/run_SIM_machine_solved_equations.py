@@ -56,7 +56,7 @@ obj.main(filename)
 # Can only import now...
 import SIM_model
 obj = SIM_model.SFCModel()
-obj.main()
+obj.main_deprecated()
 
 # Lop off t = 0 because it represents hard-coded initial conditions
 Quick2DPlot(obj.t[1:], obj.Y[1:], 'Y - National Production')
