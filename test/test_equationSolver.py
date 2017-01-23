@@ -74,7 +74,7 @@ class TestEquationSolver(TestCase):
         obj.ExtractVariableList()
         obj.SetInitialConditions()
         v = obj.TimeSeries
-        self.assertEqual([10.,]*3, v['t'])
+        self.assertEqual([10.,]*4, v['t'])
         self.assertEqual([0, 1, 2, 3], v['k'])
         self.assertEqual([0.], v['x'])
         self.assertEqual([math.sqrt(20)], v['z'])
