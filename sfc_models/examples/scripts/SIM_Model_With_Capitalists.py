@@ -56,7 +56,7 @@ def main():
     obj = SIM_Capitalist.SFCModel()
     obj.MaxTime = 20
     obj.PrintIterations = True
-    obj.main_deprecated()
+    obj.main()
     obj.WriteCSV('ex20161128_tax_cut_comparison.csv')
 
     p = Quick2DPlot([obj.t, obj.t], [obj.CA_GOOD_SUP_GOOD, obj.US_GOOD_SUP_GOOD], 'Output - Y', run_now=False)

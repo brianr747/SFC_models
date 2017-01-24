@@ -68,7 +68,7 @@ def main():
     # Only import after the file is created (which is unusual).
     import out_ex20161103 as SFCmod
     obj = SFCmod.SFCModel()
-    obj.main_deprecated()
+    obj.main()
     obj.WriteCSV('out_ex20161103.csv')
     p = Quick2DPlot([obj.t, obj.t], [obj.CA_GOOD_SUP_GOOD, obj.US_GOOD_SUP_GOOD], 'Output - Y', run_now=False)
     p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']

@@ -68,7 +68,7 @@ def main():
     # Only import after the file is created (which is unusual).
     import out_ex20161206_SIM_with_deposits as SFCmod
     obj = SFCmod.SFCModel()
-    obj.main_deprecated()
+    obj.main()
     obj.WriteCSV('out_ex20161206_SIM_with_deposits.csv')
     Quick2DPlot(obj.t[1:], obj.GOOD_SUP_GOOD[1:], 'Goods supplied (national production Y)')
     Quick2DPlot(obj.t[1:], obj.HH_F[1:], 'Household Financial Assets (F)')

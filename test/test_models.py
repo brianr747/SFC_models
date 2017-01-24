@@ -120,6 +120,57 @@ class TestModel(TestCase):
         mod.ProcessExogenous()
         self.assertEqual('EXOGENOUS TEST', household.Equations['F'])
 
+    def test_GetSectors(self):
+        mod = Model()
+        self.assertEqual(0, len(mod.GetSectors()))
+        us = Country(mod, 'USA', 'US')
+        self.assertEqual(0, len(mod.GetSectors()))
+        household = Sector(us, 'Household', 'HH')
+        self.assertEqual(1, len(mod.GetSectors()))
+        hh2 = Sector(us, 'Household2', 'HH2')
+        self.assertEqual(2, len(mod.GetSectors()))
+        ca = Country(mod, 'country', 'code')
+        hh3 = Sector(ca, 'sec3', 'sec3')
+        secs = mod.GetSectors()
+        self.assertEqual(3, len(secs))
+        self.assertIn(household, secs)
+        self.assertIn(hh2, secs)
+        self.assertIn(hh3, secs)
+
+    def test_Fixaliases(self):
+        mod = Model()
+        c = Country(mod, 'co', 'co')
+        sec1 = Sector(c, 'sec1', 'sec1')
+        sec1.AddVariable('x', 'eqn x', '')
+        varname = sec1.GetVariableName('x')
+        ID = "{0}".format(sec1.ID)
+        self.assertIn(ID, varname)
+        sec2 = Sector(c, 'sec2', 'sec2')
+        sec2.AddVariable('two_x', 'Test variable', '2 * {0}'.format(varname))
+        self.assertEqual('2*'+varname, kill_spaces(sec2.Equations['two_x']))
+        mod.GenerateFullSectorCodes()
+        mod.FixAliases()
+        self.assertEqual('2*sec1_x', kill_spaces(sec2.Equations['two_x']))
+
+    def test_fix_aliases_2(self):
+        mod = Model()
+        c = Country(mod, 'co', 'co')
+        sec1 = Sector(c, 'sec1', 'sec1')
+        sec1.AddVariable('x', 'eqn x', '')
+        varname = sec1.GetVariableName('x')
+        # The ID is the key part of the alias
+        self.assertIn('{0}'.format(sec1.ID), varname)
+        sec2 = Sector(c, 'sec2', 'sec2')
+        mod.RegisterCashFlow(sec1, sec2, 'x')
+        mod.GenerateRegisteredCashFlows()
+        self.assertEqual('-'+varname, sec1.CashFlows[0])
+        self.assertEqual('+' + varname, sec2.CashFlows[0])
+        mod.GenerateFullSectorCodes()
+        mod.FixAliases()
+        self.assertEqual('-sec1_x', kill_spaces(sec1.CashFlows[0]))
+        self.assertEqual('+sec1_x' , kill_spaces(sec2.CashFlows[0]))
+
+
     def test_ForceExogenous2(self):
         mod = Model()
         us = Country(mod, 'USA', 'US')
@@ -221,8 +272,10 @@ class TestSector(TestCase):
         mod = Model()
         us = Country(mod, 'USA', 'US')
         household = Household(us, 'Household', 'HH', .9, .2)
-        with self.assertRaises(LogicError):
-            household.GetVariableName('AlphaFin')
+        ID = household.ID
+        target = '_{0}_{1}'.format(ID, 'AlphaFin')
+        self.assertEqual(target, household.GetVariableName('AlphaFin'))
+
 
     def test_GetVariableName_3(self):
         mod = Model()

@@ -66,20 +66,24 @@ class Model(Entity):
         self.FinalEquations = '<To be generated>'
         self.NumberIterations = 100
         self.RegisteredCashFlows = []
+        self.Aliases = {}
         self.EquationSolver = sfc_models.equation_solver.EquationSolver()
 
-    def main(self, base_file_name=None):
+    def main(self, base_file_name=None):  # pragma: no cover
         """
 
-        :param base_file: str
+        :param base_file_name: str
         :return:
         """
+        # Skip testing, this, rather test underlying steps.
+        # Once we have a solid end-to-end test (which is easier now), can test this.
         if base_file_name is not None:
             log_file = base_file_name + '_log.txt'
         else:
             log_file = None
         try:
             self.GenerateFullSectorCodes()
+            self.FixAliases()
             self.GenerateEquations()
             self.GenerateRegisteredCashFlows()
             self.GenerateIncomeEquations()
@@ -154,6 +158,25 @@ class Model(Entity):
         except:
             raise ValueError('The "value" parameter for initial conditions must be a float.')
         self.InitialConditions.append((sector_fullcode, varname, str(value)))
+
+    def RegisterAlias(self, alias, sector, varname):
+        self.Aliases[alias] = (sector, varname)
+
+    def GetSectors(self):
+        out = []
+        for cntry in self.CountryList:
+            for sector in cntry.SectorList:
+                out.append(sector)
+        return out
+
+
+    def FixAliases(self):
+        lookup = {}
+        for alias in self.Aliases:
+            sector, varname = self.Aliases[alias]
+            lookup[alias] = sector.GetVariableName(varname)
+        for sector in  self.GetSectors():
+            sector.ReplaceAliases(lookup)
 
     def LogInfo(self, file_name, generate_full_codes=True, ex=None):  # pragma: no cover
         """
@@ -372,11 +395,19 @@ class Sector(Entity):
         :param varname: str
         :return: str
         """
-        if self.FullCode == '':
-            raise LogicError('Must generate FullCode before calling GetVariableName')
         if varname not in self.Equations:
             raise KeyError('Variable %s not in sector %s' % (varname, self.FullCode))
-        return self.FullCode + '_' + varname
+        if self.FullCode == '':
+            alias = '_{0}_{1}'.format(self.ID, varname)
+            self.GetModel().RegisterAlias(alias, self, varname)
+            return alias
+        else:
+            return self.FullCode + '_' + varname
+
+    def ReplaceAliases(self, lookup):
+        for var in self.Equations:
+            self.Equations[var] = replace_token_from_lookup(self.Equations[var], lookup)
+        self.CashFlows = [replace_token_from_lookup(flow, lookup) for flow in self.CashFlows]
 
     def AddCashFlow(self, term, eqn=None, desc=None):
         term = term.strip()
