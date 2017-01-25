@@ -23,7 +23,7 @@ from math import *
 import warnings
 
 import sfc_models.utils as utils
-
+from sfc_models.utils import Logger as Logger
 
 class ConvergenceError(ValueError):
     pass
@@ -93,10 +93,10 @@ class EquationSolver(object):
             except:
                 raise ValueError('Cannot parse exogenous variable: ' + var)
             if type(val) is float:
-                val = [val, ]
+                val = [val, ] * (self.Parser.MaxTime+1)
             try:
                 val = list(val)
-            except:
+            except: # pragma: no cover     I cannot trigger this error, but I will leave in place
                 raise ValueError('Initial condition must be of the list type: ' + var)
             if len(val) < self.Parser.MaxTime+1:
                 raise ValueError('Initial condition list too short: ' + var)
@@ -106,7 +106,7 @@ class EquationSolver(object):
     def SolveStep(self, step):
         # Set up starting condition (for step)
         initial = {}
-        print('step', step)
+        Logger('Step: {0}'.format(step))
         # The exogenous and lagged variables are always fixed
         for var, dummy in self.Parser.Exogenous:
             initial[var] = self.TimeSeries[var][step]
@@ -118,10 +118,7 @@ class EquationSolver(object):
         # NOTE:
         # We are missing the decorative variables, but they have no effect on the solution
         relative_error = 1.
-        try:
-            err_toler = float(self.Parser.Err_Tolerance)
-        except:
-            raise ValueError('Invalid error tolerance')
+        err_toler = float(self.Parser.Err_Tolerance)
         num_tries = 0
         while relative_error > err_toler:
             # Need to create a copy of the dictionary; saying new_value = initial means that they are
@@ -144,7 +141,8 @@ class EquationSolver(object):
             if num_tries > self.MaxIterations:
                 raise ConvergenceError('Equations do not converge - step {0}'.format(step))
         # Then: append values to the time series
-        for var, dummy in self.Parser.Endogenous:
+        varlist = [x[0] for x in self.Parser.Endogenous] + [x[0] for x in self.Parser.Lagged]
+        for var in varlist:
             assert(len(self.TimeSeries[var]) == step)
             self.TimeSeries[var].append(initial[var])
         # Finally: augment with decorative variables
@@ -165,12 +163,12 @@ class EquationSolver(object):
                     failed.append((var, eqn))
             # If we failed on every single decoration variable, something is wrong.
             if len(failed) == len(vars_to_compute):
+                # NOTE: We should not get here; it manes that the decoration variables are
+                # created incorrectly. Leave check to break infinite loops.
                 raise ValueError('Cannot solve decoration equations! <?>')
             vars_to_compute = failed
 
     def SolveEquation(self):
-        if self.Parser is None:
-            raise ValueError('Must call ParseString() first!')
         if len(self.VariableList) == 0:
             self.ExtractVariableList()
         self.SetInitialConditions()
@@ -178,7 +176,10 @@ class EquationSolver(object):
             try:
                 self.SolveStep(step)
             except ConvergenceError:
-                break
+                # Truncate so all time series are same length
+                for var in self.TimeSeries:
+                    self.TimeSeries[var] = self.TimeSeries[var][0:step]
+                raise
 
 
 
