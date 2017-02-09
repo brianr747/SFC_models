@@ -13,7 +13,7 @@ class EndToEndTester(TestCase):
     def get_builder(self):
         return sfc_models.gl_book.chapter3.SIM('C', use_book_exogenous=True)
 
-    def test_run_model(self):
+    def test_model(self):
         builder = self.get_builder()
         model = builder.build_model()
         model.main()
@@ -23,10 +23,12 @@ class EndToEndTester(TestCase):
             for k in range(0, len(targ)):
                 self.assertAlmostEqual(targ[k], actual[k], places=1, msg='Failure in variable ' + varname)
 
+
 class TestSIMEX1(EndToEndTester):
     """
     Tests model SIMEX1.
     """
     def get_builder(self):
         return sfc_models.gl_book.chapter3.SIMEX1('C', use_book_exogenous=True)
+
 
