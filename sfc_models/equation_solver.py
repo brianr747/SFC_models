@@ -181,6 +181,28 @@ class EquationSolver(object):
                     self.TimeSeries[var] = self.TimeSeries[var][0:step]
                 raise
 
+    def GenerateCSVtext(self):
+        """
+        Convert time series data into a text string that can be written to a csv. (Tab-delimited file.)
+        :return: str
+        """
+        vars = tuple(self.TimeSeries.keys())
+        if len(vars) < 1:
+            return ''
+        out = '\t'.join(vars) + '\n'
+        # We assume that all time series are the same length.
+        L = len(self.TimeSeries[vars[0]])
+        for i in range(0,L):
+            row = []
+            for v in vars:
+                row.append("{0}".format(self.TimeSeries[v][i]))
+            out += '\t'.join(row) + '\n'
+        return out
+
+
+
+
+
 
 
 

@@ -81,6 +81,7 @@ class Model(Entity):
             log_file = base_file_name + '_log.txt'
         else:
             log_file = None
+        convergence_error = False
         try:
             self.GenerateFullSectorCodes()
             self.FixAliases()
@@ -91,11 +92,19 @@ class Model(Entity):
             self.FinalEquations = self.CreateFinalEquations()
             self.EquationSolver = sfc_models.equation_solver.EquationSolver(self.FinalEquations)
             self.EquationSolver.SolveEquation()
+        except sfc_models.equation_solver.ConvergenceError:
+            convergence_error = True
         except Exception as e:
             self.LogInfo(log_file, ex=e)
             raise
         if log_file is not None:
             self.LogInfo(log_file)
+            output = self.EquationSolver.GenerateCSVtext()
+            f = open(base_file_name + '.csv', 'w')
+            f.write(output)
+            f.close()
+        if convergence_error:
+            raise sfc_models.equation_solver.ConvergenceError
         return self.FinalEquations
 
     def main_deprecated(self, base_file_name=None):  # pragma: no cover
