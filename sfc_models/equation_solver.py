@@ -230,7 +230,7 @@ class EquationSolver(object):
         """
         vars = list(self.TimeSeries.keys())
         if len(vars) == 0:
-            return
+            return ''
         vars.sort()
         if 't' in vars:
             vars.remove('t')

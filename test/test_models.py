@@ -170,7 +170,6 @@ class TestModel(TestCase):
         self.assertEqual('-sec1_x', kill_spaces(sec1.CashFlows[0]))
         self.assertEqual('+sec1_x' , kill_spaces(sec2.CashFlows[0]))
 
-
     def test_ForceExogenous2(self):
         mod = Model()
         us = Country(mod, 'USA', 'US')
@@ -235,6 +234,22 @@ class TestModel(TestCase):
         hh_dump = household.Dump()
         mod_dump = mod.DumpEquations()
         self.assertEqual(hh_dump, mod_dump)
+
+    def test_GetTimeSeries(self):
+        mod = Model()
+        mod.TimeSeriesCutoff = None
+        mod.EquationSolver.TimeSeries = {'t': [0, 1, 2]}
+        with self.assertRaises(KeyError):
+            mod.GetTimeSeries('q')
+        with self.assertRaises(KeyError):
+            mod.GetTimeSeries('q', cutoff=1)
+        self.assertEqual([0, 1, 2], mod.GetTimeSeries('t'))
+        self.assertEqual([0, 1], mod.GetTimeSeries('t', cutoff=1))
+        mod.TimeSeriesCutoff = 1
+        self.assertEqual([0, 1], mod.GetTimeSeries('t'))
+        # Passed parameter overrides default .GetTimeSeries member.
+        self.assertEqual([0,], mod.GetTimeSeries('t', cutoff=0))
+
 
 
 class TestSector(TestCase):

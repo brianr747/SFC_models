@@ -336,5 +336,23 @@ class TestEquationSolver(TestCase):
 """
         self.assertEqual(targ, obj.GenerateCSVtext())
 
+    def test_csv_text_empty(self):
+        obj = EquationSolver()
+        # Make the time series int so we do not test how floats are formatted...
+        obj.TimeSeries = {}
+        targ = ''
+        self.assertEqual(targ, obj.GenerateCSVtext())
 
-
+    def test_csv_text2(self):
+        obj = EquationSolver()
+        # Make the time series int so we do not test how floats are formatted...
+        obj.TimeSeries = {
+            'k': [0, 1],
+            'foo': [10, 11],
+            't': [0, 3],
+        }
+        targ = """k\tt\tfoo
+0\t0\t10
+1\t3\t11
+"""
+        self.assertEqual(targ, obj.GenerateCSVtext())

@@ -48,7 +48,7 @@ class GL_book_model(object):
         self.Country = models.Country(model, country_code, country_code)
         self.UseBookExogenous = use_book_exogenous
 
-    def build_model(self):
+    def build_model(self):  # pragma: no cover   This is a virtual base class
         """
         Does the work of building the sectors within a country. Returns the Model object.
 
@@ -56,7 +56,7 @@ class GL_book_model(object):
         """
         return self.Model
 
-    def expected_output(self):
+    def expected_output(self):  # pragma: no cover  -- Virtual base class.
         """
         Returns a list of expected output. Used to validate the framework output.
         Uses the default exogenous series.
