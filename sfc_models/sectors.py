@@ -46,6 +46,21 @@ class Household(BaseHousehold):
         self.Equations['PreTax'] = 'SUP_LAB'
 
 
+class HouseholdWithExpectations(Household):
+    """
+    Household sector where consumption is based on expected income.
+
+    The default functionality is that the expected after tax income equals the previous value
+    of realised after tax income.
+    """
+    def __init__(self, country, long_name, code, alpha_income, alpha_fin):
+        Household.__init__(self, country, long_name, code, alpha_income, alpha_fin)
+        self.Equations['DEM_GOOD'] = 'AlphaIncome * EXP_AfterTax + AlphaFin * LAG_F'
+        self.AddVariable('LAG_AfterTax', 'Lagged Aftertax income', 'AfterTax(k-1)')
+        self.AddVariable('EXP_AfterTax', 'Expected Aftertax income', 'LAG_AfterTax')
+
+
+
 class Capitalists(BaseHousehold):
     def __init__(self, country, long_name, code, alpha_income, alpha_fin):
         BaseHousehold.__init__(self, country, long_name, code, alpha_income, alpha_fin)
