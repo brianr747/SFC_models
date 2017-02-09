@@ -20,6 +20,7 @@ limitations under the License.
 
 import os
 
+from sfc_models.examples import get_file_base
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models.models import *
 from sfc_models.sectors import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness
@@ -41,7 +42,8 @@ def main():
     goods = Market(can, 'Goods market', 'GOOD')
     # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
     mod.AddExogenous('GOV', 'DEM_GOOD', '[20.,] * 105')
-    base_name = os.path.join('output', 'SIM_model')
+    # This line sets the name of the output files based on the code file's name...
+    base_name = os.path.join('output', get_file_base(__file__))
     # Build the model
     mod.main(base_name)
     print(mod.EquationSolver.TimeSeries)

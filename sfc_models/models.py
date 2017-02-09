@@ -22,9 +22,11 @@ limitations under the License.
 from pprint import pprint
 import traceback
 
-from sfc_models.utils import LogicError, replace_token_from_lookup, create_equation_from_terms, EquationParser
+from sfc_models.utils import LogicError, replace_token_from_lookup, create_equation_from_terms, Logger
+from sfc_models.equation_parser import EquationParser
 import sfc_models.iterative_machine_generator as iterative_machine_generator
 import sfc_models.equation_solver
+
 
 
 class Entity(object):
@@ -77,11 +79,10 @@ class Model(Entity):
         """
         # Skip testing, this, rather test underlying steps.
         # Once we have a solid end-to-end test (which is easier now), can test this.
-        if base_file_name is not None:
-            log_file = base_file_name + '_log.txt'
-        else:
-            log_file = None
         try:
+            if base_file_name is not None:
+                log_file = base_file_name + '_log.txt'
+                Logger.log_file_handle = open(log_file, 'w')
             self.GenerateFullSectorCodes()
             self.FixAliases()
             self.GenerateEquations()
@@ -90,12 +91,23 @@ class Model(Entity):
             self.ProcessExogenous()
             self.FinalEquations = self.CreateFinalEquations()
             self.EquationSolver = sfc_models.equation_solver.EquationSolver(self.FinalEquations)
-            self.EquationSolver.SolveEquation()
+            # The following looks wierd, but we can write out a csv of the time series up until the
+            # point when convergence fails
+            try:
+                converge_error = None
+                self.EquationSolver.SolveEquation()
+            except sfc_models.equation_solver.ConvergenceError as c:
+                converge_error = c
+            if base_file_name is not None:
+                self.EquationSolver.WriteCSV(base_file_name + '_out.txt')
+            if converge_error is not None:
+                raise converge_error
+            self.LogInfo()
         except Exception as e:
-            self.LogInfo(log_file, ex=e)
+            self.LogInfo(ex=e)
             raise
-        if log_file is not None:
-            self.LogInfo(log_file)
+        finally:
+            Logger.cleanup()
         return self.FinalEquations
 
     def main_deprecated(self, base_file_name=None):  # pragma: no cover
@@ -107,11 +119,10 @@ class Model(Entity):
         """
         # Excluded from unit test coverage for now. The components are all tested; this function is really a
         # end-to-end test. Only include in coverage once output file format is finalised.
-        if base_file_name is not None:
-            log_file = base_file_name + '_log.txt'
-        else:
-            log_file = None
         try:
+            if base_file_name is not None:
+                log_file = base_file_name + '_log.txt'
+                Logger.log_file_handle = open(log_file, 'w')
             self.GenerateFullSectorCodes()
             self.GenerateEquations()
             self.GenerateRegisteredCashFlows()
@@ -123,12 +134,14 @@ class Model(Entity):
                 obj = iterative_machine_generator.IterativeMachineGenerator(self.FinalEquations,
                                                                             run_equation_reduction=True)
                 obj.main(model_file)
-                self.LogInfo(log_file)
+                self.LogInfo()
             else:
                 solver = sfc_models.equation_solver.EquationSolver(self.FinalEquations)
         except Exception as e:
-            self.LogInfo(log_file, ex=e)
+            self.LogInfo(ex=e)
             raise
+        finally:
+            Logger.cleanup()
         return self.FinalEquations
 
     def AddExogenous(self, sector_fullcode, varname, value):
@@ -178,7 +191,7 @@ class Model(Entity):
         for sector in  self.GetSectors():
             sector.ReplaceAliases(lookup)
 
-    def LogInfo(self, file_name, generate_full_codes=True, ex=None):  # pragma: no cover
+    def LogInfo(self, generate_full_codes=True, ex=None):  # pragma: no cover
         """
         Write information to a file; if there is an exception, dump the trace.
         The log will normally generate the full sector codes; set generate_full_codes=False
@@ -190,25 +203,22 @@ class Model(Entity):
         :return:
         """
         # Not covered with unit tests [for now]. Output format will change a lot.
-        if file_name is None:
-            return
         if generate_full_codes:
             self.GenerateFullSectorCodes()
-        with open(file_name, 'w') as f:
             for c in self.CountryList:
-                f.write('Country: Code= "%s" %s\n' % (c.Code, c.LongName))
-                f.write('='*60 + '\n\n')
+                Logger('Country: Code= "%s" %s\n' % (c.Code, c.LongName))
+                Logger('='*60 + '\n\n')
                 for s in c.SectorList:
-                    f.write(s.Dump() + '\n')
-            f.write('\n\nFinal Equations:\n')
-            f.write(self.FinalEquations + '\n')
-            parser = EquationParser()
-            parser.ParseString(self.FinalEquations)
-            parser.EquationReduction()
-            f.write(parser.DumpEquations())
-            if ex is not None:
-                f.write('\n\nError raised:\n')
-                traceback.print_exc(file=f)
+                    Logger(s.Dump() + '\n')
+            Logger('\n\nFinal Equations:\n')
+        Logger(self.FinalEquations + '\n')
+        parser = EquationParser()
+        parser.ParseString(self.FinalEquations)
+        parser.EquationReduction()
+        Logger(parser.DumpEquations())
+        if ex is not None:
+            Logger('\n\nError raised:\n')
+            traceback.print_exc(file=Logger.log_file_handle)
 
     def AddCountry(self, country):
         """

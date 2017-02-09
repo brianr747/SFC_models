@@ -1,8 +1,9 @@
-from unittest import TestCase
 import doctest
+from unittest import TestCase
 
 import sfc_models.utils as utils
-
+from sfc_models.utils import Logger
+import sfc_models.examples
 
 def load_tests(loader, tests, ignore):
     """
@@ -34,6 +35,10 @@ class TestGetValid(TestCase):
         self.assertIn('import', bad)
         self.assertIn('sqrt', bad)
 
+    def test_examples_fn(self):
+        self.assertEqual('cat', sfc_models.examples.get_file_base('C:\\temp\\cat.txt'))
+        self.assertEqual('cat', sfc_models.examples.get_file_base('C:\\temp\\cat'))
+
 
     def test_token_list(self):
         bad = utils.get_invalid_tokens()
@@ -50,36 +55,43 @@ class TestCreate_equation_from_terms(TestCase):
         self.assertEqual('', utils.create_equation_from_terms([]))
 
 
-class TestEquationParser(TestCase):
-    """
-    Pretty much the whole class is covered by doctests.
+class MockFile(object):
+    def __init__(self):
+        self.buffer = []
+        self.is_closed = False
 
-    Can fill in more tests if desired.
-    """
-    def test_ParseString(self):
-        pass
+    def write(self, msg):
+        self.buffer.append(msg)
 
-    def test_GenerateTokenList(self):
-        pass
+    def close(self):
+        self.is_closed = True
 
-    def test_ValidateInputs(self):
-        pass
+class TestLogger(TestCase):
+    def test_write_1(self):
+        Logger.log_file_handle = None
+        # Nothing should happen,...
+        Logger('test')
 
-    def test_EquationReduction(self):
-        pass
+    def test_write_2(self):
+        mock = MockFile()
+        Logger.log_file_handle = mock
+        Logger('text')
+        self.assertEqual(['text\n'], mock.buffer)
+        Logger('text2\n', priority=0)
+        self.assertEqual(['text\n', 'text2\n'], mock.buffer)
+        Logger.priority_cutoff = 5
+        Logger("low_priority", priority=6)
+        self.assertEqual(['text\n', 'text2\n'], mock.buffer)
+        Logger('higher', priority=5)
+        # Low priority messages have an indent.
+        self.assertEqual(['text\n', 'text2\n', (' '*4) + 'higher\n'], mock.buffer)
 
-    def test_CleanupRightHandSide(self):
-        obj = utils.EquationParser()
-        self.assertEqual('', obj.CleanupRightHandSide(' '))
-        self.assertEqual('x', obj.CleanupRightHandSide('+x '))
-        self.assertEqual('x', obj.CleanupRightHandSide(' +x'))
-        self.assertEqual('-x', obj.CleanupRightHandSide('-x'))
+    def test_cleanup(self):
+        mock = MockFile()
+        Logger.log_file_handle = mock
+        self.assertFalse(mock.is_closed)
+        Logger.cleanup()
+        self.assertTrue(mock.is_closed)
 
-    def test_FindExactMatches(self):
-        pass
 
-    def test_RebuildEquations(self):
-        pass
 
-    def test_MoveDecorative(self):
-        pass

@@ -22,6 +22,7 @@ limitations under the License.
 from math import *
 import warnings
 
+import sfc_models.equation_parser
 import sfc_models.utils as utils
 from sfc_models.utils import Logger as Logger
 
@@ -32,7 +33,7 @@ class EquationSolver(object):
     def __init__(self, equation_string='', run_equation_reduction=True):
         self.EquationString = equation_string
         self.RunEquationReduction = run_equation_reduction
-        self.Parser = utils.EquationParser()
+        self.Parser = sfc_models.equation_parser.EquationParser()
         self.VariableList = []
         self.TimeSeries = {}
         self.MaxIterations = 400
@@ -48,7 +49,7 @@ class EquationSolver(object):
         :return: str
         """
         self.EquationString = equation_string
-        parser = utils.EquationParser()
+        parser = sfc_models.equation_parser.EquationParser()
         msg = parser.ParseString(equation_string)
         parser.ValidateInputs()
         if self.RunEquationReduction:
@@ -73,7 +74,7 @@ class EquationSolver(object):
         self.VariableList.sort()
 
     def SetInitialConditions(self):
-        variables = {}
+        variables = dict()
         variables['k'] = list(range(0, self.Parser.MaxTime+1))
         # First pass: include exogenous
         for var in self.VariableList:
@@ -85,7 +86,9 @@ class EquationSolver(object):
                     raise ValueError('Cannot parse initial conditions for: ' + var)
             else:
                 ic = 0.
-            variables[var] = [ic, ]
+            variables[var] = [ic,]
+
+        time_zero_constants = dict()
         # Second pass: overwrite exogenous
         for var, eqn in self.Parser.Exogenous:
             try:
@@ -101,6 +104,35 @@ class EquationSolver(object):
             if len(val) < self.Parser.MaxTime+1:
                 raise ValueError('Initial condition list too short: ' + var)
             variables[var] = val[0:self.Parser.MaxTime+1]
+            time_zero_constants[var] = val[0]
+        # Third pass: clean up constant endogenous
+        for var, eqn in self.Parser.Endogenous:
+            try:
+                val = eval(eqn, globals())
+                if type(val) is int:
+                    val = float(val)
+                if type(val) is float:
+                    variables[var] = [val,]
+                    time_zero_constants[var] = val
+            except:
+                continue
+        # Fourth pass: constant decoration
+        did_any = True
+        while did_any:
+            did_any = False
+            for var, eqn in self.Parser.Decoration:
+                if var in time_zero_constants:
+                    continue
+                try:
+                    val = eval(eqn, globals(), time_zero_constants)
+                except:
+                    continue
+                did_any = True
+                time_zero_constants[var] = val
+                variables[var] = [val,]
+
+
+
         self.TimeSeries = variables
 
     def SolveStep(self, step):
@@ -180,6 +212,42 @@ class EquationSolver(object):
                 for var in self.TimeSeries:
                     self.TimeSeries[var] = self.TimeSeries[var][0:step]
                 raise
+
+    def WriteCSV(self, fname): # pragma: no cover   We should not be writing files as part of unit tests...
+        """
+        Write time series to a tab-delimited text file.
+        :param fname: str
+        :return:
+        """
+        f = open(fname, 'w')
+        f.write(self.GenerateCSVtext())
+
+    def GenerateCSVtext(self, format_str = '%.5g'):
+        """
+        :format_str: str
+        Generates the text that goes into the csv.
+        :return: str
+        """
+        vars = list(self.TimeSeries.keys())
+        if len(vars) == 0:
+            return
+        vars.sort()
+        if 't' in vars:
+            vars.remove('t')
+            vars.insert(0, 't')
+        if 'k' in vars:
+            vars.remove('k')
+            vars.insert(0, 'k')
+        out = '\t'.join(vars) + '\n'
+        N = len(self.TimeSeries[vars[0]])
+        for i in range(0, N):
+            row = []
+            for v in vars:
+                row.append(self.TimeSeries[v][i],)
+            row = [format_str % (x,) for x in row]
+            out += '\t'.join(row) + '\n'
+        return out
+
 
 
 

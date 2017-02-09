@@ -186,6 +186,41 @@ class TestEquationSolver(TestCase):
         obj.SetInitialConditions()
         self.assertEqual([1., 1., 1., 1.,], obj.TimeSeries['t'])
 
+    def test_initial_conditions_const_endo(self):
+        obj = EquationSolver()
+        obj.RunEquationReduction = False
+        # By forcing 't' into the variable list, no automatic creation of time variables
+        obj.ParseString("""
+           x=1.
+           z=2
+           exogenous
+           t=1.0
+           MaxTime=3""")
+        obj.ExtractVariableList()
+        obj.SetInitialConditions()
+        self.assertEqual([1., ], obj.TimeSeries['x'])
+        self.assertEqual([2., ], obj.TimeSeries['z'])
+
+    def test_initial_conditions_const_decoration(self):
+        obj = EquationSolver()
+        obj.RunEquationReduction = True
+        # By forcing 't' into the variable list, no automatic creation of time variables
+        obj.ParseString("""
+           x=1.
+           z=y
+           y =x
+           exogenous
+           t=1.0
+           MaxTime=3""")
+        obj.ExtractVariableList()
+        obj.SetInitialConditions()
+        self.assertTrue(len(obj.Parser.Decoration) > 0)
+        self.assertEqual([1., ], obj.TimeSeries['x'])
+        self.assertEqual([1., ], obj.TimeSeries['z'])
+        self.assertEqual([1., ], obj.TimeSeries['y'])
+
+
+
 
     def test_initial_conditions_too_short(self):
         obj = EquationSolver()
@@ -218,9 +253,9 @@ class TestEquationSolver(TestCase):
         obj.SetInitialConditions()
         obj.SolveStep(1)
         obj.SolveStep(2)
-        self.assertEqual([0., 1., 1.], obj.TimeSeries['w'])
-        self.assertEqual([0., 1., 1.], obj.TimeSeries['y'])
-        self.assertEqual([0., 1., 1.], obj.TimeSeries['z'])
+        self.assertEqual([1., 1., 1.], obj.TimeSeries['w'])
+        self.assertEqual([1., 1., 1.], obj.TimeSeries['y'])
+        self.assertEqual([1., 1., 1.], obj.TimeSeries['z'])
 
     def test_decoration_fail(self):
         obj = EquationSolver()
@@ -286,6 +321,20 @@ class TestEquationSolver(TestCase):
             obj2.SolveEquation()
         # Validate that the exogenous variable is truncated to the same length as calculated vars
         self.assertEqual([10.,], obj2.TimeSeries['t'])
+
+    def test_csv_text(self):
+        obj = EquationSolver()
+        # Make the time series int so we do not test how floats are formatted...
+        obj.TimeSeries = {
+            'k': [0, 1],
+            'foo': [10, 11],
+            'cat': [0, 3],
+        }
+        targ = """k\tcat\tfoo
+0\t0\t10
+1\t3\t11
+"""
+        self.assertEqual(targ, obj.GenerateCSVtext())
 
 
 

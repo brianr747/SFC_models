@@ -24,3 +24,43 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+
+import os
+
+import sfc_models.examples.install_example_scripts
+
+
+def get_file_base(fullfile):
+    fname = os.path.basename(fullfile)
+    pos = fname.find('.')
+    if pos == -1:
+        return fname
+    else:
+        return fname[0:pos]
+
+
+def install_scripts(target_dir=None):   # pragma: no cover
+    """
+    Install all the example Python files into a target directory (and create an "output" subdirectory).
+
+    If a file already exists, the script will fail. You need to copy existing files out of the way.
+
+    :param target_dir: str
+    :return:
+    """
+    if target_dir is None:
+        if __name__ == '__main__':
+            print("""
+    This function installs the sfc_model example scripts into a specified target directory.
+    The function will not overwrite existing files, so you will need to clean out the directory
+    (saving any of your own changes) before calling this function.
+
+    Example usage:
+
+      sfc_models.examples.install_script('c:\\my_working_directory\\sfc_examples')
+
+     This will install to c:\my_working_directory\sfc_examples
+
+""")
+            return
+        sfc_models.examples.install_example_scripts.install(target_dir)

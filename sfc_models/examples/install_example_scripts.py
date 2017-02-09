@@ -27,7 +27,7 @@ import os
 from pkg_resources import resource_string
 
 
-def install(target_dir):
+def install(target_dir):   # pragma: no cover
     """
     Install all the example Python files into a target directory (and create an "output" subdirectory).
 
