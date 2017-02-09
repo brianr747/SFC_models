@@ -37,11 +37,19 @@ builder_SIM = SIM(country_code='C1', use_book_exogenous=True)
 model_SIM = builder_SIM.build_model()
 model_SIM.main(base_file_name=os.path.join('output','ex20170209_SIM'))
 
-time = model.EquationSolver.TimeSeries['k'][0:21]
-Y_SIMEX = model.EquationSolver.TimeSeries['GOOD_SUP_GOOD'][0:21]
-Y_SIM = model_SIM.EquationSolver.TimeSeries['GOOD_SUP_GOOD'][0:21]
+model.TimeSeriesCutoff = 20
+model_SIM.TimeSeriesCutoff = 20
+time = model.GetTimeSeries('k')
+Y_SIMEX = model.GetTimeSeries('GOOD_SUP_GOOD')
+Y_SIM = model_SIM.GetTimeSeries('GOOD_SUP_GOOD')
+income = model.GetTimeSeries('HH_AfterTax')
+expected_income =  model.GetTimeSeries('HH_EXP_AfterTax')
 
 Quick2DPlot(time, Y_SIMEX, 'Output (Y) - Model SIMEX')
+
+q = Quick2DPlot([time, time], [expected_income, income], 'Household Income in Model SIMEX', run_now=False)
+q.Legend = ['Expected', 'Realised']
+q.DoPlot()
 
 q = Quick2DPlot([time, time], [Y_SIMEX, Y_SIM], 'Output (Y)', run_now=False)
 q.Legend = ['Model SIMEX', 'Model SIM']

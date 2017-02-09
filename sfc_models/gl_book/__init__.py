@@ -56,3 +56,24 @@ class GL_book_model(object):
         """
         return self.Model
 
+    def expected_output(self):
+        """
+        Returns a list of expected output. Used to validate the framework output.
+        Uses the default exogenous series.
+
+        Format:
+        A list of tuples, that consist of the variable name, and (limited) time series of output.
+        For example:
+        [
+        ('GOOD_SUP_GOOD', [0., 10., 12.]),
+        ('HH_AfterTax', [0., 15., 18., 22.]),
+        ]
+        In this case, the variable 'GOOD_SUP_GOOD' is expected to be [0., 10., 12.] for the first 3 periods
+        and
+        'HH_AftterTax' is expected to be [0., 15., 18., 22.] over the fiest 4 periods.
+
+        In other words, target outputs do not have to be the same length.
+        :return: list
+        """
+        return []
+

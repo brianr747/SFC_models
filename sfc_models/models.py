@@ -64,9 +64,10 @@ class Model(Entity):
         self.Exogenous = []
         self.InitialConditions = []
         self.FinalEquations = '<To be generated>'
-        self.NumberIterations = 100
+        self.MaxTime = 100
         self.RegisteredCashFlows = []
         self.Aliases = {}
+        self.TimeSeriesCutoff = None
         self.EquationSolver = sfc_models.equation_solver.EquationSolver()
 
     def main(self, base_file_name=None):  # pragma: no cover
@@ -177,6 +178,17 @@ class Model(Entity):
             for sector in cntry.SectorList:
                 out.append(sector)
         return out
+
+    def GetTimeSeries(self, series, cutoff=None):
+        if cutoff is None:
+            cutoff = self.TimeSeriesCutoff
+        try:
+            if cutoff is None:
+                return self.EquationSolver.TimeSeries[series]
+            else:
+                return self.EquationSolver.TimeSeries[series][0:(cutoff+1)]
+        except KeyError:
+            raise KeyError('Time series "{0}" does not exist'.format(series))
 
 
     def FixAliases(self):
@@ -326,7 +338,7 @@ class Model(Entity):
         endo = [formatter % x for x in endo]
         exo = [formatter % x for x in exo]
         s = '\n'.join(endo) + '\n\n# Exogenous Variables\n\n' + '\n'.join(exo)
-        s += '\n\nMaxTime = {0}\nErr_Tolerance=0.001'.format(self.NumberIterations)
+        s += '\n\nMaxTime = {0}\nErr_Tolerance=0.001'.format(self.MaxTime)
         return s
 
 

@@ -62,7 +62,7 @@ def main():
     # Output is put into two files, based on the file name passed into main() ['out_SIM_Machine_Model']
     # (1) [out_ex20161206_SIM_with_deposits]_log.txt:  Log file
     # (2) [out_ex20161206_SIM_with_Deposits].py:  File that solves the system of equations
-    mod.NumberIterations = 100
+    mod.MaxTime = 100
     eqns = mod.main_deprecated('out_ex20161206_SIM_with_deposits')
 
     # Only import after the file is created (which is unusual).

@@ -53,6 +53,21 @@ class SIM(GL_book_model):
             self.Model.AddExogenous('GOV', 'DEM_GOOD', '[0.,] + [20.,] * 105')
         return self.Model
 
+    def expected_output(self):
+        """
+        Expected output for the model (using default input).
+        Based on Table 3.4, page 69.
+        :return:
+        """
+        out = [
+            ('GOV_DEM_GOOD', [0., 20., 20., 20., 20.]), # G
+            ('GOOD_SUP_GOOD', [0., 38.5, 47.9]),  # Y
+            ('GOV_T', [0., 7.7, 9.6]),  # T
+            ('HH_AfterTax', [0., 30.8, 38.3]), # YD
+            ('HH_F', [0., 12.3, 22.7]),  # H = high-powered money
+        ]
+        return out
+
 
 class SIMEX1(GL_book_model):
     """
@@ -74,5 +89,23 @@ class SIMEX1(GL_book_model):
         if self.UseBookExogenous:
             # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
             self.Model.AddExogenous('GOV', 'DEM_GOOD', '[0.,] + [20.,] * 105')
+            # This is strange; not sure why the book assumes that the expected after tax income in period 1 is 16....
+            self.Model.AddInitialCondition('HH', 'AfterTax', 16.)
         return self.Model
 
+
+    def expected_output(self):
+        """
+        Expected output for the model (using default input).
+        Based on Table 3.6, page 69.
+        :return:
+        """
+        out = [
+            ('GOV_DEM_GOOD', [0., 20., 20., 20., 20.]),  # G
+            ('GOOD_SUP_GOOD', [0., 29.6, 39.8]),  # Y   NOTE: Book has 39.9 as the final figure...
+            ('GOV_T', [0., 5.9, 8.0]),  # T
+            ('HH_AfterTax', [16., 23.7, 31.9]),  # YD
+            ('HH_EXP_AfterTax', [0., 16., 23.7]),  # YD
+            ('HH_F', [0., 14.1, 26.1]),  # H = high-powered money
+        ]
+        return out
