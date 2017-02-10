@@ -56,9 +56,19 @@ class Quick2DPlot(object):
     def DoPlot(self):  # pragma: no cover
         if plt is None:
             pprint('Attempted to plot the following data; cannot to do because cannot import matplotlib')
-            pprint('%s %20s' % ('X', 'Y'))
-            for i in range(0, len(self.X)):
-                pprint('%f %20f' % (self.X[i], self.Y[i]))
+            if type(self.X[0]) == list:
+                pprint('Series 1')
+                pprint('%s %20s' % ('X', 'Y'))
+                for i in range(0, len(self.X[0])):
+                    pprint('%f %20f' % (self.X[0][i], self.Y[0][i]))
+                pprint('Series 2')
+                pprint('%s %20s' % ('X', 'Y'))
+                for i in range(0, len(self.X[1])):
+                    pprint('%f %20f' % (self.X[1][i], self.Y[1][i]))
+            else:
+                pprint('%s %20s' % ('X', 'Y'))
+                for i in range(0, len(self.X)):
+                    pprint('%f %20f' % (self.X[i], self.Y[i]))
             return
         if type(self.X[0]) == list:
             plt.plot(self.X[0], self.Y[0], self.X[1], self.Y[1], marker='o')
