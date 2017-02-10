@@ -23,6 +23,7 @@ limitations under the License.
 
 import sfc_models.models as models
 
+
 class GL_book_model(object):
     """
     Base class for example models from [G&L 2012] for single-country models.

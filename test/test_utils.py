@@ -5,6 +5,7 @@ import sfc_models.utils as utils
 from sfc_models.utils import Logger
 import sfc_models.examples
 
+
 def load_tests(loader, tests, ignore):
     """
     Load doctests, so unittest discovery can find them.

@@ -44,6 +44,9 @@ Y_SIMEX = model.GetTimeSeries('GOOD_SUP_GOOD')
 Y_SIM = model_SIM.GetTimeSeries('GOOD_SUP_GOOD')
 income = model.GetTimeSeries('HH_AfterTax')
 expected_income =  model.GetTimeSeries('HH_EXP_AfterTax')
+F_SIMEX = model.GetTimeSeries('HH_F')
+F_SIM = model_SIM.GetTimeSeries('HH_F')
+
 
 Quick2DPlot(time, Y_SIMEX, 'Output (Y) - Model SIMEX')
 
@@ -55,3 +58,6 @@ q = Quick2DPlot([time, time], [Y_SIMEX, Y_SIM], 'Output (Y)', run_now=False)
 q.Legend = ['Model SIMEX', 'Model SIM']
 q.DoPlot()
 
+q = Quick2DPlot([time, time], [F_SIMEX, F_SIM], 'Household Financial Assets', run_now=False)
+q.Legend = ['Model SIMEX', 'Model SIM']
+q.DoPlot()

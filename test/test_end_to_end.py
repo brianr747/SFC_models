@@ -1,6 +1,7 @@
 """
 End-to-end tests of the framework, using the models from Godley & Lavoie.
 """
+
 from unittest import TestCase
 
 import sfc_models.gl_book.chapter3
