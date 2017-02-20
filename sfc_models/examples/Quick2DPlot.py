@@ -33,6 +33,7 @@ limitations under the License.
 """
 
 from pprint import pprint
+import os
 
 try:
     import matplotlib.pyplot as plt
@@ -41,15 +42,54 @@ except ImportError:  # pragma: no cover
     plt = None
 
 
+class Quick2DPlotParams(object):
+    OutputDirectory = None
+    dpi = 90
+    ParamFileName = 'Quick2DPlot_params.txt'
+    FileRead = False
+    FontSize = 11
+    Width = 4.5
+    Height = 3
+
+    def ReadFile(self): # pragma: no cover
+        # If we have already read the file, do not do it again.
+        if self.FileRead:
+            return
+        self.FileRead = True
+        if not os.path.isfile(self.ParamFileName):
+            return
+        f = open(self.ParamFileName, 'r')
+        for row in f:
+            data = row.split('=')
+            if len(data) != 2:
+                continue
+            param, val = data
+            param = param.strip()
+            val = val.strip()
+            param = param.lower()
+            if param == 'dpi':
+                self.dpi = int(val)
+            if param == 'output_directory':
+                self.OutputDirectory = val
+            if param == 'width':
+                self.Width = float(val)
+            if param == 'height':
+                self.Height = float(val)
+            if param == 'fontsize':
+                self.FontSize = float(val)
+
+
 class Quick2DPlot(object):
-    def __init__(self, x, y, title='', run_now=True):
+    def __init__(self, x, y, title='', run_now=True, output_directory=None, filename=None):
         self.X = x
         self.Y = y
         self.Title = title
         self.XLabel = None
         self.YLabel = None
         self.Legend = None
+        self.FileName = filename
         self.LegendPos = 'best'
+        self.OutputDirectory = output_directory
         if run_now:
             self.DoPlot()
 
@@ -71,9 +111,17 @@ class Quick2DPlot(object):
                     pprint('%f %20f' % (self.X[i], self.Y[i]))
             return
         if type(self.X[0]) == list:
-            plt.plot(self.X[0], self.Y[0], self.X[1], self.Y[1], marker='o')
+            fig, ax = plt.subplots()
+            ax.plot(self.X[0], self.Y[0], marker='o')
+            ax.plot(self.X[1], self.Y[1], marker='^')
+            # plt.plot(self.X[0], self.Y[0], self.X[1], self.Y[1], marker='o')
         else:
             plt.plot(self.X, self.Y, marker='o')
+        params = Quick2DPlotParams()
+        params.ReadFile()
+        plt.rcParams.update({'font.size': params.FontSize})
+        figure = plt.gcf()
+        figure.set_size_inches(4.5, 3)
         if len(self.Title) > 0:
             plt.title(self.Title)
         plt.grid()
@@ -83,4 +131,11 @@ class Quick2DPlot(object):
             plt.ylabel(self.YLabel)
         if self.Legend is not None:
             plt.legend(self.Legend, loc=self.LegendPos)
+
+        if params.OutputDirectory is not None:
+            self.OutputDirectory = params.OutputDirectory
+        if (self.OutputDirectory is not None) and (self.FileName is not None):
+            fullname = os.path.join(self.OutputDirectory, self.FileName)
+            pprint('Saving File: {0} dpi={1}'.format(fullname, params.dpi))
+            plt.savefig(fullname, dpi=params.dpi)
         plt.show()

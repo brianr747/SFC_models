@@ -30,12 +30,12 @@ builder_SIMEX = SIMEX1(country_code='C1', use_book_exogenous=True)
 
 model = builder_SIMEX.build_model()
 
-model.main(base_file_name=os.path.join('output','ex20170209_SIMEX1'))
+model.main(base_file_name=os.path.join('output', 'ex20170209_SIMEX1'))
 
 builder_SIM = SIM(country_code='C1', use_book_exogenous=True)
 
 model_SIM = builder_SIM.build_model()
-model_SIM.main(base_file_name=os.path.join('output','ex20170209_SIM'))
+model_SIM.main(base_file_name=os.path.join('output', 'ex20170209_SIM'))
 
 model.TimeSeriesCutoff = 20
 model_SIM.TimeSeriesCutoff = 20
@@ -50,7 +50,8 @@ F_SIM = model_SIM.GetTimeSeries('HH_F')
 
 Quick2DPlot(time, Y_SIMEX, 'Output (Y) - Model SIMEX')
 
-q = Quick2DPlot([time, time], [expected_income, income], 'Household Income in Model SIMEX', run_now=False)
+q = Quick2DPlot([time, time], [expected_income, income], 'Household Income in Model SIMEX', run_now=False,
+                filename='SIMEX1_output.png')
 q.Legend = ['Expected', 'Realised']
 q.DoPlot()
 
