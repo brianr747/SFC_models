@@ -50,7 +50,7 @@ class SIM(GL_book_model):
         goods = Market(country, 'Goods market', 'GOOD')
         if self.UseBookExogenous:
             # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
-            self.Model.AddExogenous('GOV', 'DEM_GOOD', '[0.,] + [20.,] * 105')
+            gov.SetExogenous('DEM_GOOD', '[0.,] + [20.,] * 105')
         return self.Model
 
     def expected_output(self):
@@ -103,7 +103,7 @@ class SIMEX1(GL_book_model):
         goods = Market(country, 'Goods market', 'GOOD')
         if self.UseBookExogenous:
             # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
-            self.Model.AddExogenous('GOV', 'DEM_GOOD', '[0.,] + [20.,] * 105')
+            gov.SetExogenous('DEM_GOOD', '[0.,] + [20.,] * 105')
             # In order to replicate the book results, we need to patch in this initial condition so that the
             # expected income in period 1 is 16.
             self.Model.AddInitialCondition('HH', 'AfterTax', 16.)

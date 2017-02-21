@@ -159,8 +159,26 @@ class EquationSolver(object):
             for key, val in initial.items():
                 new_value[key] = val
             relative_error = 0.
+            had_evaluation_errors = False
+            last_error = ''
             for var, eqn in self.Parser.Endogenous:
-                new_value[var] = eval(eqn, globals(), initial)
+                # NOTE: We will try to step over some errors. For example, we can get a lot of
+                # divisions by zero in the initial interation. The algorithm just notes the error,
+                # and uses the previous value.
+                # If the condition persists, we throw a ValueError to prevent going forward with the
+                # invalid data.
+                try:
+                    new_value[var] = eval(eqn, globals(), initial)
+                except ZeroDivisionError as e:
+                    # We can add new error types that we are willing to temporarily accept.
+                    new_value[var] = initial[var]
+                    had_evaluation_errors = True
+                    last_error = 'Error evaluating variable {0} = {1}'.format(var, str(e))
+                except ValueError as e:
+                    # We get a ValueError thrown by evaluating log10(0)
+                    new_value[var] = initial[var]
+                    had_evaluation_errors = True
+                    last_error = 'Error evaluating variable {0}. Error message: {1}'.format(var, str(e))
                 difference = abs(new_value[var] - initial[var])
                 if difference < 1e-3:
                     relative_error += difference
@@ -171,7 +189,11 @@ class EquationSolver(object):
             initial = new_value
             num_tries += 1
             if num_tries > self.MaxIterations:
+                if had_evaluation_errors:
+                    raise ValueError(last_error)
                 raise ConvergenceError('Equations do not converge - step {0}'.format(step))
+        if had_evaluation_errors:
+            raise ValueError(last_error)
         # Then: append values to the time series
         varlist = [x[0] for x in self.Parser.Endogenous] + [x[0] for x in self.Parser.Lagged]
         for var in varlist:

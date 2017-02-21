@@ -70,6 +70,7 @@ class Model(Entity):
         self.RegisteredCashFlows = []
         self.Aliases = {}
         self.TimeSeriesCutoff = None
+        self.TimeSeriesSupressTimeZero = False
         self.EquationSolver = sfc_models.equation_solver.EquationSolver()
 
     def main(self, base_file_name=None):  # pragma: no cover
@@ -150,11 +151,22 @@ class Model(Entity):
         Add an exogenous variable to the model. Overwrites an existing variable definition.
         Need to use the full sector code.
 
+        Exogenous variables are sepcified as time series, which are implemented as list variables ([1, 2, 3,...])
+        The exogenous variable can either be specified as a string (which can be evaluated to a list), or else
+        as a list object. The list object will be converted into a string representation using repr(), which
+        means that it may be much longer than using something like '[20,] * 100'.
+
+        At present, does not support the usage of specifying a constant value. For example value='20.' does
+        not work, you need '[20.]*100.'
+
         :param sector_fullcode: str
         :param varname: str
         :param value: str
         :return:
         """
+        # If the user passes in a list or tuple, convert it to a string representation.
+        if type(value) in (list, tuple):
+            value = repr(value)
         self.Exogenous.append((sector_fullcode, varname, value))
 
     def AddInitialCondition(self, sector_fullcode, varname, value):
@@ -184,15 +196,24 @@ class Model(Entity):
         return out
 
     def GetTimeSeries(self, series, cutoff=None):
+        """
+
+        :param series: str
+        :param cutoff: int
+        :return: list
+        """
         if cutoff is None:
             cutoff = self.TimeSeriesCutoff
         try:
             if cutoff is None:
-                return self.EquationSolver.TimeSeries[series]
+                val = self.EquationSolver.TimeSeries[series]
             else:
-                return self.EquationSolver.TimeSeries[series][0:(cutoff + 1)]
+                val = self.EquationSolver.TimeSeries[series][0:(cutoff + 1)]
         except KeyError:
             raise KeyError('Time series "{0}" does not exist'.format(series))
+        if self.TimeSeriesSupressTimeZero:
+            val.pop(0)
+        return val
 
     def FixAliases(self):
         lookup = {}
@@ -275,7 +296,10 @@ class Model(Entity):
 
     def ProcessExogenous(self):
         for sector_code, varname, eqn in self.Exogenous:
-            sector = self.LookupSector(sector_code)
+            if type(sector_code) is str:
+                sector = self.LookupSector(sector_code)
+            else:
+                sector = sector_code
             if varname not in sector.Equations:
                 raise KeyError('Sector %s does not have variable %s' % (sector_code, varname))
             # Need to mark exogenous variables
@@ -398,6 +422,15 @@ class Sector(Entity):
     def AddVariable(self, varname, desc, eqn):
         self.VariableDescription[varname] = desc
         self.Equations[varname] = eqn
+
+    def SetExogenous(self, varname, val):
+        """
+        Set an exogenous variable for a sector. The variable must already be defined (by AddVariable()).
+        :param varname: str
+        :param val: str
+        :return:
+        """
+        self.GetModel().AddExogenous(self, varname, val)
 
     def GetVariables(self):
         """

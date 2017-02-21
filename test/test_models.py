@@ -85,6 +85,19 @@ class TestModel(TestCase):
         mod.AddExogenous('code','varname', 'val')
         self.assertEqual([('code', 'varname', 'val')], mod.Exogenous)
 
+    def test_AddExogenous_list(self):
+        mod = Model()
+        # Does not validate that the sector exists (until we call ProcessExogenous)
+        val = [0, 1, 2]
+        mod.AddExogenous('code', 'varname', val)
+        self.assertEqual([('code', 'varname', repr(val))], mod.Exogenous)
+
+    def test_AddExogenous_tuple(self):
+        mod = Model()
+        val = (0, 1, 2)
+        mod.AddExogenous('code', 'varname', val)
+        self.assertEqual([('code', 'varname', repr(val))], mod.Exogenous)
+
     def test_AddInitialCondition(self):
         mod = Model()
         # Does not validate that the sector exists until processing
@@ -389,6 +402,12 @@ class TestSector(TestCase):
         self.assertEqual('1.0-WGT_BOND', kill_spaces(s.Equations['WGT_MON']))
         self.assertEqual('F*WGT_MON', kill_spaces(s.Equations['DEM_MON']))
 
+    def test_SetExogenous(self):
+        mod = Model()
+        us = Country(mod, 'USA', 'US')
+        s = Sector(us, 'Household', 'HH')
+        s.SetExogenous('varname', 'val')
+        self.assertEqual([(s, 'varname', 'val'),], mod.Exogenous)
 
 class TestCountry(TestCase):
     def test_AddSector(self):
