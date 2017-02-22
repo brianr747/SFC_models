@@ -70,19 +70,33 @@ class PC(GL_book_model):
             self.Model.AddInitialCondition('HH', 'AfterTax', 86.486)
             self.Model.AddInitialCondition('HH', 'F', 86.486)
             self.Model.AddInitialCondition('HH', 'DEM_DEP', 64.865)
+            self.Model.AddGlobalEquation('t', 'decorated time axis', '1950. + k')
         return self.Model
 
     def expected_output(self):
         """
         Expected output for the model (using default input).
-        Based on Table 3.4, page 69.
+        Based on EViews output using code from Gennaro Zezza (from sfcmodels.net)
+
+        NOTE: A spreadsheet at sfcmodels.net gives different output; income is changing during the
+        same period as the rate change.
+
+        We ignore value at t=0
         :return: list
         """
         out = [
-            ('GOV_DEM_GOOD', [0., 20., 20., 20., 20.]), # G
-            ('GOOD_SUP_GOOD', [0., 38.5, 47.9]),  # Y
-            ('GOV_T', [0., 7.7, 9.6]),  # T
-            ('HH_AfterTax', [0., 30.8, 38.3]), # YD
-            ('HH_F', [0., 12.3, 22.7]),  # H = high-powered money
+            ('t', [None, 1951., 1952., 1953.,]),
+            ('TRE_DEM_GOOD', [None, 20., 20., 20., 20.]), # G
+            ('DEP_r', [0.025,]* 10 + [.035]*5),
+            ('HH_WGT_DEP', [None, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.80, 0.80, 0.80, 0.80, 0.80,
+                            0.80, 0.80]), # Weight of deposits (bills)
+            ('HH_AfterTax', [None, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 87.72,
+                             88.04, 88.32, 88.56, 88.77, 88.95, 89.11]),  # YD
+            ('TRE_T', [None, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.93, 22.01, 22.08,
+                       22.14, 22.19, 22.24, 22.28]),  # T
+            ('GOOD_SUP_GOOD', [None, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49,
+                               107.22, 107.62, 107.95, 108.25, 108.50, 108.71, 108.90, 109.06, 109.20, 109.33]),  # Y
+            ('HH_DEM_MON', [None, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 17.30, 17.40, 17.49,
+                        17.56, 17.62, 17.68, 17.72, 17.76, 17.80]),  # high-powered money (H)
         ]
         return out

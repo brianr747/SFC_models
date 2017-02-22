@@ -304,6 +304,58 @@ class TestEquationSolver(TestCase):
         obj2. SolveEquation()
         self.assertEqual(obj.TimeSeries['x'], obj2.TimeSeries['x'])
 
+    def test_DivideZeroSkip(self):
+        obj = EquationSolver()
+        obj.RunEquationReduction = False
+        # This equation will initially have a divide by zero error; the algorithm will step over that.
+        # This is because the initial guess for Z = 0.
+        obj.ParseString("""
+         z = t
+         x=1/z
+         exogenous
+         t=[10.]*20
+         MaxTime=3""")
+        obj.ExtractVariableList()
+        obj.SetInitialConditions()
+        obj.SolveStep(1)
+        obj.SolveStep(2)
+        self.assertEqual([0., .1, .1], obj.TimeSeries['x'])
+
+    def test_FailLog0(self):
+        obj = EquationSolver()
+        obj.RunEquationReduction = False
+        # This equation will initially have a divide by zero error; the algorithm will step over that.
+        # This is because the initial guess for Z = 0.
+        obj.ParseString("""
+         x = log10(0)
+         exogenous
+         t=[10.]*20
+         MaxTime=3""")
+        obj.ExtractVariableList()
+        obj.SetInitialConditions()
+        with self.assertRaises(ValueError):
+            obj.SolveStep(1)
+
+    def test_FailLog0_maxiter(self):
+        obj = EquationSolver()
+        obj.RunEquationReduction = False
+        # This equation will initially have a divide by zero error; the algorithm will step over that.
+        # This is because the initial guess for Z = 0.
+        # This test is used to hit the case where we do not converge
+        obj.ParseString("""
+         z = t
+         y = z
+         w = y
+         x = log10(0)
+         exogenous
+         t=[10.]*20
+         MaxTime=3""")
+        obj.ExtractVariableList()
+        obj.SetInitialConditions()
+        obj.MaxIterations = 1
+        with self.assertRaises(ValueError):
+            obj.SolveStep(1)
+
 
     def test_SolveEquation_3(self):
         obj2 = EquationSolver()

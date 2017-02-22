@@ -72,6 +72,8 @@ class Model(Entity):
         self.TimeSeriesCutoff = None
         self.TimeSeriesSupressTimeZero = False
         self.EquationSolver = sfc_models.equation_solver.EquationSolver()
+        self.GlobalVariables = []
+
 
     def main(self, base_file_name=None):  # pragma: no cover
         """
@@ -187,6 +189,16 @@ class Model(Entity):
 
     def RegisterAlias(self, alias, sector, varname):
         self.Aliases[alias] = (sector, varname)
+
+    def AddGlobalEquation(self, var, description, eqn):
+        """
+        Add a variable that is not associated with a sector.
+        :param var: str
+        :param description: str
+        :param eqn: str
+        :return: None
+        """
+        self.GlobalVariables.append((var, eqn, description))
 
     def GetSectors(self):
         out = []
@@ -343,6 +355,7 @@ class Model(Entity):
             for sector in cntry.SectorList:
                 out.extend(sector.CreateFinalEquations())
         out.extend(self.GenerateInitialConditions())
+        out.extend(self.GlobalVariables)
         return self.FinalEquationFormatting(out)
 
     def FinalEquationFormatting(self, out):

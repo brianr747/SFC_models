@@ -263,6 +263,12 @@ class TestModel(TestCase):
         # Passed parameter overrides default .GetTimeSeries member.
         self.assertEqual([0,], mod.GetTimeSeries('t', cutoff=0))
 
+    def test_GetTimeSeriesPop(self):
+        mod = Model()
+        mod.EquationSolver.TimeSeries = {'t': [0,1,2]}
+        mod.TimeSeriesSupressTimeZero = True
+        self.assertEqual([1, 2], mod.GetTimeSeries('t'))
+
 
 
 class TestSector(TestCase):

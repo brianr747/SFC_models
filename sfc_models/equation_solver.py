@@ -140,6 +140,7 @@ class EquationSolver(object):
         initial = {}
         Logger('Step: {0}'.format(step))
         # The exogenous and lagged variables are always fixed
+        initial['k'] = float(step)
         for var, dummy in self.Parser.Exogenous:
             initial[var] = self.TimeSeries[var][step]
         for lag_var, original_var in self.Parser.Lagged:
