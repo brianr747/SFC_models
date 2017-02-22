@@ -74,6 +74,7 @@ class EquationSolver(object):
         self.VariableList.sort()
 
     def SetInitialConditions(self):
+        Logger('Set Initial Conditions')
         variables = dict()
         variables['k'] = list(range(0, self.Parser.MaxTime+1))
         # First pass: include exogenous

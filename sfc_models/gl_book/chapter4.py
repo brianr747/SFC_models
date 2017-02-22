@@ -5,8 +5,9 @@ chapter4.py
 Models from Chapter 4 of [G&L 2012].
 
 - Model PC = Model with Portfolio Choice
-- Model SIMEX1 = Model SIM + Expectations. This version features expected income that is the previous period's
-  realised income.
+
+Note that if using the book initial conditions, not all variables are being set at
+present. This will affect some stock variable accounting.
 
 [G&L 2012] "Monetary Economics: An Integrated Approach to credit, Money, Income, Production
 and Wealth; Second Edition", by Wynne Godley and Marc Lavoie, Palgrave Macmillan, 2012.
@@ -61,14 +62,22 @@ class PC(GL_book_model):
         hh.GenerateAssetWeighting([('DEP', eqn)], 'MON')
         # Fix the Pretax income equation to include deposit income.
         hh.Equations['PreTax'] = 'SUP_LAB + INTDEP'
+        # Add a decorative equation: Government Fiscal Balance
+        # = Primary Balance - Interest expense + Central Bank Dividend (= interest
+        # received by the central bank).
+        tre.AddVariable('FISCBAL', 'Fiscal Balance', 'PRIM_BAL - INTDEP + CB_INTDEP')
 
 
         if self.UseBookExogenous:
             # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
             tre.SetExogenous('DEM_GOOD', '[0.,] + [20.,] * 105')
             dep.SetExogenous('r', '[.025,]*10 + [.035,]*105')
+            # NOTE:
+            # Initial conditions are only partial; there may be issues with some
+            # variables.
             self.Model.AddInitialCondition('HH', 'AfterTax', 86.486)
             self.Model.AddInitialCondition('HH', 'F', 86.486)
+            self.Model.AddInitialCondition('TRE', 'F', -86.486)
             self.Model.AddInitialCondition('HH', 'DEM_DEP', 64.865)
             self.Model.AddGlobalEquation('t', 'decorated time axis', '1950. + k')
         return self.Model

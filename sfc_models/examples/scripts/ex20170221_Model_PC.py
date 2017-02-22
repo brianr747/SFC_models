@@ -33,12 +33,21 @@ model = builder_PC.build_model()
 model.main(base_file_name=os.path.join('output', 'ex20170221_PC'))
 
 
-model.TimeSeriesCutoff = 20
+model.TimeSeriesCutoff = 40
+# The data at the first time point are initial conditions, which may be incoherent.
+# The next line tells the model to suppress those points.
 model.TimeSeriesSupressTimeZero = True
 
-time = model.GetTimeSeries('k')
+time = model.GetTimeSeries('t')
 Y_PC = model.GetTimeSeries('GOOD_SUP_GOOD')
-
+r = model.GetTimeSeries('DEP_r')
+Y_d = model.GetTimeSeries('HH_AfterTax')
+FB = model.GetTimeSeries('TRE_FISCBAL')
 
 Quick2DPlot(time, Y_PC, 'Output (Y) - Model PC')
+Quick2DPlot(time, r, 'Interest Rate - Model PC')
+Quick2DPlot(time, Y_d, 'Household Disposable Income - Model PC')
+# The fiscal balance is incorrect at k=1, as well as k=0 (already suppressed).
+Quick2DPlot(time[1:], FB[1:], 'Fiscal Balance - Model PC')
+
 
