@@ -21,12 +21,18 @@ limitations under the License.
 # We want to be able to have access to math functions, like sqrt.
 from math import *
 import warnings
+import copy
 
 import sfc_models.equation_parser
 import sfc_models.utils as utils
 from sfc_models.utils import Logger as Logger
+from sfc_models import Parameters as Parameters
+
 
 class ConvergenceError(ValueError):
+    pass
+
+class NoEquilibriumError(ValueError):
     pass
 
 class EquationSolver(object):
@@ -37,7 +43,6 @@ class EquationSolver(object):
         self.VariableList = []
         self.TimeSeries = {}
         self.MaxIterations = 400
-
         if len(equation_string) > 0:
             self.ParseString(equation_string)
 
@@ -76,7 +81,7 @@ class EquationSolver(object):
     def SetInitialConditions(self):
         Logger('Set Initial Conditions')
         variables = dict()
-        variables['k'] = list(range(0, self.Parser.MaxTime+1))
+        #variables['k'] = list(range(0, self.Parser.MaxTime+1))
         # First pass: include exogenous
         for var in self.VariableList:
             if var in self.Parser.InitialConditions:
@@ -88,20 +93,32 @@ class EquationSolver(object):
             else:
                 ic = 0.
             variables[var] = [ic,]
-
+        if 'k' not in variables:
+            k_series = list(range(0, self.Parser.MaxTime+1))
+            k_series = [float(x) for x in k_series]
+            self.Parser.Exogenous.append(('k', k_series))
         time_zero_constants = dict()
         # Second pass: overwrite exogenous
         for var, eqn in self.Parser.Exogenous:
-            try:
-                val = eval(eqn, globals())
-            except:
-                raise ValueError('Cannot parse exogenous variable: ' + var)
-            if type(val) is float:
-                val = [val, ] * (self.Parser.MaxTime+1)
-            try:
-                val = list(val)
-            except: # pragma: no cover     I cannot trigger this error, but I will leave in place
-                raise ValueError('Initial condition must be of the list type: ' + var)
+            if type(eqn) == str:
+                try:
+                    val = eval(eqn, globals())
+                except:
+                    raise ValueError('Cannot parse exogenous variable: ' + var)
+                if type(val) is float:
+                    val = [val, ] * (self.Parser.MaxTime+1)
+                try:
+                    val = list(val)
+                except: # pragma: no cover     I cannot trigger this error, but I will leave in place
+                    raise ValueError('Initial condition must be of the list type: ' + var)
+            else:
+                if type(eqn) == float:
+                    val = [eqn, ] * (self.Parser.MaxTime + 1)
+                else:
+                    try:
+                        val = list(eqn)
+                    except: # pragma: no cover   Hard time figuring how to trigger this
+                        raise ValueError('Initial conditions must be directly convertible to a list: ' + var)
             if len(val) < self.Parser.MaxTime+1:
                 raise ValueError('Initial condition list too short: ' + var)
             variables[var] = val[0:self.Parser.MaxTime+1]
@@ -131,17 +148,102 @@ class EquationSolver(object):
                 did_any = True
                 time_zero_constants[var] = val
                 variables[var] = [val,]
-
-
-
         self.TimeSeries = variables
+
+    def CalculateInitialEquilibrium(self):
+        """
+        Attempt to calculate initial conditions. Very little guarantee
+        the system will converge.
+
+        Methodology:
+        [1] Create a (deep) copy of this solver object.
+        [2] Set the exogenous variables to be constants, equal to their
+             k = 0 value.
+        [3] Set k to be [-T, T-1, ... 0]
+        [3] Solve the copied system normally.
+            Number of time steps = Parameters.InitialEquilbriumMaxTime
+        [4] If variables are essentially constant in the last time point,
+            we treat that as equilibrium.
+            If they are not constant, throw a NoEquilibriumError.
+            Tolerance for error is Parameters.InitialEquilibriumErrorTolerance
+            The algorithm ignores variables listed in
+            Parameters.InitialEquilibriumExcludedVariables
+        [5] Copy equilibrium values into the initial values (endogenous,
+            decoration, lagged.)
+
+        Returns the new solver for inspection.
+
+        :return: EquationSolver
+        """
+        # Create a deep copy of the solver object.
+        # A "deep copy" means that all data members are copied,
+        # so that changes to the copy do not affect this object!
+        Logger('Starting to calculate initial equilibrium')
+        new_solver = self._GetCopy()
+        T = Parameters.InitialEquilbriumMaxTime
+        new_solver.Parser.MaxTime = T
+        # Fix exogenous to be constants
+        for var, dummy in new_solver.Parser.Exogenous:
+            val = [new_solver.TimeSeries[var][0],] * (T+1)
+            new_solver.TimeSeries[var] = val
+        # Force 'k' to be negative.
+        time_axis = list(range(0, T+1))
+        time_axis = [-float(x) for x in time_axis]
+        time_axis.reverse()
+        new_solver.TimeSeries['k'] = time_axis
+        try:
+            for step in range(1, T + 1):
+                new_solver.SolveStep(step)
+        except ConvergenceError:
+            raise ValueError('No convergence in initial equilibrium')
+        except:
+            raise
+        finally:
+            Logger(new_solver.GenerateCSVtext(), 'equilibrium_0')
+        # Now: look at which variables are not constant.
+        bad_variables = []
+        excluded =  ['k', ] + Parameters.InitialEquilibriumExcludedVariables
+        for var in self.TimeSeries.keys():
+            if var in excluded:
+                continue
+            TS = new_solver.TimeSeries[var]
+            lastval = TS[-1]
+            prev = TS[-2]
+            bad = False
+            if lastval == 0.:
+                if not prev == 0.:
+                    bad = True
+            else:
+                err = abs(lastval-prev)/lastval
+                if err > Parameters.InitialEquilibriumErrorTolerance:
+                    bad = True
+            if bad:
+                bad_variables.append(var)
+            else:
+                self.TimeSeries[var][0] = lastval
+        if len(bad_variables) > 0:
+            Logger('Variables that did not converge in initial equilibrium')
+            for var in bad_variables:
+                Logger(var)
+            raise NoEquilibriumError('Variables did not converge')
+        return new_solver
+
+    def _GetCopy(self):
+        """
+        Get a (deep) copy of this object. This copy may be modified without
+        affecting this object.
+        :return: EquationSolver
+        """
+        return copy.deepcopy(self)
 
     def SolveStep(self, step):
         # Set up starting condition (for step)
         initial = {}
         Logger('Step: {0}'.format(step))
-        # The exogenous and lagged variables are always fixed
-        initial['k'] = float(step)
+        if step == Parameters.TraceStep:
+            Logger('Starting convergence tracing.', log='step')
+            Logger('Step {0}'.format(step))
+        # The exogenous and lagged variables are always fixed for a time period
         for var, dummy in self.Parser.Exogenous:
             initial[var] = self.TimeSeries[var][step]
         for lag_var, original_var in self.Parser.Lagged:
@@ -154,9 +256,18 @@ class EquationSolver(object):
         relative_error = 1.
         err_toler = float(self.Parser.Err_Tolerance)
         num_tries = 0
+        trace_keys = list(initial.keys())
+        trace_keys.sort()
+        if Parameters.TraceStep == step:
+            Logger("""
+Values at beginning of step. (Only incldues variables that are solved within
+iteration. Decorative variables calculated later).""", log='step')
+            Logger('\t'.join(['Iteration',] + trace_keys), log='step')
         while relative_error > err_toler:
             # Need to create a copy of the dictionary; saying new_value = initial means that they are
             # the same object.
+            if Parameters.TraceStep == step:
+                Logger('\t'.join([str(num_tries),] + [str(initial[x]) for x in trace_keys]), log='step')
             new_value = dict()
             for key, val in initial.items():
                 new_value[key] = val
@@ -195,7 +306,9 @@ class EquationSolver(object):
                     raise ValueError(last_error)
                 raise ConvergenceError('Equations do not converge - step {0}'.format(step))
         if had_evaluation_errors:
+            Logger('Had evaluation errors')
             raise ValueError(last_error)
+        Logger('Number of iterations: {0}'.format(num_tries), priority=3)
         # Then: append values to the time series
         varlist = [x[0] for x in self.Parser.Endogenous] + [x[0] for x in self.Parser.Lagged]
         for var in varlist:
@@ -228,14 +341,12 @@ class EquationSolver(object):
         if len(self.VariableList) == 0:
             self.ExtractVariableList()
         self.SetInitialConditions()
+        if Parameters.SolveInitialEquilibrium:
+            self.CalculateInitialEquilibrium()
+            # Reset the parameter; it needs to be set before every call to SolveEquation()
+            Parameters.SolveInitialEquilibrium = False
         for step in range(1, self.Parser.MaxTime+1):
-            try:
-                self.SolveStep(step)
-            except ConvergenceError:
-                # Truncate so all time series are same length
-                for var in self.TimeSeries:
-                    self.TimeSeries[var] = self.TimeSeries[var][0:step]
-                raise
+            self.SolveStep(step)
 
     def WriteCSV(self, fname): # pragma: no cover   We should not be writing files as part of unit tests...
         """
@@ -263,7 +374,8 @@ class EquationSolver(object):
             vars.remove('k')
             vars.insert(0, 'k')
         out = '\t'.join(vars) + '\n'
-        N = len(self.TimeSeries[vars[0]])
+        lengths = [len(x) for x in self.TimeSeries.values()]
+        N = min(lengths)
         for i in range(0, N):
             row = []
             for v in vars:

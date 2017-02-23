@@ -56,6 +56,7 @@ as being marked as unreached; they have been eliminated with::
 Change Log
 ----------
 
+- **Development** Multi-file Logger, initial (constant) equilibrium calculation.
 - **0.3.0** Rebuilt the solver, heavy refactoring, example installation, Godley & Lavoie example framework.
 - **0.2.1** Cleaned up examples layout.
 - **Version 0.2**  (Should have been 0.2.0 - oops)

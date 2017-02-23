@@ -65,3 +65,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+
+
+class Parameters(object):
+    """
+    (Static) class that holds various parameters.
+    """
+    # If we are having convergence issues, set TraceStep equal to the step
+    # that you want to be logged to.
+    TraceStep = None
+    # Do we solve for initial equilibrium?
+    SolveInitialEquilibrium = False
+    # Number of time steps for Equilibrium search
+    InitialEquilbriumMaxTime = 200
+    # What is the maximum relative movement allowed (.01 = 1%).
+    InitialEquilibriumErrorTolerance = .0001
+    # Which variables should be excluded from equilibrium considerations?
+    # 'k' is excluded automatically.
+    # Since 't' is presumably related to 'k', it is normally excluded.
+    InitialEquilibriumExcludedVariables = ['t']

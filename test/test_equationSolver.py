@@ -2,7 +2,8 @@ from unittest import TestCase
 import warnings
 import math
 
-from sfc_models.equation_solver import EquationSolver, ConvergenceError
+from sfc_models.equation_solver import EquationSolver, ConvergenceError, NoEquilibriumError
+from sfc_models import Parameters as Parameters
 
 
 class TestEquationSolver(TestCase):
@@ -219,6 +220,24 @@ class TestEquationSolver(TestCase):
         self.assertEqual([1., ], obj.TimeSeries['z'])
         self.assertEqual([1., ], obj.TimeSeries['y'])
 
+    def test_initial_conditions_with_float_exo(self):
+        obj = EquationSolver()
+        obj.RunEquationReduction = True
+        # By forcing 't' into the variable list, no automatic creation of time variables
+        obj.ParseString("""
+           x=1.
+           z=y
+           y =x
+           exogenous
+           t=1.0
+           MaxTime=3""")
+        obj.ExtractVariableList()
+        self.assertEqual([('t', '1.0'), ], obj.Parser.Exogenous)
+        # Turn it into a float.
+        obj.Parser.Exogenous = [('t', 1.)]
+        obj.SetInitialConditions()
+        self.assertEqual([1., 1., 1., 1.], obj.TimeSeries['t'])
+
 
 
 
@@ -304,6 +323,26 @@ class TestEquationSolver(TestCase):
         obj2. SolveEquation()
         self.assertEqual(obj.TimeSeries['x'], obj2.TimeSeries['x'])
 
+    def test_SolveEquation_with_initial_equilibrium(self):
+        obj2 = EquationSolver()
+        obj2.RunEquationReduction = False
+        # By forcing 't' into the variable list, no automatic creation of time variables
+        obj2.ParseString("""
+         x=t
+         z=x+1
+         z(0) = 2.
+         exogenous
+         t=[10.]*20
+         MaxTime=3""")
+        Parameters.SolveInitialEquilibrium = True
+        obj2. SolveEquation()
+        # Must be reset
+        self.assertFalse(Parameters.SolveInitialEquilibrium)
+        # The Initial equilibrium calculation overrides the initial condition.
+        self.assertEqual([11., 11., 11., 11.], obj2.TimeSeries['z'])
+
+
+
     def test_DivideZeroSkip(self):
         obj = EquationSolver()
         obj.RunEquationReduction = False
@@ -357,22 +396,6 @@ class TestEquationSolver(TestCase):
             obj.SolveStep(1)
 
 
-    def test_SolveEquation_3(self):
-        obj2 = EquationSolver()
-        obj2.RunEquationReduction = False
-        # By forcing 't' into the variable list, no automatic creation of time variables
-        obj2.ParseString("""
-          x=t
-          z=x+1
-          z(0) = 2.
-          exogenous
-          t=[10.]*20
-          MaxTime=3""")
-        obj2.MaxIterations = 0
-        with self.assertRaises(ConvergenceError):
-            obj2.SolveEquation()
-        # Validate that the exogenous variable is truncated to the same length as calculated vars
-        self.assertEqual([10.,], obj2.TimeSeries['t'])
 
     def test_csv_text(self):
         obj = EquationSolver()
@@ -408,3 +431,98 @@ class TestEquationSolver(TestCase):
 1\t3\t11
 """
         self.assertEqual(targ, obj.GenerateCSVtext())
+
+    def test_InitialEquilibrium(self):
+        obj = EquationSolver()
+        obj.RunEquationReduction = False
+        # By forcing 't' into the variable list, no automatic creation of time variables
+        obj.ParseString("""
+             x=t
+             z=x+1
+             w=z(k-1)
+             z(0) = 2.
+             exogenous
+             t=[10.]*20
+             MaxTime=3""")
+        obj.ExtractVariableList()
+        obj.SetInitialConditions()
+        Parameters.InitialEquilbriumMaxTime = 3
+        copied_solver = obj.CalculateInitialEquilibrium()
+        self.assertEqual([10., ], obj.TimeSeries['x'])
+        self.assertEqual([11., ], obj.TimeSeries['z'])
+        self.assertEqual([11., ], obj.TimeSeries['w'])
+        self.assertEqual([2., 11., 11., 11.], copied_solver.TimeSeries['z'])
+        self.assertEqual([0., 2., 11., 11.], copied_solver.TimeSeries['w'])
+
+
+    def test_InitialEquilibrium_fail_convergence(self):
+        obj = EquationSolver()
+        obj.RunEquationReduction = False
+        # By forcing 't' into the variable list, no automatic creation of time variables
+        obj.ParseString("""
+             x=t + z
+             z=x+1
+             z(0) = 2.
+             exogenous
+             t=[10.]*20
+             MaxTime=3""")
+        obj.ExtractVariableList()
+        obj.SetInitialConditions()
+        Parameters.InitialEquilbriumMaxTime = 3
+        obj.MaxIterations = 2
+        with self.assertRaises(ValueError):
+            obj.CalculateInitialEquilibrium()
+
+    def test_InitialEquilibrium_fail_bad_eqn(self):
+        obj = EquationSolver()
+        obj.RunEquationReduction = False
+        # By forcing 't' into the variable list, no automatic creation of time variables
+        obj.ParseString("""
+             x=foo
+             exogenous
+             t=[10.]*20
+             MaxTime=3""")
+        obj.ExtractVariableList()
+        obj.SetInitialConditions()
+        Parameters.InitialEquilbriumMaxTime = 3
+        obj.MaxIterations = 2
+        with self.assertRaises(NameError):
+            obj.CalculateInitialEquilibrium()
+
+
+    def test_InitialEquilibrium_no_convergence(self):
+        obj = EquationSolver()
+        obj.RunEquationReduction = False
+        # By forcing 't' into the variable list, no automatic creation of time variables
+        obj.ParseString("""
+             x=t
+             u = v+1
+             v = u(k-1)
+             exogenous
+             t=[10.]*20
+             MaxTime=3""")
+        obj.ExtractVariableList()
+        obj.SetInitialConditions()
+        Parameters.InitialEquilbriumMaxTime = 3
+        Parameters.InitialEquilibriumExcludedVariables = ['x']
+        with self.assertRaises(NoEquilibriumError):
+            obj.CalculateInitialEquilibrium()
+
+    def test_InitialEquilibrium_zero(self):
+        obj = EquationSolver()
+        obj.RunEquationReduction = False
+        # By forcing 't' into the variable list, no automatic creation of time variables
+        obj.ParseString("""
+             x=y(t-1)
+             y=x(t-1)
+             x(0) = 0
+             y(0) = 1
+             exogenous
+             t=[10.]*20
+             MaxTime=3""")
+        obj.ExtractVariableList()
+        obj.SetInitialConditions()
+        Parameters.InitialEquilbriumMaxTime = 2
+        Parameters.InitialEquilibriumExcludedVariables = []
+        with self.assertRaises(NoEquilibriumError):
+            obj.CalculateInitialEquilibrium()

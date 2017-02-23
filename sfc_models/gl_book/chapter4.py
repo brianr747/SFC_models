@@ -70,7 +70,7 @@ class PC(GL_book_model):
 
         if self.UseBookExogenous:
             # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
-            tre.SetExogenous('DEM_GOOD', '[0.,] + [20.,] * 105')
+            tre.SetExogenous('DEM_GOOD', '[20.,] * 105')
             dep.SetExogenous('r', '[.025,]*10 + [.035,]*105')
             # NOTE:
             # Initial conditions are only partial; there may be issues with some

@@ -218,36 +218,99 @@ class Logger(object):
 
     If the priority > cutoff, ignore. Hence - level 1 are top level comments.
 
-    To start logging, set the log_file_handle and priority_cutoff variables
+    To switch the file logged to, specify the log='<name>' parameter.
+    The <name> is a short code used to identify the file. BY default, it equals
+    'log' (main log).
 
-    with open('log.txt') as f:
-        Logger.log_file_handle = f
-        Logger.priority_cutoff = 5
-        DoWork()
-    # Turn off...
-    Logger.log_file_handle = None
+    This allows us to centralise logging and file handling at a high level.
     """
+
+
     # Have a single file handle for all Logger objects
-    log_file_handle = None
+    log_file_handles = {}
     priority_cutoff = 10
 
-    def __init__(self, txt, priority=1):
-        if priority > Logger.priority_cutoff:
+    def __init__(self, txt, log='log', priority=1):
+        """
+        Do a logging message.
+
+        Usual usage:
+        Logger('Hello World!')
+        This writes "Hello World!" to the default log 'log'.
+
+        We can add low-level logging by adding a priority (higher priority means
+        less important. If that makes sense...)
+        Logger('Low level message', priority=9)
+        In this case, if we set the cutoff below 9 (default=10), the message will
+        not be logged.
+
+        We can direct messages to different files by using the log parameter.
+
+        Logger('Start initial conditions calculation', log='init')
+        will write the message to the log labelled 'init'.
+
+        To start logging, need to use Logger.register_log() call. If
+        a log is not registered, the Logger() call will do nothing.
+
+        :param txt: str
+        :param log: str
+        :param priority: int
+        """
+        try:
+            f = Logger.get_handle(log)
+        except KeyError:
+            # Was not registered, so just eat the message.
             return
-        if Logger.log_file_handle is None:
+        if priority > Logger.priority_cutoff:
             return
         if txt[-1] != '\n':
             txt += '\n'
         if priority < 1:
             priority = 1
-        Logger.log_file_handle.write((' ' * (priority-1)) + txt)
+        f.write((' ' * (priority-1)) + txt)
+
+    @staticmethod
+    def register_log(fname, log='log'):
+        """
+        Register a file for logging. The fname is the full file path to be
+        written. The log parameter is the short code used to specify which log file
+        is used.
+
+        The file is only created (overwriting previous contents) when the file handle
+        is accessed.
+
+        :param fname: str
+        :param log: str
+        :return: None
+        """
+        if log in Logger.log_file_handles:
+            raise ValueError('Log already registered: ' + log)
+        Logger.log_file_handles[log] = fname
+
+    @staticmethod
+    def get_handle(log='log'): # pragma: no cover
+        """
+        Get the file handle associated with the log.
+
+        If the file was not yet opened, it is opened for writing.
+
+        Throws a KeyError if log was not registered.
+        :param log: str
+        :return:
+        """""
+        f = Logger.log_file_handles[log]
+        if type(f) is str:
+            f = open(f, 'w')
+            Logger.log_file_handles[log] = f
+        return f
 
     @staticmethod
     def cleanup():
-        if Logger.log_file_handle is not None:
-            Logger.log_file_handle.close()
-            Logger.log_file_handle = None
-
+        for k,f in Logger.log_file_handles.items():
+            if f is not None:
+                if type(f) is not str:
+                    f.close()
+        Logger.log_file_handles = {}
 
 
 

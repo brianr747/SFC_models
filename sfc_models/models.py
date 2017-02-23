@@ -86,7 +86,11 @@ class Model(Entity):
         try:
             if base_file_name is not None:
                 log_file = base_file_name + '_log.txt'
-                Logger.log_file_handle = open(log_file, 'w')
+                Logger.register_log(log_file, 'log')
+                Logger.register_log(base_file_name + '_out.txt', 'timeseries')
+                Logger.register_log(base_file_name + '_eqn.txt', 'eqn')
+                Logger.register_log(base_file_name + '_iteration.txt', 'step')
+                Logger.register_log(base_file_name + '_equilib.txt', 'equilibrium_0')
             self.GenerateFullSectorCodes()
             self.FixAliases()
             self.GenerateEquations()
@@ -95,22 +99,13 @@ class Model(Entity):
             self.ProcessExogenous()
             self.FinalEquations = self.CreateFinalEquations()
             self.EquationSolver = sfc_models.equation_solver.EquationSolver(self.FinalEquations)
-            # The following looks wierd, but we can write out a csv of the time series up until the
-            # point when convergence fails
-            try:
-                converge_error = None
-                self.EquationSolver.SolveEquation()
-            except sfc_models.equation_solver.ConvergenceError as c:
-                converge_error = c
-            if base_file_name is not None:
-                self.EquationSolver.WriteCSV(base_file_name + '_out.txt')
-            if converge_error is not None:
-                raise converge_error
+            self.EquationSolver.SolveEquation()
             self.LogInfo()
         except Exception as e:
             self.LogInfo(ex=e)
             raise
         finally:
+            Logger(self.EquationSolver.GenerateCSVtext(), 'timeseries')
             Logger.cleanup()
         return self.FinalEquations
 
@@ -126,7 +121,7 @@ class Model(Entity):
         try:
             if base_file_name is not None:
                 log_file = base_file_name + '_log.txt'
-                Logger.log_file_handle = open(log_file, 'w')
+                Logger.register_log(log_file, 'log')
             self.GenerateFullSectorCodes()
             self.GenerateEquations()
             self.GenerateRegisteredCashFlows()
@@ -251,18 +246,19 @@ class Model(Entity):
             self.GenerateFullSectorCodes()
             for c in self.CountryList:
                 Logger('Country: Code= "%s" %s\n' % (c.Code, c.LongName))
-                Logger('='*60 + '\n\n')
+                Logger('=' * 60 + '\n\n')
                 for s in c.SectorList:
                     Logger(s.Dump() + '\n')
-            Logger('\n\nFinal Equations:\n')
-        Logger(self.FinalEquations + '\n')
+        Logger('\n\nFinal Equations:\n', log='eqn')
+        Logger(self.FinalEquations + '\n', log='eqn')
         parser = EquationParser()
         parser.ParseString(self.FinalEquations)
         parser.EquationReduction()
-        Logger(parser.DumpEquations())
+        Logger('\n\nReduced Equations', log='eqn')
+        Logger(parser.DumpEquations(), log='eqn')
         if ex is not None:
             Logger('\n\nError raised:\n')
-            traceback.print_exc(file=Logger.log_file_handle)
+            traceback.print_exc(file=Logger.get_handle())
 
     def AddCountry(self, country):
         """

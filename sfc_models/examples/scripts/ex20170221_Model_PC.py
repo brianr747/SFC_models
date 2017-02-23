@@ -24,19 +24,18 @@ limitations under the License.
 import os
 from sfc_models.gl_book.chapter4 import PC
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
+from sfc_models import Parameters
 
-
+Parameters.TraceStep = 1
 builder_PC = PC(country_code='C1', use_book_exogenous=True)
 
 model = builder_PC.build_model()
-
+Parameters.SolveInitialEquilibrium = True
+# Generate the file name using an operating system independent tool - os.path.join
 model.main(base_file_name=os.path.join('output', 'ex20170221_PC'))
 
 
 model.TimeSeriesCutoff = 40
-# The data at the first time point are initial conditions, which may be incoherent.
-# The next line tells the model to suppress those points.
-model.TimeSeriesSupressTimeZero = True
 
 time = model.GetTimeSeries('t')
 Y_PC = model.GetTimeSeries('GOOD_SUP_GOOD')
@@ -48,6 +47,6 @@ Quick2DPlot(time, Y_PC, 'Output (Y) - Model PC')
 Quick2DPlot(time, r, 'Interest Rate - Model PC')
 Quick2DPlot(time, Y_d, 'Household Disposable Income - Model PC')
 # The fiscal balance is incorrect at k=1, as well as k=0 (already suppressed).
-Quick2DPlot(time[1:], FB[1:], 'Fiscal Balance - Model PC')
+Quick2DPlot(time, FB, 'Fiscal Balance - Model PC')
 
 
