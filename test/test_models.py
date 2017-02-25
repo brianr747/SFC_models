@@ -447,7 +447,9 @@ class TestMarket(TestCase):
         self.assertEqual(['-DEM_LAB', ], bus.CashFlows)
         self.assertEqual('x', bus.Equations['DEM_LAB'])
         self.assertEqual(['+SUP_LAB', ], hh.CashFlows)
-        self.assertEqual('BUS_DEM_LAB', hh.Equations['SUP_LAB'].strip())
+        #self.assertEqual('BUS_DEM_LAB', hh.Equations['SUP_LAB'].strip())
+        self.assertEqual('SUP_LAB', mar.Equations['SUP_HH'])
+        self.assertEqual('LAB_SUP_HH', hh.Equations['SUP_LAB'].strip())
 
     def test_GenerateEquations_no_supply(self):
         mod = Model()
@@ -457,6 +459,20 @@ class TestMarket(TestCase):
         bus.AddVariable('DEM_LAB', 'desc', '')
         mod.GenerateFullSectorCodes()
         with self.assertRaises(ValueError):
+            mar.GenerateEquations()
+
+    def test_GenerateEquations_2_supply_fail(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'Eh')
+        mar = Market(can, 'Market', 'LAB')
+        bus = Sector(can, 'Business', 'BUS')
+        hh = Sector(can, 'Household', 'HH')
+        hh2 = Sector(can, 'Household', 'HH2')
+        bus.AddVariable('DEM_LAB', 'desc', 'x')
+        hh.AddVariable('SUP_LAB', 'desc 2', '')
+        hh2.AddVariable('SUP_LAB', 'desc 2', '')
+        mod.GenerateFullSectorCodes()
+        with self.assertRaises(LogicError):
             mar.GenerateEquations()
 
     def test_GenerateEquations_2_supply(self):
@@ -470,8 +486,58 @@ class TestMarket(TestCase):
         hh.AddVariable('SUP_LAB', 'desc 2', '')
         hh2.AddVariable('SUP_LAB', 'desc 2', '')
         mod.GenerateFullSectorCodes()
-        with self.assertRaises(NotImplementedError):
-            mar.GenerateEquations()
+        mar.SupplyAllocation = [[(hh, 'SUP_LAB/2')], hh2]
+        mar.GenerateEquations()
+        self.assertEqual('SUP_LAB/2', mar.Equations['SUP_HH'])
+        self.assertEqual('SUP_LAB-SUP_HH', kill_spaces(mar.Equations['SUP_HH2']))
+        self.assertEqual('LAB_SUP_HH', hh.Equations['SUP_LAB'])
+        self.assertEqual('LAB_SUP_HH2', hh2.Equations['SUP_LAB'])
+
+    def test_GenerateEquations_2_supply_multicountry(self):
+        mod = Model()
+        can = Country(mod, 'Canada, Eh?', 'CA')
+        US = Country(mod, 'USA! USA!', 'US')
+        mar = Market(can, 'Market', 'LAB')
+        bus = Sector(can, 'Business', 'BUS')
+        hh = Sector(can, 'Household', 'HH')
+        # Somehow, Americans are supplying labour in Canada...
+        hh2 = Sector(US, 'Household', 'HH2')
+        bus.AddVariable('DEM_LAB', 'desc', 'x')
+        hh.AddVariable('SUP_LAB', 'desc 2', '')
+        hh2.AddVariable('SUP_LAB', 'desc 2', '')
+        mod.GenerateFullSectorCodes()
+        mar.SupplyAllocation = [[(hh, 'SUP_LAB/2')], hh2]
+        mar.GenerateEquations()
+        self.assertEqual('SUP_LAB/2', mar.Equations['SUP_CA_HH'])
+        self.assertEqual('SUP_LAB-SUP_CA_HH', kill_spaces(mar.Equations['SUP_US_HH2']))
+        self.assertEqual('CA_LAB_SUP_CA_HH', hh.Equations['SUP_LAB'])
+        self.assertIn('+SUP_LAB', hh.CashFlows)
+        self.assertEqual('CA_LAB_SUP_US_HH2', hh2.Equations['SUP_CA_LAB'])
+        self.assertIn('+SUP_CA_LAB', hh2.CashFlows)
+
+    def test_GenerateEquations_2_supply_multicountry_2(self):
+        mod = Model()
+        can = Country(mod, 'Canada, Eh?', 'CA')
+        US = Country(mod, 'USA! USA!', 'US')
+        mar = Market(can, 'Market', 'LAB')
+        bus = Sector(can, 'Business', 'BUS')
+        hh = Sector(can, 'Household', 'HH')
+        # Although we have two countries, both suppliers are from Canada
+        hh2 = Sector(can, 'Household', 'HH2')
+        bus.AddVariable('DEM_LAB', 'desc', 'x')
+        hh.AddVariable('SUP_LAB', 'desc 2', '')
+        hh2.AddVariable('SUP_LAB', 'desc 2', '')
+        mod.GenerateFullSectorCodes()
+        mar.SupplyAllocation = [[(hh, 'SUP_LAB/2')], hh2]
+        mar.GenerateEquations()
+        self.assertEqual('SUP_LAB/2', mar.Equations['SUP_CA_HH'])
+        self.assertEqual('SUP_LAB-SUP_CA_HH', mar.Equations['SUP_CA_HH2'])
+        self.assertEqual('CA_LAB_SUP_CA_HH', hh.Equations['SUP_LAB'])
+        self.assertIn('+SUP_LAB', hh.CashFlows)
+        self.assertEqual('CA_LAB_SUP_CA_HH2', hh2.Equations['SUP_LAB'])
+        self.assertIn('+SUP_LAB', hh2.CashFlows)
+
+
 
     def test_GenerateTermsLowLevel(self):
         mod = Model()

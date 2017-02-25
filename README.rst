@@ -41,7 +41,8 @@ relies upon economic intuition to reduce the dimension of the search space.
 
 Dependencies
 ------------
-- *matplotlib*: for plots in *examples*. (May be required later.)
+- *matplotlib*: for plots in *examples*. (Essentially optional, may be required later
+  if the solver algorithm needs beefing up.)
 
 Documentation will be placed in the "docs" directory.
 
@@ -56,7 +57,8 @@ as being marked as unreached; they have been eliminated with::
 Change Log
 ----------
 
-- **Development** Multi-file Logger, initial (constant) equilibrium calculation.
+- **Development** Multi-file Logger, initial (constant) equilibrium calculation, markets
+  with multiple supply sources.
 - **0.3.0** Rebuilt the solver, heavy refactoring, example installation, Godley & Lavoie example framework.
 - **0.2.1** Cleaned up examples layout.
 - **Version 0.2**  (Should have been 0.2.0 - oops)

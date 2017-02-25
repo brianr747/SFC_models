@@ -51,6 +51,14 @@ class Entity(object):
             obj = obj.Parent
         return obj
 
+    def ShareParent(self, other):
+        """
+        Does this entity have the same parent?
+        :param other:  Entity
+        :return: bool
+        """
+        return self.Parent == other.Parent
+
 
 class Model(Entity):
     """
@@ -563,17 +571,54 @@ class Market(Sector):
         self.NumSupply = 0
         self.AddVariable('SUP_' + code, 'Supply for market ' + code, '')
         self.AddVariable('DEM_' + code, 'Demand for market ' + code, '')
+        self.SupplyAllocation = []
+
+    def SearchSupplier(self):
+        """
+        Find the sector that is a single supplier in a country.
+        Throws a LogicError if more than one, or none.
+
+        Need to set SupplyAllocation if you want to do something not
+        covered by this default behaviour.
+
+        :return: Sector
+        """
+        ret_value = None
+        country = self.Parent
+        for sector in country.SectorList:
+            if sector.ID == self.ID:
+                continue
+            if 'SUP_' + self.Code in sector.Equations:
+                if ret_value is None:
+                    ret_value = sector
+                else:
+                    raise LogicError('More than one supplier, must set SupplyAllocation: ' + self.Code)
+        if ret_value is None:
+            raise LogicError('No supplier: ' + self.Code)
+        return ret_value
 
     def GenerateEquations(self):
-        self.NumSupply = 0
-        self.GenerateTermsLowLevel('SUP', 'Supply')
-        if self.NumSupply == 0:
-            raise ValueError('No supply for market: ' + self.FullCode)
-        if self.NumSupply > 1:
-            raise NotImplementedError('More than one supply for a market is not yet supported: ' + self.Code)
-        self.GenerateTermsLowLevel('DEM', 'Demand')
-        if self.NumSupply == 1:
-            self.FixSingleSupply()
+        if len(self.SupplyAllocation) == 0:
+            supplier = self.SearchSupplier()
+            self.SupplyAllocation = [[], supplier]
+        if len(self.SupplyAllocation) > 0:
+            self.NumSupply = len(self.SupplyAllocation[0])
+            self.GenerateTermsLowLevel('DEM', 'Demand')
+            self.GenerateMultiSupply()
+        else: # pragma: no cover
+            # Keep this legacy code here for now, in case I need to revert.
+            raise LogicError('Should never reach this code!')
+            self.NumSupply = 0
+            self.GenerateTermsLowLevel('SUP', 'Supply')
+            if self.NumSupply == 0:
+                raise ValueError('No supply for market: ' + self.FullCode)
+            self.GenerateTermsLowLevel('DEM', 'Demand')
+            if self.NumSupply > 1:
+                raise LogicError('More than one supply at market, must set SupplyAllocation: ' + self.Code)
+            else:
+                self.FixSingleSupply()
+
+
 
     def GenerateTermsLowLevel(self, prefix, long_desc):
         if prefix not in ('SUP', 'DEM'):
@@ -607,6 +652,7 @@ class Market(Sector):
         country = self.Parent
         sup_name = 'SUP_' + self.Code
         dem_name = 'DEM_' + self.Code
+        # Set aggregate supply equal to demand
         self.Equations[sup_name] = dem_name
         for s in country.SectorList:
             if s.ID == self.ID:
@@ -614,6 +660,45 @@ class Market(Sector):
             if sup_name in s.Equations:
                 s.Equations[sup_name] = self.Equations[dem_name]
                 return
+
+    def GenerateMultiSupply(self):
+        country = self.Parent
+        sup_name = 'SUP_' + self.Code
+        dem_name = 'DEM_' + self.Code
+        # Set aggregate supply equal to demand
+        self.Equations[sup_name] = dem_name
+        # Generate individual supply equations
+        # terms: need to create a list of non-residual supply terms so that
+        # we can set the residual supply
+        terms = [sup_name,]
+        # Unpack the SupplyAllocation member. [Create a class?]
+        sector_list, residual_sector = self.SupplyAllocation
+        for sector, eqn in sector_list:
+            local_name = 'SUP_' + sector.FullCode
+            terms.append(local_name)
+            self.AddVariable(local_name, 'Supply from {0}'.format(sector.LongName), eqn)
+            # Push this local variable into the supplying sector
+            # If we are in the same country, use 'SUP_{CODE}'
+            # If we are in different countries, use 'SUP_{FULLCODE}'
+            if self.ShareParent(sector):
+                supply_name = 'SUP_' + self.Code
+            else:
+                supply_name = 'SUP_' + self.FullCode
+            sector.Equations[supply_name] = self.GetVariableName(local_name)
+            sector.AddCashFlow('+' + supply_name)
+        # Residual sector supplies rest
+        sector = residual_sector
+        local_name = 'SUP_' + residual_sector.FullCode
+        # Equation = [Total supply] - \Sum Individual suppliers
+        eqn = '-'.join(terms)
+        self.AddVariable(local_name,  'Supply from {0}'.format(residual_sector.LongName), eqn)
+        if self.ShareParent(residual_sector):
+            supply_name = 'SUP_' + self.Code
+        else:
+            supply_name = 'SUP_' + self.FullCode
+        residual_sector.Equations[supply_name] = self.GetVariableName(local_name)
+        residual_sector.AddCashFlow('+' + supply_name)
+
 
 
 class FinancialAssetMarket(Market):

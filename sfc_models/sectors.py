@@ -27,23 +27,23 @@ class BaseHousehold(Sector):
     """
     Base class for all household sectors
     """
-    def __init__(self, country, long_name, code, alpha_income, alpha_fin):
+    def __init__(self, country, long_name, code, alpha_income, alpha_fin, consumption_good_name='GOOD'):
         Sector.__init__(self, country, long_name, code)
         self.AlphaIncome = alpha_income
         self.AlphaFin = alpha_fin
         self.AddVariable('AlphaIncome', 'Parameter for consumption out of income', '%0.4f' % (self.AlphaIncome,))
         self.AddVariable('AlphaFin', 'Parameter for consumption out of financial assets', '%0.4f' % (self.AlphaFin,))
-        self.AddVariable('DEM_GOOD', 'Expenditure on goods consumption', 'AlphaIncome * AfterTax + AlphaFin * LAG_F')
+        self.AddVariable('DEM_' + consumption_good_name, 'Expenditure on goods consumption', 'AlphaIncome * AfterTax + AlphaFin * LAG_F')
         self.AddVariable('PreTax', 'Pretax income', 'SET IN DERIVED CLASSES')
         self.AddVariable('AfterTax', 'Aftertax income', 'PreTax - T')
         self.AddVariable('T', 'Taxes paid.', '')
 
 
 class Household(BaseHousehold):
-    def __init__(self, country, long_name, code, alpha_income, alpha_fin):
-        BaseHousehold.__init__(self, country, long_name, code, alpha_income, alpha_fin)
-        self.AddVariable('SUP_LAB', 'Supply of Labour', '<To be determined>')
-        self.Equations['PreTax'] = 'SUP_LAB'
+    def __init__(self, country, long_name, code, alpha_income, alpha_fin, consumption_good_name='GOOD', labour_name='LAB'):
+        BaseHousehold.__init__(self, country, long_name, code, alpha_income, alpha_fin, consumption_good_name=consumption_good_name)
+        self.AddVariable('SUP_' + labour_name, 'Supply of Labour', '<To be determined>')
+        self.Equations['PreTax'] = 'SUP_' + labour_name
 
 
 class HouseholdWithExpectations(Household):
@@ -99,21 +99,24 @@ class CentralBank(Sector):
 
 
 class FixedMarginBusiness(Sector):
-    def __init__(self, country, long_name, code, profit_margin=0.0):
+    def __init__(self, country, long_name, code, profit_margin=0.0, output_name='GOOD', labour_input_name='LAB'):
         Sector.__init__(self, country, long_name, code)
         self.ProfitMargin = profit_margin
-        self.AddVariable('SUP_GOOD', 'Supply of goods', '<TO BE DETERMINED>')
+        self.LabourInputName = labour_input_name
+        self.OutputName = output_name
+        self.AddVariable('SUP_' + output_name, 'Supply of goods', '')
         self.AddVariable('PROF', 'Profits', 'SUP_GOOD - DEM_LAB')
 
 
     def GenerateEquations(self):
+        #self.AddVariable('SUP_GOOD', 'Supply of goods', '<TO BE DETERMINED>')
         wage_share = 1.0 - self.ProfitMargin
-        market_sup_good = self.Parent.LookupSector('GOOD').GetVariableName('SUP_GOOD')
+        market_sup_good = self.Parent.LookupSector(self.OutputName).GetVariableName('SUP_' + self.OutputName)
         if self.ProfitMargin == 0:
-            self.AddVariable('DEM_LAB', 'Demand for labour', market_sup_good)
-            self.Equations['PROF'] = ''
+            self.AddVariable('DEM_' + self.LabourInputName, 'Demand for labour', market_sup_good)
+            #self.Equations['PROF'] = ''
         else:
-            self.AddVariable('DEM_LAB', 'Demand for labour', '%0.3f * %s' % (wage_share, market_sup_good))
+            self.AddVariable('DEM_' + self.LabourInputName, 'Demand for labour', '%0.3f * %s' % (wage_share, market_sup_good))
             self.Equations['PROF'] = '%0.3f * %s' % (self.ProfitMargin, market_sup_good)
         for s in self.Parent.SectorList:
             if 'DIV' in s.Equations:

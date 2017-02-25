@@ -42,11 +42,12 @@ Y_PC = model.GetTimeSeries('GOOD_SUP_GOOD')
 r = model.GetTimeSeries('DEP_r')
 Y_d = model.GetTimeSeries('HH_AfterTax')
 FB = model.GetTimeSeries('TRE_FISCBAL')
+PB = model.GetTimeSeries('TRE_PRIM_BAL')
 
-Quick2DPlot(time, Y_PC, 'Output (Y) - Model PC')
 Quick2DPlot(time, r, 'Interest Rate - Model PC')
+Quick2DPlot(time, Y_PC, 'Output (Y) - Model PC')
 Quick2DPlot(time, Y_d, 'Household Disposable Income - Model PC')
-# The fiscal balance is incorrect at k=1, as well as k=0 (already suppressed).
 Quick2DPlot(time, FB, 'Fiscal Balance - Model PC')
+Quick2DPlot(time, PB, 'Primary Fiscal Balance')
 
 
