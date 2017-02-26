@@ -182,6 +182,8 @@ class EquationSolver(object):
         new_solver = self._GetCopy()
         T = Parameters.InitialEquilbriumMaxTime
         new_solver.Parser.MaxTime = T
+        new_solver.MaxIterations = 1000
+        new_solver.Parser.Err_Tolerance = Parameters.InitialEquilibriumStepError
         # Fix exogenous to be constants
         for var, dummy in new_solver.Parser.Exogenous:
             val = [new_solver.TimeSeries[var][0],] * (T+1)
@@ -210,8 +212,8 @@ class EquationSolver(object):
             lastval = TS[-1]
             prev = TS[-2]
             bad = False
-            if lastval == 0.:
-                if not prev == 0.:
+            if abs(lastval) < 1e-4:
+                if not abs(lastval) < 1e-4:
                     bad = True
             else:
                 err = abs(lastval-prev)/lastval
@@ -262,12 +264,12 @@ class EquationSolver(object):
             Logger("""
 Values at beginning of step. (Only incldues variables that are solved within
 iteration. Decorative variables calculated later).""", log='step')
-            Logger('\t'.join(['Iteration',] + trace_keys), log='step')
+            Logger('\t'.join(['Iteration','PreviousError'] + trace_keys), log='step')
         while relative_error > err_toler:
             # Need to create a copy of the dictionary; saying new_value = initial means that they are
             # the same object.
             if Parameters.TraceStep == step:
-                Logger('\t'.join([str(num_tries),] + [str(initial[x]) for x in trace_keys]), log='step')
+                Logger('\t'.join([str(num_tries),str(relative_error)] + [str(initial[x]) for x in trace_keys]), log='step')
             new_value = dict()
             for key, val in initial.items():
                 new_value[key] = val
@@ -298,6 +300,16 @@ iteration. Decorative variables calculated later).""", log='step')
                 else:
                     # Scale by variable size if large
                     relative_error += difference/(max(abs(new_value[var]), abs(initial[var])))
+            if num_tries > 10:
+                # Allow initial iterations to swing a lot, but we clamp down the
+                # movement later. (We want constants to immediately move to the correct value,
+                # and there might be other variables where it takes a few steps to snap to the
+                # correct value.)
+                # New value equals average of originally calculated new value and previous;
+                # that is, it moves half as much.
+                # This slower movement reduces the odds of oscillation.
+                for var, dummy in self.Parser.Endogenous:
+                    new_value[var] = (new_value[var] + initial[var])/2.
             # Use new_value as the initial at the next step
             initial = new_value
             num_tries += 1

@@ -131,11 +131,13 @@ class EquationParser(object):
         Used for logging
         :return: str
         """
-        out = ''
+        out = 'Endogenous:\n'
         for varname, rhs in self.Endogenous:
             out += '{0} = {1}\n'.format(varname, rhs)
+        out += 'Lagged:\n'
         for varname, rhs in self.Lagged:
             out += '{0} = {1}(k-1)\n'.format(varname, rhs)
+        out += 'Exogenous:\n'
         for varname, rhs in self.Exogenous:
             out += '{0} = {1}\n'.format(varname, rhs)
         return out

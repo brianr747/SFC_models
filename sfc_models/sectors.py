@@ -105,7 +105,7 @@ class FixedMarginBusiness(Sector):
         self.LabourInputName = labour_input_name
         self.OutputName = output_name
         self.AddVariable('SUP_' + output_name, 'Supply of goods', '')
-        self.AddVariable('PROF', 'Profits', 'SUP_GOOD - DEM_LAB')
+        self.AddVariable('PROF', 'Profits', 'SUP_GOOD - DEM_' + labour_input_name)
 
 
     def GenerateEquations(self):
@@ -123,6 +123,49 @@ class FixedMarginBusiness(Sector):
                 self.AddCashFlow('-DIV', 'PROF', 'Dividends paid')
                 s.AddCashFlow('DIV', self.GetVariableName('PROF'), 'Dividends received')
                 break
+
+class FixedMarginBusinessMultiOutput(Sector):
+    """
+    Create a business that supplies multiple markets.
+    The market objects must exist before creation (so we cannot create Market classes
+    that assume the supply objects exist first!).
+    """
+    def __init__(self, country, long_name, code, market_list, profit_margin=0.0, labour_input_name='LAB'):
+        Sector.__init__(self, country, long_name, code)
+        self.ProfitMargin = profit_margin
+        self.LabourInputName = labour_input_name
+        self.MarketList = market_list
+        if len(market_list) == 0:
+            raise utils.LogicError('Must have at least one market to supply ' + code)
+        sup_terms = []
+        for market in market_list:
+            if self.ShareParent(market):
+                term = 'SUP_' + market.Code
+            else:
+                # We do not have the FullCodes yet, but we know we are in a multi-
+                # country model. So we can call Model.GetSectorCodeWithCountry()
+                term = 'SUP_' + self.GetModel().GetSectorCodeWithCountry(market)
+            self.AddVariable(term, 'Supply of ' + market.Code, '')
+            sup_terms.append(term)
+        self.AddVariable('SUP', 'Total supply', '+'.join(sup_terms))
+        self.AddVariable('PROF', 'Profits', 'SUP - DEM_{0}'.format(labour_input_name))
+        self.AddVariable('DEM_' + labour_input_name, 'Demand for labour.', '')
+
+    def GenerateEquations(self):
+        wage_share = 1.0 - self.ProfitMargin
+        demand_labour = 'DEM_' + self.LabourInputName
+        if self.ProfitMargin == 0:
+            self.Equations[demand_labour] = 'SUP'
+        else:
+            self.Equations[demand_labour] = '%0.3f * SUP' % (wage_share, )
+            # self.Equations['PROF'] = '%0.3f * %s' % (self.ProfitMargin, market_sup_good)
+        for s in self.Parent.SectorList:
+            if 'DIV' in s.Equations: # pragma: no cover
+                raise NotImplementedError('Not tested yet')
+                self.AddCashFlow('-DIV', 'PROF', 'Dividends paid')
+                s.AddCashFlow('DIV', self.GetVariableName('PROF'), 'Dividends received')
+                break
+
 
 
 class TaxFlow(Sector):

@@ -61,7 +61,7 @@ class SIM(GL_book_model):
         """
         out = [
             ('GOV_DEM_GOOD', [0., 20., 20., 20., 20.]), # G
-            ('GOOD_SUP_GOOD', [0., 38.5, 47.9]),  # Y
+            ('GOOD_SUP_GOOD', [0., 38.44, 47.9]),  # Y
             ('GOV_T', [0., 7.7, 9.6]),  # T
             ('HH_AfterTax', [0., 30.8, 38.3]), # YD
             ('HH_F', [0., 12.3, 22.7]),  # H = high-powered money

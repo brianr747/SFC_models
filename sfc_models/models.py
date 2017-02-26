@@ -100,8 +100,8 @@ class Model(Entity):
                 Logger.register_log(base_file_name + '_iteration.txt', 'step')
                 Logger.register_log(base_file_name + '_equilib.txt', 'equilibrium_0')
             self.GenerateFullSectorCodes()
-            self.FixAliases()
             self.GenerateEquations()
+            self.FixAliases()
             self.GenerateRegisteredCashFlows()
             self.GenerateIncomeEquations()
             self.ProcessExogenous()
@@ -235,7 +235,7 @@ class Model(Entity):
         for alias in self.Aliases:
             sector, varname = self.Aliases[alias]
             lookup[alias] = sector.GetVariableName(varname)
-        for sector in  self.GetSectors():
+        for sector in self.GetSectors():
             sector.ReplaceAliases(lookup)
 
     def LogInfo(self, generate_full_codes=True, ex=None):  # pragma: no cover
@@ -289,6 +289,21 @@ class Model(Entity):
                     sector.FullCode = cntry.Code + '_' + sector.Code
                 else:
                     sector.FullCode = sector.Code
+
+    def GetSectorCodeWithCountry(self, sector):
+        """
+        Return the sector code including the country information.
+        Need to use this if we want the FullCode before the model information
+        is bound in main().
+
+        We should not need to use this function often; generally only when we need
+        FullCodes in constructors. For example, the multi-supply business sector
+        needs the full codes of markets passed into the constructor.
+        :param sector:
+        :return:
+        """
+        return '{0}_{1}'.format(sector.Parent.Code, sector.Code)
+
 
     def RegisterCashFlow(self, source_sector, target_sector, amount_variable):
         # if amount_variable not in source_sector.Equations:
@@ -477,6 +492,7 @@ class Sector(Entity):
 
     def ReplaceAliases(self, lookup):
         for var in self.Equations:
+            eqn = self.Equations[var]
             self.Equations[var] = replace_token_from_lookup(self.Equations[var], lookup)
         self.CashFlows = [replace_token_from_lookup(flow, lookup) for flow in self.CashFlows]
 

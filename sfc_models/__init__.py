@@ -97,3 +97,4 @@ class Parameters(object):
     # 'k' is excluded automatically.
     # Since 't' is presumably related to 'k', it is normally excluded.
     InitialEquilibriumExcludedVariables = ['t']
+    InitialEquilibriumStepError = 1e-6
