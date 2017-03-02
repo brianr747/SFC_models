@@ -25,6 +25,10 @@ import os
 from sfc_models.gl_book.chapter4 import PC
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models import Parameters
+import sfc_models.utils
+
+# Set up the standard logs in the "output" subdirectory.
+sfc_models.utils.Logger.register_standard_logs(base_file_name=os.path.join('output', 'ex20170221_PC'))
 
 Parameters.TraceStep = 1
 builder_PC = PC(country_code='C1', use_book_exogenous=True)
@@ -32,22 +36,30 @@ builder_PC = PC(country_code='C1', use_book_exogenous=True)
 model = builder_PC.build_model()
 Parameters.SolveInitialEquilibrium = True
 # Generate the file name using an operating system independent tool - os.path.join
-model.main(base_file_name=os.path.join('output', 'ex20170221_PC'))
+model.main()
 
 
 model.TimeSeriesCutoff = 40
 
 time = model.GetTimeSeries('t')
+k = model.GetTimeSeries('k')
 Y_PC = model.GetTimeSeries('GOOD_SUP_GOOD')
 r = model.GetTimeSeries('DEP_r')
 Y_d = model.GetTimeSeries('HH_AfterTax')
 FB = model.GetTimeSeries('TRE_FISCBAL')
 PB = model.GetTimeSeries('TRE_PRIM_BAL')
+w_dep = model.GetTimeSeries('HH_WGT_DEP')
+w_mon = model.GetTimeSeries('HH_WGT_MON')
 
-Quick2DPlot(time, r, 'Interest Rate - Model PC')
-Quick2DPlot(time, Y_PC, 'Output (Y) - Model PC')
-Quick2DPlot(time, Y_d, 'Household Disposable Income - Model PC')
-Quick2DPlot(time, FB, 'Fiscal Balance - Model PC')
-Quick2DPlot(time, PB, 'Primary Fiscal Balance')
+# Quick2DPlot(time, r, 'Interest Rate - Model PC')
+# Quick2DPlot(time, Y_PC, 'Output (Y) - Model PC')
+# Quick2DPlot(time, Y_d, 'Household Disposable Income - Model PC')
+# Quick2DPlot(time, FB, 'Fiscal Balance - Model PC')
+# Quick2DPlot(time, PB, 'Primary Fiscal Balance')
+
+Quick2DPlot(k[5:15], w_mon[5:15], 'Money (Currency) Weighting')
+Quick2DPlot(k[5:15], r[5:15], 'Interest Rate')
+Quick2DPlot(k[5:15], w_dep[5:15], 'Deposit (Treasury Bill) Weighting')
+Quick2DPlot(k[5:15], Y_PC[5:15], 'Output')
 
 

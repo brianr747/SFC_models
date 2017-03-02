@@ -59,14 +59,13 @@ class PC(GL_book_model):
         r = dep.GetVariableName('r')
         # The format() call will replace '{0}' with the contents of the 'r' variable.
         eqn = 'L0 + L1 * {0} - L2 * (AfterTax/F)'.format(r)
-        hh.GenerateAssetWeighting([('DEP', eqn)], 'MON')
+        hh.GenerateAssetWeighting({'DEP': eqn}, 'MON')
         # Fix the Pretax income equation to include deposit income.
         hh.Equations['PreTax'] = 'SUP_LAB + INTDEP'
         # Add a decorative equation: Government Fiscal Balance
         # = Primary Balance - Interest expense + Central Bank Dividend (= interest
         # received by the central bank).
         tre.AddVariable('FISCBAL', 'Fiscal Balance', 'PRIM_BAL - INTDEP + CB_INTDEP')
-
 
         if self.UseBookExogenous:
             # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)

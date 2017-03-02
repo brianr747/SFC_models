@@ -17,6 +17,12 @@ For another take on SFC models in Python see: https://github.com/kennt/monetary-
 
 Developed under Python 3.4, and is compatible with Python 2.7.
 
+Road To Version 1.0
+-------------------
+
+Another text file "RoadToVersion1.txt" describes the functionality that is aimed to be
+incorporated in Version 1.0 of *sfc_models*.
+
 Sub-package: gl_book
 --------------------
 

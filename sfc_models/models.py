@@ -44,6 +44,7 @@ class Entity(object):
         self.Parent = parent
         self.Code = ''
         self.LongName = ''
+        Logger('{0} Created, ID={1}', priority=2, data_to_format=(type(self), self.ID))
 
     def GetModel(self):
         obj = self
@@ -93,12 +94,8 @@ class Model(Entity):
         # Once we have a solid end-to-end test (which is easier now), can test this.
         try:
             if base_file_name is not None:
-                log_file = base_file_name + '_log.txt'
-                Logger.register_log(log_file, 'log')
-                Logger.register_log(base_file_name + '_out.txt', 'timeseries')
-                Logger.register_log(base_file_name + '_eqn.txt', 'eqn')
-                Logger.register_log(base_file_name + '_iteration.txt', 'step')
-                Logger.register_log(base_file_name + '_equilib.txt', 'equilibrium_0')
+                Logger.register_standard_logs(base_file_name)
+            Logger('Starting Model main()')
             self.GenerateFullSectorCodes()
             self.GenerateEquations()
             self.FixAliases()
@@ -128,8 +125,7 @@ class Model(Entity):
         # end-to-end test. Only include in coverage once output file format is finalised.
         try:
             if base_file_name is not None:
-                log_file = base_file_name + '_log.txt'
-                Logger.register_log(log_file, 'log')
+                Logger.register_standard_logs(base_file_name)
             self.GenerateFullSectorCodes()
             self.GenerateEquations()
             self.GenerateRegisteredCashFlows()
@@ -454,6 +450,8 @@ class Sector(Entity):
     def AddVariable(self, varname, desc, eqn):
         self.VariableDescription[varname] = desc
         self.Equations[varname] = eqn
+        Logger('[ID={0}] Variable Added: {1} = {2} # {3}', priority=5,
+               data_to_format=(self.ID, varname, desc, eqn))
 
     def SetExogenous(self, varname, val):
         """
@@ -551,21 +549,36 @@ class Sector(Entity):
                         '[%s] %s' % (varname, self.VariableDescription[varname])))
         return out
 
-    def GenerateAssetWeighting(self, asset_weighting_list, residual_asset_code):
+    def GenerateAssetWeighting(self, asset_weighting_dict, residual_asset_code, is_absolute_weighting=False):
         """
         Generates the asset weighting/allocation equations. If there are N assets, pass N-1 in the list, the residual
         gets the rest.
 
-        The variable asset_weighting_list is a list of pairs, of the form:
-        [('asset1code', 'weigthing equation'), ('asset2code','weighting2'), ...]
+        The variable asset_weighting_list is a
+        dictionary, of the form:
+        {'asset1code': 'weighting equation',
+        'asset2code': 'weighting2')}
+
+        The is_absolute_weighting parameter is a placeholder; if set to true, asset demands are
+        absolute. There is a TODO marking where code should be added.
 
         Note that weightings are (normally) from 0-1.
-        :param asset_weighting_list: list
+        :param asset_weighting_dict: dict
         :param residual_asset: str
+        :param is_absolute_weighting: bool
         :return:
         """
+        if is_absolute_weighting:
+            # TODO: Implement absolute weightings.
+            raise NotImplementedError('Absolute weightings not implemented')
         residual_weight = '1.0'
-        for code, weight_eqn in asset_weighting_list:
+        if type(asset_weighting_dict) in (list, tuple):
+            # Allow asset_weighting_dict to be a list of key: value pairs.
+            tmp = dict()
+            for code, eqn in asset_weighting_dict:
+                tmp[code] = eqn
+            asset_weighting_dict = tmp
+        for code, weight_eqn in asset_weighting_dict.items():
             # Weight variable = 'WGT_{CODE}'
             weight = 'WGT_' + code
             self.AddVariable(weight, 'Asset weight for' + code, weight_eqn)

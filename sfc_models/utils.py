@@ -230,7 +230,7 @@ class Logger(object):
     log_file_handles = {}
     priority_cutoff = 10
 
-    def __init__(self, txt, log='log', priority=1):
+    def __init__(self, txt, log='log', priority=1, data_to_format=None, endline=True):
         """
         Do a logging message.
 
@@ -255,6 +255,8 @@ class Logger(object):
         :param txt: str
         :param log: str
         :param priority: int
+        :param data_to_format: tuple
+        :param endline: bool
         """
         try:
             f = Logger.get_handle(log)
@@ -263,7 +265,10 @@ class Logger(object):
             return
         if priority > Logger.priority_cutoff:
             return
-        if txt[-1] != '\n':
+        if data_to_format is not None:
+            txt = txt.format(*data_to_format)
+        # Add an endline automatically (unless endline=False).
+        if txt[-1] != '\n' and endline:
             txt += '\n'
         if priority < 1:
             priority = 1
@@ -286,6 +291,22 @@ class Logger(object):
         if log in Logger.log_file_handles:
             raise ValueError('Log already registered: ' + log)
         Logger.log_file_handles[log] = fname
+
+    @staticmethod
+    def register_standard_logs(base_file_name):
+        loginfo = {
+            'log': base_file_name + '_log.txt',
+            'timeseries': base_file_name + '_out.txt',
+            'eqn': base_file_name + '_eqn.txt',
+            'step': base_file_name + '_iteration.txt',
+            'equilibrium_0': base_file_name + '_equilib.txt',
+        }
+        for logname in loginfo:
+            try:
+                Logger.register_log(loginfo[logname], log=logname)
+            except ValueError:
+                # If already registered, eat the error.
+                pass
 
     @staticmethod
     def get_handle(log='log'): # pragma: no cover
