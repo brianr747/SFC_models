@@ -27,23 +27,27 @@ class BaseHousehold(Sector):
     """
     Base class for all household sectors
     """
+
     def __init__(self, country, long_name, code, alpha_income, alpha_fin, consumption_good_name='GOOD'):
         Sector.__init__(self, country, long_name, code)
         self.AlphaIncome = alpha_income
         self.AlphaFin = alpha_fin
         self.AddVariable('AlphaIncome', 'Parameter for consumption out of income', '%0.4f' % (self.AlphaIncome,))
         self.AddVariable('AlphaFin', 'Parameter for consumption out of financial assets', '%0.4f' % (self.AlphaFin,))
-        self.AddVariable('DEM_' + consumption_good_name, 'Expenditure on goods consumption', 'AlphaIncome * AfterTax + AlphaFin * LAG_F')
+        self.AddVariable('DEM_' + consumption_good_name, 'Expenditure on goods consumption',
+                         'AlphaIncome * AfterTax + AlphaFin * LAG_F')
         self.AddVariable('PreTax', 'Pretax income', 'SET IN DERIVED CLASSES')
         self.AddVariable('AfterTax', 'Aftertax income', 'PreTax - T')
         self.AddVariable('T', 'Taxes paid.', '')
 
 
 class Household(BaseHousehold):
-    def __init__(self, country, long_name, code, alpha_income, alpha_fin, consumption_good_name='GOOD', labour_name='LAB'):
-        BaseHousehold.__init__(self, country, long_name, code, alpha_income, alpha_fin, consumption_good_name=consumption_good_name)
+    def __init__(self, country, long_name, code, alpha_income, alpha_fin, consumption_good_name='GOOD',
+                 labour_name='LAB'):
+        BaseHousehold.__init__(self, country, long_name, code, alpha_income, alpha_fin,
+                               consumption_good_name=consumption_good_name)
         self.AddVariable('SUP_' + labour_name, 'Supply of Labour', '<To be determined>')
-        self.Equations['PreTax'] = 'SUP_' + labour_name
+        self.SetEquationRightHandSide('PreTax', 'SUP_' + labour_name)
 
 
 class HouseholdWithExpectations(Household):
@@ -53,19 +57,20 @@ class HouseholdWithExpectations(Household):
     The default functionality is that the expected after tax income equals the previous value
     of realised after tax income.
     """
+
     def __init__(self, country, long_name, code, alpha_income, alpha_fin):
         Household.__init__(self, country, long_name, code, alpha_income, alpha_fin)
-        self.Equations['DEM_GOOD'] = 'AlphaIncome * EXP_AfterTax + AlphaFin * LAG_F'
+        self.SetEquationRightHandSide('DEM_GOOD',
+                                      'AlphaIncome * EXP_AfterTax + AlphaFin * LAG_F')
         self.AddVariable('LAG_AfterTax', 'Lagged Aftertax income', 'AfterTax(k-1)')
         self.AddVariable('EXP_AfterTax', 'Expected Aftertax income', 'LAG_AfterTax')
-
 
 
 class Capitalists(BaseHousehold):
     def __init__(self, country, long_name, code, alpha_income, alpha_fin):
         BaseHousehold.__init__(self, country, long_name, code, alpha_income, alpha_fin)
         self.AddVariable('DIV', 'Dividends', '')
-        self.Equations['PreTax'] = 'DIV'
+        self.SetEquationRightHandSide('PreTax', 'DIV')
 
 
 class DoNothingGovernment(Sector):
@@ -97,7 +102,6 @@ class CentralBank(Sector):
         # self.Treasury.AddCashFlow('CBDIV', self.GetVariableName('CBDIV'), 'Dividends paid by the central bank')
 
 
-
 class FixedMarginBusiness(Sector):
     def __init__(self, country, long_name, code, profit_margin=0.0, output_name='GOOD', labour_input_name='LAB'):
         Sector.__init__(self, country, long_name, code)
@@ -107,22 +111,23 @@ class FixedMarginBusiness(Sector):
         self.AddVariable('SUP_' + output_name, 'Supply of goods', '')
         self.AddVariable('PROF', 'Profits', 'SUP_GOOD - DEM_' + labour_input_name)
 
-
     def GenerateEquations(self):
-        #self.AddVariable('SUP_GOOD', 'Supply of goods', '<TO BE DETERMINED>')
+        # self.AddVariable('SUP_GOOD', 'Supply of goods', '<TO BE DETERMINED>')
         wage_share = 1.0 - self.ProfitMargin
         market_sup_good = self.Parent.LookupSector(self.OutputName).GetVariableName('SUP_' + self.OutputName)
         if self.ProfitMargin == 0:
             self.AddVariable('DEM_' + self.LabourInputName, 'Demand for labour', market_sup_good)
-            #self.Equations['PROF'] = ''
+            # self.Equations['PROF'] = ''
         else:
-            self.AddVariable('DEM_' + self.LabourInputName, 'Demand for labour', '%0.3f * %s' % (wage_share, market_sup_good))
-            self.Equations['PROF'] = '%0.3f * %s' % (self.ProfitMargin, market_sup_good)
+            self.AddVariable('DEM_' + self.LabourInputName, 'Demand for labour',
+                             '%0.3f * %s' % (wage_share, market_sup_good))
+            self.SetEquationRightHandSide('PROF', '%0.3f * %s' % (self.ProfitMargin, market_sup_good))
         for s in self.Parent.SectorList:
             if 'DIV' in s.Equations:
                 self.AddCashFlow('-DIV', 'PROF', 'Dividends paid')
                 s.AddCashFlow('DIV', self.GetVariableName('PROF'), 'Dividends received')
                 break
+
 
 class FixedMarginBusinessMultiOutput(Sector):
     """
@@ -130,6 +135,7 @@ class FixedMarginBusinessMultiOutput(Sector):
     The market objects must exist before creation (so we cannot create Market classes
     that assume the supply objects exist first!).
     """
+
     def __init__(self, country, long_name, code, market_list, profit_margin=0.0, labour_input_name='LAB'):
         Sector.__init__(self, country, long_name, code)
         self.ProfitMargin = profit_margin
@@ -155,17 +161,16 @@ class FixedMarginBusinessMultiOutput(Sector):
         wage_share = 1.0 - self.ProfitMargin
         demand_labour = 'DEM_' + self.LabourInputName
         if self.ProfitMargin == 0:
-            self.Equations[demand_labour] = 'SUP'
+            self.SetEquationRightHandSide(demand_labour, 'SUP')
         else:
-            self.Equations[demand_labour] = '%0.3f * SUP' % (wage_share, )
+            self.SetEquationRightHandSide(demand_labour, '%0.3f * SUP' % (wage_share,))
             # self.Equations['PROF'] = '%0.3f * %s' % (self.ProfitMargin, market_sup_good)
         for s in self.Parent.SectorList:
-            if 'DIV' in s.Equations: # pragma: no cover
+            if 'DIV' in s.Equations:  # pragma: no cover
                 raise NotImplementedError('Not tested yet')
                 self.AddCashFlow('-DIV', 'PROF', 'Dividends paid')
                 s.AddCashFlow('DIV', self.GetVariableName('PROF'), 'Dividends received')
                 break
-
 
 
 class TaxFlow(Sector):
@@ -198,7 +203,7 @@ class TaxFlow(Sector):
                 term = '%s * %s' % (tax_name_used, s.GetVariableName('PreTax'))
                 s.AddCashFlow('-T', term, 'Taxes paid.')
                 terms.append('+' + term)
-        self.Equations['T'] = utils.create_equation_from_terms(terms)
+        self.SetEquationRightHandSide('T', utils.create_equation_from_terms(terms))
         # work on other sectors
         tax_fullname = self.GetVariableName('T')
         gov = self.Parent.LookupSector(self.TaxingSector)
@@ -250,7 +255,8 @@ class MoneyMarket(FinancialAssetMarket):
                 pass
             s.AddVariable(dem_name, 'Demand for ' + self.LongName, s.GetVariableName('F'))
             dem_terms.append(s.GetVariableName(dem_name))
-        self.AddVariable(dem_name,'Total demand for ' + self.LongName, utils.create_equation_from_terms(dem_terms))
+        self.AddVariable(dem_name, 'Total demand for ' + self.LongName, utils.create_equation_from_terms(dem_terms))
+
 
 class DepositMarket(FinancialAssetMarket):
     """
@@ -291,7 +297,8 @@ class DepositMarket(FinancialAssetMarket):
             if s.Code == self.IssuerShortCode:
                 sup_name = 'SUP_' + self.Code
                 s.AddVariable(sup_name, 'Supply of ' + self.LongName, self.GetVariableName('DEM_' + self.Code))
-                s.AddVariable('LAG_' + sup_name, 'Lagged Supply of ' + self.LongName, s.GetVariableName(sup_name) + '(k-1)')
+                s.AddVariable('LAG_' + sup_name, 'Lagged Supply of ' + self.LongName,
+                              s.GetVariableName(sup_name) + '(k-1)')
                 s.AddCashFlow('-INT' + self.Code,
                               '{0}*{1}'.format(self.GetVariableName('LAG_r'), s.GetVariableName('LAG_' + sup_name)),
                               'Interest paid on ' + self.LongName)
@@ -300,17 +307,14 @@ class DepositMarket(FinancialAssetMarket):
                 continue
             dem_name = 'DEM_' + self.Code
             try:
+                # noinspection PyUnusedLocal
                 term = s.GetVariableName(dem_name)
             except KeyError:
                 continue
-            s.AddVariable('LAG_' + dem_name, 'Lagged demand for ' + self.LongName, s.GetVariableName(dem_name)+'(k-1)')
+            s.AddVariable('LAG_' + dem_name, 'Lagged demand for ' + self.LongName,
+                          s.GetVariableName(dem_name) + '(k-1)')
             s.AddCashFlow('+INT' + self.Code,
                           '{0}*{1}'.format(self.GetVariableName('LAG_r'), s.GetVariableName('LAG_' + dem_name)),
                           'Interest received on ' + self.LongName)
             dem_terms.append(s.GetVariableName(dem_name))
         self.AddVariable(dem_name, 'Total demand for ' + self.LongName, utils.create_equation_from_terms(dem_terms))
-
-
-
-
-

@@ -96,6 +96,7 @@ class EquationParser(object):
                 continue  # pragma: no cover   -- Seems to be a bug in the coverage report on this line...
             if varname == 'Err_Tolerance':
                 try:
+                    # noinspection PyUnusedLocal
                     err_tol = float(eqn)
                 except ValueError:
                     raise ValueError('Invalid Err_Tolerance value = ' + eqn)
@@ -170,7 +171,8 @@ class EquationParser(object):
         >>> p.ValidateInputs()
         Traceback (most recent call last):
         ...
-        NameError: Cannot use variable name: yield, as it is reserved. Call sfc_models.utils.get_invalid_variable_names() to get full list.
+        NameError: Cannot use variable name: yield, as it is reserved.
+        Call sfc_models.utils.get_invalid_variable_names() to get full list.
 
         >>> p = EquationParser()
         >>> p.ParseString('inc = 2 * import')
@@ -178,7 +180,8 @@ class EquationParser(object):
         >>> p.ValidateInputs()
         Traceback (most recent call last):
         ...
-        NameError: Cannot use token in equation: import, as it is reserved. Call sfc_models.utils.get_invalid_tokens() to get full list.
+        NameError: Cannot use token in equation: import, as it is reserved.
+        Call sfc_models.utils.get_invalid_tokens() to get full list.
 
 
         :return: None
@@ -188,10 +191,13 @@ class EquationParser(object):
         self.GenerateTokenList()
         for var in self.AllEquations:
             if var in bad_variables:
-                raise NameError('Cannot use variable name: ' + var + ', as it is reserved. Call sfc_models.utils.get_invalid_variable_names() to get full list.')
+                raise NameError(
+                    'Cannot use variable name: ' + var + ', as it is reserved.\n' +
+                    'Call sfc_models.utils.get_invalid_variable_names() to get full list.')
             for tok in self.Tokens[var]:
                 if tok in bad_tokens:
-                    msg = 'Cannot use token in equation: ' + tok + ', as it is reserved. Call sfc_models.utils.get_invalid_tokens() to get full list.'
+                    msg = 'Cannot use token in equation: ' + tok + ', as it is reserved.\n' +\
+                          'Call sfc_models.utils.get_invalid_tokens() to get full list.'
                     raise NameError(msg)
 
     def EquationReduction(self):
@@ -279,8 +285,6 @@ class EquationParser(object):
         """
         new_endo = [(x[0], self.AllEquations[x[0]]) for x in self.Endogenous]
         self.Endogenous = new_endo
-
-
 
     def MoveDecorative(self):
         """

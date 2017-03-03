@@ -42,7 +42,6 @@ class TestGetValid(TestCase):
         self.assertEqual('cat', sfc_models.examples.get_file_base('C:\\temp\\cat.txt'))
         self.assertEqual('cat', sfc_models.examples.get_file_base('C:\\temp\\cat'))
 
-
     def test_token_list(self):
         bad = utils.get_invalid_tokens()
         self.assertIn('self', bad)
@@ -52,6 +51,7 @@ class TestGetValid(TestCase):
         self.assertNotIn('max', bad)
         # Also: functions in "math"
         self.assertNotIn('sqrt', bad)
+
 
 class TestCreate_equation_from_terms(TestCase):
     def test_create_equation_from_terms_1(self):
@@ -68,6 +68,7 @@ class MockFile(object):
 
     def close(self):
         self.is_closed = True
+
 
 class TestLogger(TestCase):
     def test_write_1(self):
@@ -86,7 +87,7 @@ class TestLogger(TestCase):
         self.assertEqual(['text\n', 'text2\n'], mock.buffer)
         Logger('higher', priority=5)
         # Low priority messages have an indent.
-        self.assertEqual(['text\n', 'text2\n', (' '*4) + 'higher\n'], mock.buffer)
+        self.assertEqual(['text\n', 'text2\n', (' ' * 4) + 'higher\n'], mock.buffer)
 
     def test_cleanup(self):
         mock = MockFile()
@@ -132,5 +133,3 @@ class TestEquationSolverLogging(TestCase):
         mock.buffer = []
         obj.SolveStep(3)
         self.assertEqual([], mock.buffer)
-
-

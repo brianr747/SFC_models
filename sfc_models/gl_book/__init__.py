@@ -41,7 +41,7 @@ class GL_book_model(object):
 
         :param country_code: str
         :param model: sfc_models.models.Model
-        :param use_book_exo: bool
+        :param use_book_exogenous: bool
         """
         if model is None:
             model = models.Model()

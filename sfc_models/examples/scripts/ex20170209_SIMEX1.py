@@ -20,11 +20,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
 import os
 from sfc_models.gl_book.chapter3 import SIMEX1, SIM
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
-
 
 builder_SIMEX = SIMEX1(country_code='C1', use_book_exogenous=True)
 
@@ -43,10 +41,9 @@ time = model.GetTimeSeries('k')
 Y_SIMEX = model.GetTimeSeries('GOOD_SUP_GOOD')
 Y_SIM = model_SIM.GetTimeSeries('GOOD_SUP_GOOD')
 income = model.GetTimeSeries('HH_AfterTax')
-expected_income =  model.GetTimeSeries('HH_EXP_AfterTax')
+expected_income = model.GetTimeSeries('HH_EXP_AfterTax')
 F_SIMEX = model.GetTimeSeries('HH_F')
 F_SIM = model_SIM.GetTimeSeries('HH_F')
-
 
 Quick2DPlot(time, Y_SIMEX, 'Output (Y) - Model SIMEX')
 

@@ -30,7 +30,9 @@ is_python_3 = sys.version_info[0] == 3
 if is_python_3:
     import builtins
 else:  # pragma: no cover
+    # noinspection PyUnresolvedReferences
     import __builtin__
+
 
 class LogicError(ValueError):
     """
@@ -64,6 +66,7 @@ def list_tokens(s):
             if toknum == NAME:  # find NAME tokens
                 result.append(tokval)
     return result
+
 
 def replace_token(s, target, replacement):
     """
@@ -112,7 +115,6 @@ def replace_token(s, target, replacement):
         return untokenize(result).decode('utf-8')
 
 
-
 def replace_token_from_lookup(s, lookup):
     """
     Replace tokens using a lookup dictionary.
@@ -141,6 +143,7 @@ def replace_token_from_lookup(s, lookup):
             else:
                 result.append((toknum, tokval))
         return untokenize(result).decode('utf-8')
+
 
 def create_equation_from_terms(terms):
     """
@@ -225,7 +228,6 @@ class Logger(object):
     This allows us to centralise logging and file handling at a high level.
     """
 
-
     # Have a single file handle for all Logger objects
     log_file_handles = {}
     priority_cutoff = 10
@@ -272,7 +274,7 @@ class Logger(object):
             txt += '\n'
         if priority < 1:
             priority = 1
-        f.write((' ' * (priority-1)) + txt)
+        f.write((' ' * (priority - 1)) + txt)
 
     @staticmethod
     def register_log(fname, log='log'):
@@ -309,7 +311,7 @@ class Logger(object):
                 pass
 
     @staticmethod
-    def get_handle(log='log'): # pragma: no cover
+    def get_handle(log='log'):  # pragma: no cover
         """
         Get the file handle associated with the log.
 
@@ -327,11 +329,8 @@ class Logger(object):
 
     @staticmethod
     def cleanup():
-        for k,f in Logger.log_file_handles.items():
+        for k, f in Logger.log_file_handles.items():
             if f is not None:
                 if type(f) is not str:
                     f.close()
         Logger.log_file_handles = {}
-
-
-

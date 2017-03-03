@@ -255,8 +255,9 @@ class IterativeMachineGenerator(object):
             # Initialise to that value. We could mark such variables...
             init_cond = '0.'
             try:
+                # noinspection PyUnusedLocal
                 dummy = float(eqn.strip())
-                init_cond = eqn        #  pragma: no cover   [Problem in the coverage report; we have to hit this!]
+                init_cond = eqn  # pragma: no cover   [Problem in the coverage report; we have to hit this!]
             except ValueError:
                 try:
                     init_cond = self.InitialConditions[variable_name]

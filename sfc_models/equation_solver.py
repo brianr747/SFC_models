@@ -24,7 +24,6 @@ import warnings
 import copy
 
 import sfc_models.equation_parser
-import sfc_models.utils as utils
 from sfc_models.utils import Logger as Logger
 from sfc_models import Parameters as Parameters
 
@@ -32,14 +31,17 @@ from sfc_models import Parameters as Parameters
 class ConvergenceError(ValueError):
     pass
 
+
 class NoEquilibriumError(ValueError):
     pass
+
 
 class EquationSolver(object):
     """
     EquationSolver - Object to solve equations.
 
     """
+
     def __init__(self, equation_string='', run_equation_reduction=True):
         self.EquationString = equation_string
         self.RunEquationReduction = run_equation_reduction
@@ -95,7 +97,7 @@ class EquationSolver(object):
     def SetInitialConditions(self):
         Logger('Set Initial Conditions')
         variables = dict()
-        #variables['k'] = list(range(0, self.Parser.MaxTime+1))
+        # variables['k'] = list(range(0, self.Parser.MaxTime+1))
         # First pass: include exogenous
         for var in self.VariableList:
             if var in self.Parser.InitialConditions:
@@ -106,9 +108,9 @@ class EquationSolver(object):
                     raise ValueError('Cannot parse initial conditions for: ' + var)
             else:
                 ic = 0.
-            variables[var] = [ic,]
+            variables[var] = [ic, ]
         if 'k' not in variables:
-            k_series = list(range(0, self.Parser.MaxTime+1))
+            k_series = list(range(0, self.Parser.MaxTime + 1))
             k_series = [float(x) for x in k_series]
             self.Parser.Exogenous.append(('k', k_series))
         time_zero_constants = dict()
@@ -120,10 +122,10 @@ class EquationSolver(object):
                 except:
                     raise ValueError('Cannot parse exogenous variable: ' + var)
                 if type(val) is float:
-                    val = [val, ] * (self.Parser.MaxTime+1)
+                    val = [val, ] * (self.Parser.MaxTime + 1)
                 try:
                     val = list(val)
-                except: # pragma: no cover     I cannot trigger this error, but I will leave in place
+                except:  # pragma: no cover     I cannot trigger this error, but I will leave in place
                     raise ValueError('Initial condition must be of the list type: ' + var)
             else:
                 if type(eqn) == float:
@@ -131,22 +133,24 @@ class EquationSolver(object):
                 else:
                     try:
                         val = list(eqn)
-                    except: # pragma: no cover   Hard time figuring how to trigger this
+                    except:  # pragma: no cover   Hard time figuring how to trigger this
                         raise ValueError('Initial conditions must be directly convertible to a list: ' + var)
-            if len(val) < self.Parser.MaxTime+1:
+            if len(val) < self.Parser.MaxTime + 1:
                 raise ValueError('Initial condition list too short: ' + var)
-            variables[var] = val[0:self.Parser.MaxTime+1]
+            variables[var] = val[0:self.Parser.MaxTime + 1]
             time_zero_constants[var] = val[0]
         # Third pass: clean up constant endogenous
         for var, eqn in self.Parser.Endogenous:
+            # noinspection PyBroadException
             try:
                 val = eval(eqn, globals())
                 if type(val) is int:
                     val = float(val)
                 if type(val) is float:
-                    variables[var] = [val,]
+                    variables[var] = [val, ]
                     time_zero_constants[var] = val
             except:
+                # If not a constant, we will blow up. We step over any problems.
                 continue
         # Fourth pass: constant decoration
         did_any = True
@@ -155,13 +159,16 @@ class EquationSolver(object):
             for var, eqn in self.Parser.Decoration:
                 if var in time_zero_constants:
                     continue
+                # noinspection PyBroadException
                 try:
                     val = eval(eqn, globals(), time_zero_constants)
                 except:
+                    # We do not care what the exception is here; it is probably
+                    # a NameError. We just step over it.
                     continue
                 did_any = True
                 time_zero_constants[var] = val
-                variables[var] = [val,]
+                variables[var] = [val, ]
         self.TimeSeries = variables
 
     def CalculateInitialEquilibrium(self):
@@ -200,10 +207,10 @@ class EquationSolver(object):
         new_solver.Parser.Err_Tolerance = Parameters.InitialEquilibriumStepError
         # Fix exogenous to be constants
         for var, dummy in new_solver.Parser.Exogenous:
-            val = [new_solver.TimeSeries[var][0],] * (T+1)
+            val = [new_solver.TimeSeries[var][0], ] * (T + 1)
             new_solver.TimeSeries[var] = val
         # Force 'k' to be negative.
-        time_axis = list(range(0, T+1))
+        time_axis = list(range(0, T + 1))
         time_axis = [-float(x) for x in time_axis]
         time_axis.reverse()
         new_solver.TimeSeries['k'] = time_axis
@@ -218,7 +225,7 @@ class EquationSolver(object):
             Logger(new_solver.GenerateCSVtext(), 'equilibrium_0')
         # Now: look at which variables are not constant.
         bad_variables = []
-        excluded =  ['k', ] + Parameters.InitialEquilibriumExcludedVariables
+        excluded = ['k', ] + Parameters.InitialEquilibriumExcludedVariables
         for var in self.TimeSeries.keys():
             if var in excluded:
                 continue
@@ -230,7 +237,7 @@ class EquationSolver(object):
                 if not abs(lastval) < 1e-4:
                     bad = True
             else:
-                err = abs(lastval-prev)/lastval
+                err = abs(lastval - prev) / lastval
                 if err > Parameters.InitialEquilibriumErrorTolerance:
                     bad = True
             if bad:
@@ -266,10 +273,10 @@ class EquationSolver(object):
         for var, dummy in self.Parser.Exogenous:
             initial[var] = self.TimeSeries[var][step]
         for lag_var, original_var in self.Parser.Lagged:
-            initial[lag_var] = self.TimeSeries[original_var][step-1]
+            initial[lag_var] = self.TimeSeries[original_var][step - 1]
         # This is an initial guess
         for var, dummy in self.Parser.Endogenous:
-            initial[var] = self.TimeSeries[var][step-1]
+            initial[var] = self.TimeSeries[var][step - 1]
         # NOTE:
         # We are missing the decorative variables, but they have no effect on the solution
         relative_error = 1.
@@ -281,12 +288,17 @@ class EquationSolver(object):
             Logger("""
 Values at beginning of step. (Only incldues variables that are solved within
 iteration. Decorative variables calculated later).""", log='step')
-            Logger('\t'.join(['Iteration','PreviousError'] + trace_keys), log='step')
+            Logger('\t'.join(['Iteration', 'PreviousError'] + trace_keys), log='step')
+        # The following two assignments not really necessary, but the code inspection
+        # was unhappy if they were not set.
+        had_evaluation_errors = False
+        last_error = False
         while relative_error > err_toler:
             # Need to create a copy of the dictionary; saying new_value = initial means that they are
             # the same object.
             if Parameters.TraceStep == step:
-                Logger('\t'.join([str(num_tries),str(relative_error)] + [str(initial[x]) for x in trace_keys]), log='step')
+                Logger('\t'.join([str(num_tries), str(relative_error)] + [str(initial[x]) for x in trace_keys]),
+                       log='step')
             new_value = dict()
             for key, val in initial.items():
                 new_value[key] = val
@@ -301,22 +313,22 @@ iteration. Decorative variables calculated later).""", log='step')
                 # invalid data.
                 try:
                     new_value[var] = eval(eqn, globals(), initial)
-                except ZeroDivisionError as e:
+                except ZeroDivisionError as er:
                     # We can add new error types that we are willing to temporarily accept.
                     new_value[var] = initial[var]
                     had_evaluation_errors = True
-                    last_error = 'Error evaluating variable {0} = {1}'.format(var, str(e))
-                except ValueError as e:
+                    last_error = 'Error evaluating variable {0} = {1}'.format(var, str(er))
+                except ValueError as er:
                     # We get a ValueError thrown by evaluating log10(0)
                     new_value[var] = initial[var]
                     had_evaluation_errors = True
-                    last_error = 'Error evaluating variable {0}. Error message: {1}'.format(var, str(e))
+                    last_error = 'Error evaluating variable {0}. Error message: {1}'.format(var, str(er))
                 difference = abs(new_value[var] - initial[var])
                 if difference < 1e-3:
                     relative_error += difference
                 else:
                     # Scale by variable size if large
-                    relative_error += difference/(max(abs(new_value[var]), abs(initial[var])))
+                    relative_error += difference / (max(abs(new_value[var]), abs(initial[var])))
             if num_tries > 10:
                 # Allow initial iterations to swing a lot, but we clamp down the
                 # movement later. (We want constants to immediately move to the correct value,
@@ -326,7 +338,7 @@ iteration. Decorative variables calculated later).""", log='step')
                 # that is, it moves half as much.
                 # This slower movement reduces the odds of oscillation.
                 for var, dummy in self.Parser.Endogenous:
-                    new_value[var] = (new_value[var] + initial[var])/2.
+                    new_value[var] = (new_value[var] + initial[var]) / 2.
             # Use new_value as the initial at the next step
             initial = new_value
             num_tries += 1
@@ -341,7 +353,7 @@ iteration. Decorative variables calculated later).""", log='step')
         # Then: append values to the time series
         varlist = [x[0] for x in self.Parser.Endogenous] + [x[0] for x in self.Parser.Lagged]
         for var in varlist:
-            assert(len(self.TimeSeries[var]) == step)
+            assert (len(self.TimeSeries[var]) == step)
             self.TimeSeries[var].append(initial[var])
         # Finally: augment with decorative variables
         # This is complicated as decorative variables may depend upon other decorative variables
@@ -374,10 +386,10 @@ iteration. Decorative variables calculated later).""", log='step')
             self.CalculateInitialEquilibrium()
             # Reset the parameter; it needs to be set before every call to SolveEquation()
             Parameters.SolveInitialEquilibrium = False
-        for step in range(1, self.Parser.MaxTime+1):
+        for step in range(1, self.Parser.MaxTime + 1):
             self.SolveStep(step)
 
-    def WriteCSV(self, fname): # pragma: no cover   We should not be writing files as part of unit tests...
+    def WriteCSV(self, fname):  # pragma: no cover   We should not be writing files as part of unit tests...
         """
         Write time series to a tab-delimited text file.
         :param fname: str
@@ -386,35 +398,29 @@ iteration. Decorative variables calculated later).""", log='step')
         f = open(fname, 'w')
         f.write(self.GenerateCSVtext())
 
-    def GenerateCSVtext(self, format_str = '%.5g'):
+    def GenerateCSVtext(self, format_str='%.5g'):
         """
         :format_str: str
         Generates the text that goes into the csv.
         :return: str
         """
-        vars = list(self.TimeSeries.keys())
-        if len(vars) == 0:
+        varz = list(self.TimeSeries.keys())
+        if len(varz) == 0:
             return ''
-        vars.sort()
-        if 't' in vars:
-            vars.remove('t')
-            vars.insert(0, 't')
-        if 'k' in vars:
-            vars.remove('k')
-            vars.insert(0, 'k')
-        out = '\t'.join(vars) + '\n'
+        varz.sort()
+        if 't' in varz:
+            varz.remove('t')
+            varz.insert(0, 't')
+        if 'k' in varz:
+            varz.remove('k')
+            varz.insert(0, 'k')
+        out = '\t'.join(varz) + '\n'
         lengths = [len(x) for x in self.TimeSeries.values()]
         N = min(lengths)
         for i in range(0, N):
             row = []
-            for v in vars:
-                row.append(self.TimeSeries[v][i],)
+            for v in varz:
+                row.append(self.TimeSeries[v][i], )
             row = [format_str % (x,) for x in row]
             out += '\t'.join(row) + '\n'
         return out
-
-
-
-
-
-

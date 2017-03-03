@@ -96,5 +96,6 @@ def main():
     # p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']
     # p.DoPlot()
 
+
 if __name__ == '__main__':
     main()

@@ -19,14 +19,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from pprint import pprint
 import traceback
 
 from sfc_models.utils import LogicError, replace_token_from_lookup, create_equation_from_terms, Logger
 from sfc_models.equation_parser import EquationParser
 import sfc_models.iterative_machine_generator as iterative_machine_generator
 import sfc_models.equation_solver
-
 
 
 class Entity(object):
@@ -83,7 +81,6 @@ class Model(Entity):
         self.EquationSolver = sfc_models.equation_solver.EquationSolver()
         self.GlobalVariables = []
 
-
     def main(self, base_file_name=None):  # pragma: no cover
         """
 
@@ -139,6 +136,7 @@ class Model(Entity):
                 obj.main(model_file)
                 self.LogInfo()
             else:
+                # noinspection PyUnusedLocal
                 solver = sfc_models.equation_solver.EquationSolver(self.FinalEquations)
         except Exception as e:
             self.LogInfo(ex=e)
@@ -240,7 +238,6 @@ class Model(Entity):
         The log will normally generate the full sector codes; set generate_full_codes=False
         to leave the Model full codes untouched.
 
-        :param file_name: str
         :param generate_full_codes: bool
         :param ex: Exception
         :return:
@@ -286,7 +283,8 @@ class Model(Entity):
                 else:
                     sector.FullCode = sector.Code
 
-    def GetSectorCodeWithCountry(self, sector):
+    @staticmethod
+    def GetSectorCodeWithCountry(sector):
         """
         Return the sector code including the country information.
         Need to use this if we want the FullCode before the model information
@@ -299,7 +297,6 @@ class Model(Entity):
         :return:
         """
         return '{0}_{1}'.format(sector.Parent.Code, sector.Code)
-
 
     def RegisterCashFlow(self, source_sector, target_sector, amount_variable):
         # if amount_variable not in source_sector.Equations:
@@ -432,7 +429,7 @@ class Sector(Entity):
     All sectors derive from this class.
     """
 
-    def __init__(self, country, long_name, code, has_F = True):
+    def __init__(self, country, long_name, code, has_F=True):
         Entity.__init__(self, country)
         country.AddSector(self)
         self.Code = code
@@ -448,17 +445,43 @@ class Sector(Entity):
         self.CashFlows = []
 
     def AddVariable(self, varname, desc, eqn):
+        """
+        Add a variable to the sector.
+        The variable name (varname) is the local name; it will be decorated to create a
+        full name. Equations within a sector can use the local name; other sectors need to
+        use GetVariableName to get the full name.
+        :param varname: str
+        :param desc: str
+        :param eqn: str
+        :return: None
+        """
+        if varname in self.Equations:
+            Logger('[ID={0}] Variable Overwritten: {1}', priority=3,
+                   data_to_format=(self.ID, varname))
         self.VariableDescription[varname] = desc
         self.Equations[varname] = eqn
         Logger('[ID={0}] Variable Added: {1} = {2} # {3}', priority=5,
-               data_to_format=(self.ID, varname, desc, eqn))
+               data_to_format=(self.ID, varname, eqn, desc))
+
+    def SetEquationRightHandSide(self, varname, rhs):
+        """
+        Set the right hand side of the equation for an existing variable.
+        :param varname: str
+        :param rhs: str
+        :return: None
+        """
+        if varname not in self.Equations:
+            raise KeyError('Variable {0} does not exist'.format(varname))
+        Logger('[ID={0}] Equation set: {1} = {2} ', priority=5,
+               data_to_format=(self.ID, varname, rhs))
+        self.Equations[varname] = rhs
 
     def SetExogenous(self, varname, val):
         """
         Set an exogenous variable for a sector. The variable must already be defined (by AddVariable()).
         :param varname: str
         :param val: str
-        :return:
+        :return: None
         """
         self.GetModel().AddExogenous(self, varname, val)
 
@@ -490,7 +513,6 @@ class Sector(Entity):
 
     def ReplaceAliases(self, lookup):
         for var in self.Equations:
-            eqn = self.Equations[var]
             self.Equations[var] = replace_token_from_lookup(self.Equations[var], lookup)
         self.CashFlows = [replace_token_from_lookup(flow, lookup) for flow in self.CashFlows]
 
@@ -510,7 +532,7 @@ class Sector(Entity):
         term = term[1:]
         if term in self.Equations:
             if len(self.Equations[term]) == 0:
-                self.Equations[term] = eqn
+                self.SetEquationRightHandSide(term, eqn)
         else:
             self.AddVariable(term, desc, eqn)
 
@@ -528,12 +550,12 @@ class Sector(Entity):
         if not self.HasF:
             return
         if len(self.CashFlows) == 0:
-            self.Equations['F'] = ''
-            self.Equations['LAG_F'] = ''
+            self.SetEquationRightHandSide('F', '')
+            self.SetEquationRightHandSide('LAG_F', '')
             return
         self.CashFlows = ['LAG_F', ] + self.CashFlows
         eqn = create_equation_from_terms(self.CashFlows)
-        self.Equations['F'] = eqn
+        self.SetEquationRightHandSide('F', eqn)
 
     def CreateFinalEquations(self):
         out = []
@@ -564,7 +586,7 @@ class Sector(Entity):
 
         Note that weightings are (normally) from 0-1.
         :param asset_weighting_dict: dict
-        :param residual_asset: str
+        :param residual_asset_code: str
         :param is_absolute_weighting: bool
         :return:
         """
@@ -582,21 +604,20 @@ class Sector(Entity):
             # Weight variable = 'WGT_{CODE}'
             weight = 'WGT_' + code
             self.AddVariable(weight, 'Asset weight for' + code, weight_eqn)
-            self.AddVariable('DEM_'+ code, 'Demand for asset ' + code, 'F * {0}'.format(weight))
+            self.AddVariable('DEM_' + code, 'Demand for asset ' + code, 'F * {0}'.format(weight))
             residual_weight += ' - ' + weight
         self.AddVariable('WGT_' + residual_asset_code, 'Asset weight for ' + residual_asset_code, residual_weight)
-        self.AddVariable('DEM_'+ residual_asset_code, 'Demand for asset ' + residual_asset_code,
-                        'F * {0}'.format('WGT_' + residual_asset_code))
-
+        self.AddVariable('DEM_' + residual_asset_code, 'Demand for asset ' + residual_asset_code,
+                         'F * {0}'.format('WGT_' + residual_asset_code))
 
 
 class Market(Sector):
     """
-    Market Not really a sector, but keep it in the same list
+    Market Not really a sector, but keep it in the same list.
     """
 
     def __init__(self, country, long_name, code):
-        Sector.__init__(self, country, long_name, code, has_F = False)
+        Sector.__init__(self, country, long_name, code, has_F=False)
         self.NumSupply = 0
         self.AddVariable('SUP_' + code, 'Supply for market ' + code, '')
         self.AddVariable('DEM_' + code, 'Demand for market ' + code, '')
@@ -627,29 +648,41 @@ class Market(Sector):
         return ret_value
 
     def GenerateEquations(self):
+        """
+        Generate the equations associated with this market.
+        :return:
+        """
         if len(self.SupplyAllocation) == 0:
             supplier = self.SearchSupplier()
             self.SupplyAllocation = [[], supplier]
         if len(self.SupplyAllocation) > 0:
             self.NumSupply = len(self.SupplyAllocation[0])
-            self.GenerateTermsLowLevel('DEM', 'Demand')
-            self.GenerateMultiSupply()
-        else: # pragma: no cover
+            self._GenerateTermsLowLevel('DEM', 'Demand')
+            self._GenerateMultiSupply()
+        else:  # pragma: no cover
             # Keep this legacy code here for now, in case I need to revert.
             raise LogicError('Should never reach this code!')
             self.NumSupply = 0
-            self.GenerateTermsLowLevel('SUP', 'Supply')
+            self._GenerateTermsLowLevel('SUP', 'Supply')
             if self.NumSupply == 0:
                 raise ValueError('No supply for market: ' + self.FullCode)
-            self.GenerateTermsLowLevel('DEM', 'Demand')
+            self._GenerateTermsLowLevel('DEM', 'Demand')
             if self.NumSupply > 1:
                 raise LogicError('More than one supply at market, must set SupplyAllocation: ' + self.Code)
             else:
                 self.FixSingleSupply()
 
+    def _GenerateTermsLowLevel(self, prefix, long_desc):
+        """
+        Generate the terms associated with this market, for supply and demand.
 
+        TODO: This is now only called for the demand function; simplify to just refer
+        to demand.
 
-    def GenerateTermsLowLevel(self, prefix, long_desc):
+        :param prefix: str
+        :param long_desc: str
+        :return: None
+        """
         if prefix not in ('SUP', 'DEM'):
             raise LogicError('Input to function must be "SUP" or "DEM"')
         country = self.Parent
@@ -673,33 +706,43 @@ class Market(Sector):
                 # Must fill in demand equation in sectors.
                 s.AddCashFlow('-' + var_name, 'Error: must fill in demand equation', long_desc)
         eqn = create_equation_from_terms(term_list)
-        self.Equations[var_name] = eqn
+        self.SetEquationRightHandSide(var_name, eqn)
 
     def FixSingleSupply(self):
+        """
+        Deprecated function.
+
+        TODO: Eliminate this function.
+        :return:
+        """
         if self.NumSupply != 1:
             raise LogicError('Can only call this function with a single supply source!')
         country = self.Parent
         sup_name = 'SUP_' + self.Code
         dem_name = 'DEM_' + self.Code
         # Set aggregate supply equal to demand
-        self.Equations[sup_name] = dem_name
+        self.SetEquationRightHandSide(sup_name, rhs=dem_name)
         for s in country.SectorList:
             if s.ID == self.ID:
                 continue
             if sup_name in s.Equations:
-                s.Equations[sup_name] = self.Equations[dem_name]
+                s.SetEquationRightHandSide(sup_name, self.Equations[dem_name])
                 return
 
-    def GenerateMultiSupply(self):
-        country = self.Parent
+    def _GenerateMultiSupply(self):
+        """
+        Generate the supply terms with multiple suppliers.
+
+        :return:
+        """
         sup_name = 'SUP_' + self.Code
         dem_name = 'DEM_' + self.Code
         # Set aggregate supply equal to demand
-        self.Equations[sup_name] = dem_name
+        self.SetEquationRightHandSide(sup_name, rhs=dem_name)
         # Generate individual supply equations
         # terms: need to create a list of non-residual supply terms so that
         # we can set the residual supply
-        terms = [sup_name,]
+        terms = [sup_name, ]
         # Unpack the SupplyAllocation member. [Create a class?]
         sector_list, residual_sector = self.SupplyAllocation
         for sector, eqn in sector_list:
@@ -716,11 +759,14 @@ class Market(Sector):
             sector.Equations[supply_name] = self.GetVariableName(local_name)
             sector.AddCashFlow('+' + supply_name)
         # Residual sector supplies rest
+        # noinspection PyUnusedLocal
+        # This declaration of sector is not needed, but I left it in case code from
+        # above is pasted here, without replacing 'sector' with residual_sector.
         sector = residual_sector
         local_name = 'SUP_' + residual_sector.FullCode
         # Equation = [Total supply] - \Sum Individual suppliers
         eqn = '-'.join(terms)
-        self.AddVariable(local_name,  'Supply from {0}'.format(residual_sector.LongName), eqn)
+        self.AddVariable(local_name, 'Supply from {0}'.format(residual_sector.LongName), eqn)
         if self.ShareParent(residual_sector):
             supply_name = 'SUP_' + self.Code
         else:
@@ -729,15 +775,12 @@ class Market(Sector):
         residual_sector.AddCashFlow('+' + supply_name)
 
 
-
 class FinancialAssetMarket(Market):
     """
     Handles the interactions for a market in a financial asset.
     Must be a single issuer.
     """
+
     def __init__(self, country, long_name, code, issuer_short_code):
         Market.__init__(self, country, long_name, code)
         self.IssuerShortCode = issuer_short_code
-
-
-

@@ -51,7 +51,7 @@ class Quick2DPlotParams(object):
     Width = 4.5
     Height = 3
 
-    def ReadFile(self): # pragma: no cover
+    def ReadFile(self):  # pragma: no cover
         # If we have already read the file, do not do it again.
         if self.FileRead:
             return

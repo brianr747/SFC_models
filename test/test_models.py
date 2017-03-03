@@ -13,6 +13,7 @@ def kill_spaces(s):
     s = s.replace(' ', '')
     return s
 
+
 class TestEntity(TestCase):
     def test_ctor(self):
         Entity.ID = 0
@@ -82,7 +83,7 @@ class TestModel(TestCase):
     def test_AddExogenous(self):
         mod = Model()
         # Does not validate that the sector exists (until we call ProcessExogenous)
-        mod.AddExogenous('code','varname', 'val')
+        mod.AddExogenous('code', 'varname', 'val')
         self.assertEqual([('code', 'varname', 'val')], mod.Exogenous)
 
     def test_AddExogenous_list(self):
@@ -104,7 +105,7 @@ class TestModel(TestCase):
         mod.AddInitialCondition('code', 'varname', 0.1)
         self.assertEqual([('code', 'varname', str(0.1))], mod.InitialConditions)
         with self.assertRaises(ValueError):
-            mod.AddInitialCondition('code2','varname2', 'kablooie!')
+            mod.AddInitialCondition('code2', 'varname2', 'kablooie!')
 
     def test_GenerateInitialCond(self):
         mod = Model()
@@ -160,7 +161,7 @@ class TestModel(TestCase):
         self.assertIn(ID, varname)
         sec2 = Sector(c, 'sec2', 'sec2')
         sec2.AddVariable('two_x', 'Test variable', '2 * {0}'.format(varname))
-        self.assertEqual('2*'+varname, kill_spaces(sec2.Equations['two_x']))
+        self.assertEqual('2*' + varname, kill_spaces(sec2.Equations['two_x']))
         mod.GenerateFullSectorCodes()
         mod.FixAliases()
         self.assertEqual('2*sec1_x', kill_spaces(sec2.Equations['two_x']))
@@ -176,12 +177,12 @@ class TestModel(TestCase):
         sec2 = Sector(c, 'sec2', 'sec2')
         mod.RegisterCashFlow(sec1, sec2, 'x')
         mod.GenerateRegisteredCashFlows()
-        self.assertEqual('-'+varname, sec1.CashFlows[0])
+        self.assertEqual('-' + varname, sec1.CashFlows[0])
         self.assertEqual('+' + varname, sec2.CashFlows[0])
         mod.GenerateFullSectorCodes()
         mod.FixAliases()
         self.assertEqual('-sec1_x', kill_spaces(sec1.CashFlows[0]))
-        self.assertEqual('+sec1_x' , kill_spaces(sec2.CashFlows[0]))
+        self.assertEqual('+sec1_x', kill_spaces(sec2.CashFlows[0]))
 
     def test_ForceExogenous2(self):
         mod = Model()
@@ -235,7 +236,7 @@ class TestModel(TestCase):
         # Remove spaces; what matters is the content
         out = out.replace(' ', '').split('\n')
         target = ['x=y+1#comment_x', 'z=d#comment_z', '', '#ExogenousVariables', '', 'y=20#comment_y',
-                  '', 'MaxTime=100','Err_Tolerance=0.001']
+                  '', 'MaxTime=100', 'Err_Tolerance=0.001']
         self.assertEqual(target, out)
 
     def test_dumpequations(self):
@@ -261,14 +262,13 @@ class TestModel(TestCase):
         mod.TimeSeriesCutoff = 1
         self.assertEqual([0, 1], mod.GetTimeSeries('t'))
         # Passed parameter overrides default .GetTimeSeries member.
-        self.assertEqual([0,], mod.GetTimeSeries('t', cutoff=0))
+        self.assertEqual([0, ], mod.GetTimeSeries('t', cutoff=0))
 
     def test_GetTimeSeriesPop(self):
         mod = Model()
-        mod.EquationSolver.TimeSeries = {'t': [0,1,2]}
+        mod.EquationSolver.TimeSeries = {'t': [0, 1, 2]}
         mod.TimeSeriesSupressTimeZero = True
         self.assertEqual([1, 2], mod.GetTimeSeries('t'))
-
 
 
 class TestSector(TestCase):
@@ -309,7 +309,6 @@ class TestSector(TestCase):
         ID = household.ID
         target = '_{0}_{1}'.format(ID, 'AlphaFin')
         self.assertEqual(target, household.GetVariableName('AlphaFin'))
-
 
     def test_GetVariableName_3(self):
         mod = Model()
@@ -402,7 +401,7 @@ class TestSector(TestCase):
         mod = Model()
         us = Country(mod, 'USA', 'US')
         s = Sector(us, 'Household', 'HH')
-        s.GenerateAssetWeighting([('BOND', '0.5'),], 'MON')
+        s.GenerateAssetWeighting([('BOND', '0.5'), ], 'MON')
         self.assertEqual('0.5', s.Equations['WGT_BOND'])
         self.assertEqual('F*WGT_BOND', kill_spaces(s.Equations['DEM_BOND']))
         self.assertEqual('1.0-WGT_BOND', kill_spaces(s.Equations['WGT_MON']))
@@ -413,7 +412,8 @@ class TestSector(TestCase):
         us = Country(mod, 'USA', 'US')
         s = Sector(us, 'Household', 'HH')
         s.SetExogenous('varname', 'val')
-        self.assertEqual([(s, 'varname', 'val'),], mod.Exogenous)
+        self.assertEqual([(s, 'varname', 'val'), ], mod.Exogenous)
+
 
 class TestCountry(TestCase):
     def test_AddSector(self):
@@ -447,7 +447,7 @@ class TestMarket(TestCase):
         self.assertEqual(['-DEM_LAB', ], bus.CashFlows)
         self.assertEqual('x', bus.Equations['DEM_LAB'])
         self.assertEqual(['+SUP_LAB', ], hh.CashFlows)
-        #self.assertEqual('BUS_DEM_LAB', hh.Equations['SUP_LAB'].strip())
+        # self.assertEqual('BUS_DEM_LAB', hh.Equations['SUP_LAB'].strip())
         self.assertEqual('SUP_LAB', mar.Equations['SUP_HH'])
         self.assertEqual('LAB_SUP_HH', hh.Equations['SUP_LAB'].strip())
 
@@ -537,8 +537,6 @@ class TestMarket(TestCase):
         self.assertEqual('CA_LAB_SUP_CA_HH2', hh2.Equations['SUP_LAB'])
         self.assertIn('+SUP_LAB', hh2.CashFlows)
 
-
-
     def test_GenerateTermsLowLevel(self):
         mod = Model()
         can = Country(mod, 'Canada', 'Eh')
@@ -546,17 +544,16 @@ class TestMarket(TestCase):
         bus = Sector(can, 'Business', 'BUS')
         bus.AddVariable('DEM_LAB', 'desc', '')
         mod.GenerateFullSectorCodes()
-        mar.GenerateTermsLowLevel('DEM', 'Demand')
+        mar._GenerateTermsLowLevel('DEM', 'Demand')
         self.assertEqual(['-DEM_LAB', ], bus.CashFlows)
         self.assertTrue('error' in bus.Equations['DEM_LAB'].lower())
-
 
     def test_GenerateTermsLowLevel_3(self):
         mod = Model()
         can = Country(mod, 'Canada', 'Eh')
         mar = Market(can, 'Market', 'LAB')
         with self.assertRaises(LogicError):
-            mar.GenerateTermsLowLevel('Blam!', 'desc')
+            mar._GenerateTermsLowLevel('Blam!', 'desc')
 
     def test_FixSingleSupply(self):
         mod = Model()
@@ -591,9 +588,3 @@ class TestRegisterCashFlows(TestCase):
         mod.GenerateIncomeEquations()
         self.assertEqual('LAG_F+SEC1_DIV', kill_spaces(sec2.Equations['F']))
         self.assertEqual('LAG_F-SEC1_DIV', kill_spaces(sec1.Equations['F']))
-
-
-
-
-
-

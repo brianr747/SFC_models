@@ -18,6 +18,7 @@ class TestEquationParser(TestCase):
 
     Can fill in more tests if desired.
     """
+
     def test_ParseString(self):
         pass
 

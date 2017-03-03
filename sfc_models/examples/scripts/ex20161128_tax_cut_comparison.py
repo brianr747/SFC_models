@@ -19,7 +19,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models.models import *
 from sfc_models.sectors import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness, Capitalists
@@ -41,6 +40,7 @@ def CreateCountry(mod, name, code):
     Market(cntry, 'Goods market', 'GOOD')
     return cntry
 
+
 def main():
     # Create model, which holds all entities
     mod = Model()
@@ -50,9 +50,9 @@ def main():
     mod.AddExogenous('SCEN1_GOV', 'DEM_GOOD', '[20.,] * 105')
     mod.AddExogenous('SCEN2_GOV', 'DEM_GOOD', '[20.,] * 105')
     # clean up output by starting at steady state by setting initial F
-    mod.AddInitialCondition('SCEN1_HH','F', 29.09)
+    mod.AddInitialCondition('SCEN1_HH', 'F', 29.09)
     mod.AddInitialCondition('SCEN1_CAP', 'F', 33.94)
-    mod.AddInitialCondition('SCEN2_HH','F', 29.09)
+    mod.AddInitialCondition('SCEN2_HH', 'F', 29.09)
     mod.AddInitialCondition('SCEN2_CAP', 'F', 33.94)
     # Generate a $1 tax cut based on steady state values.
     # Scenario #1: Tax cut for workers at t=5
@@ -76,10 +76,12 @@ def main():
     obj.main()
     obj.WriteCSV('out_ex20161128_tax_cut_comparison.csv')
 
-    p = Quick2DPlot([obj.t[1:], obj.t[1:]], [obj.SCEN1_GOOD_SUP_GOOD[1:], obj.SCEN2_GOOD_SUP_GOOD[1:]], 'Output - Y', run_now=False)
+    p = Quick2DPlot([obj.t[1:], obj.t[1:]], [obj.SCEN1_GOOD_SUP_GOOD[1:], obj.SCEN2_GOOD_SUP_GOOD[1:]], 'Output - Y',
+                    run_now=False)
     p.Legend = ['Scenario #1 - Worker Tax Cut', 'Scenario #2 - Capitalist Tax Cut']
     p.LegendPos = 'center right'
     p.DoPlot()
+
 
 if __name__ == '__main__':
     main()

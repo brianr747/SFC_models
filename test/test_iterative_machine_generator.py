@@ -5,9 +5,9 @@ import sys
 from sfc_models.iterative_machine_generator import IterativeMachineGenerator
 import sfc_models.iterative_machine_generator as iterative_machine_generator
 
-
 # assertWarns does not exist in Python 2.7...
 is_python_3 = sys.version_info[0] == 3
+
 
 def load_tests(loader, tests, ignore):
     """
@@ -263,12 +263,11 @@ G = [20., ] * 20
 
     def test_error_toler(self):
         obj = IterativeMachineGenerator('Err_Tolerance = 0.4')
-        self.assertEqual(obj.Err_Tolerance,'0.4')
+        self.assertEqual(obj.Err_Tolerance, '0.4')
 
     def test_error_toler_fail(self):
         with self.assertRaises(ValueError):
             obj = IterativeMachineGenerator('Err_Tolerance = SNORTLOO')
-
 
     def test_string_ctor(self):
         if not is_python_3:  # pragma: no cover
@@ -312,4 +311,4 @@ G = [20., ] * 20
         obj.ParseString(eqns)
         self.assertIn(('x', 'z'), obj.Endogenous)
         # t= y replaced by t=x
-        self.assertIn(('t','x'), obj.Endogenous)
+        self.assertIn(('t', 'x'), obj.Endogenous)

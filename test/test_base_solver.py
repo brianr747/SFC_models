@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from sfc_models.base_solver import BaseSolver
 
+
 class TestBaseSolver(TestCase):
     def test_CsvString(self):
         obj = BaseSolver(['x', 'y', 't'])

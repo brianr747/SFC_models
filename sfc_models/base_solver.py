@@ -16,13 +16,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+
 class BaseSolver(object):
     def __init__(self, variable_list):
         self.VariableList = variable_list
 
     def WriteCSV(self, f_name):  # pragma: no cover
         out = self.CreateCsvString()
-        with open(f_name,'w') as f:
+        with open(f_name, 'w') as f:
             f.write(out)
 
     def CreateCsvString(self):
@@ -37,7 +38,3 @@ class BaseSolver(object):
                 txt.append(str(getattr(self, v)[i]))
             out += '\t'.join(txt) + '\n'
         return out
-
-
-
-

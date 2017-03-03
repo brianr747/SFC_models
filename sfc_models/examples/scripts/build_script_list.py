@@ -9,6 +9,7 @@ import os
 
 excluded = ['__init__.py', 'build_script_list.py']
 
+
 def main():
     print("Starting")
     fpath = os.path.dirname(__file__)
@@ -23,6 +24,7 @@ def main():
                 continue
             print(fname)
             f.write(fname + '\n')
+
 
 if __name__ == '__main__':
     main()

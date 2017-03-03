@@ -18,7 +18,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models.models import *
 from sfc_models.sectors import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness, Capitalists
@@ -38,6 +37,7 @@ def CreateCountry(mod, name, code):
     Market(cntry, 'Labour market', 'LAB')
     Market(cntry, 'Goods market', 'GOOD')
     return cntry
+
 
 def main():
     # Create model, which holds all entities
@@ -69,6 +69,7 @@ def main():
     #                 run_now=False)
     # p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']
     # p.DoPlot()
+
 
 if __name__ == '__main__':
     main()

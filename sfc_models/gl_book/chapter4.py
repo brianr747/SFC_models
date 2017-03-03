@@ -33,11 +33,13 @@ from sfc_models.gl_book import GL_book_model
 from sfc_models.models import *
 from sfc_models.sectors import *
 
+
 class PC(GL_book_model):
     """
     Implements Model PC from Chapter 4 of G&L. PC = "Portfolio Choice."
 
     """
+
     def build_model(self):
         country = self.Country
         tre = Treasury(country, 'Treasury', 'TRE')
@@ -61,7 +63,7 @@ class PC(GL_book_model):
         eqn = 'L0 + L1 * {0} - L2 * (AfterTax/F)'.format(r)
         hh.GenerateAssetWeighting({'DEP': eqn}, 'MON')
         # Fix the Pretax income equation to include deposit income.
-        hh.Equations['PreTax'] = 'SUP_LAB + INTDEP'
+        hh.SetEquationRightHandSide('PreTax', 'SUP_LAB + INTDEP')
         # Add a decorative equation: Government Fiscal Balance
         # = Primary Balance - Interest expense + Central Bank Dividend (= interest
         # received by the central bank).
@@ -93,11 +95,11 @@ class PC(GL_book_model):
         :return: list
         """
         out = [
-            ('t', [None, 1951., 1952., 1953.,]),
-            ('TRE_DEM_GOOD', [None, 20., 20., 20., 20.]), # G
-            ('DEP_r', [0.025,]* 10 + [.035]*5),
+            ('t', [None, 1951., 1952., 1953., ]),
+            ('TRE_DEM_GOOD', [None, 20., 20., 20., 20.]),  # G
+            ('DEP_r', [0.025, ] * 10 + [.035] * 5),
             ('HH_WGT_DEP', [None, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.80, 0.80, 0.80, 0.80, 0.80,
-                            0.80, 0.80]), # Weight of deposits (bills)
+                            0.80, 0.80]),  # Weight of deposits (bills)
             ('HH_AfterTax', [None, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 87.72,
                              88.04, 88.32, 88.56, 88.77, 88.95, 89.11]),  # YD
             ('TRE_T', [None, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.93, 22.01, 22.08,
@@ -105,6 +107,6 @@ class PC(GL_book_model):
             ('GOOD_SUP_GOOD', [None, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49,
                                107.22, 107.62, 107.95, 108.25, 108.50, 108.71, 108.90, 109.06, 109.20, 109.33]),  # Y
             ('HH_DEM_MON', [None, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 17.30, 17.40, 17.49,
-                        17.56, 17.62, 17.68, 17.72, 17.76, 17.80]),  # high-powered money (H)
+                            17.56, 17.62, 17.68, 17.72, 17.76, 17.80]),  # high-powered money (H)
         ]
         return out

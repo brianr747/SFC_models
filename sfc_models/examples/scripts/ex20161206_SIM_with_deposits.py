@@ -20,7 +20,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models.models import *
 from sfc_models.sectors import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness, DepositMarket, MoneyMarket

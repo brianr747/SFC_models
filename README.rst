@@ -64,7 +64,7 @@ Change Log
 ----------
 
 - **Development** Multi-file Logger, initial (constant) equilibrium calculation, markets
-  with multiple supply sources.
+  with multiple supply sources, custom functions.
 - **0.3.0** Rebuilt the solver, heavy refactoring, example installation, Godley & Lavoie example framework.
 - **0.2.1** Cleaned up examples layout.
 - **Version 0.2**  (Should have been 0.2.0 - oops)

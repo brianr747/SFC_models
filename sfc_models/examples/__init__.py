@@ -39,7 +39,7 @@ def get_file_base(fullfile):
         return fname[0:pos]
 
 
-def install_scripts(target_dir=None):   # pragma: no cover
+def install_scripts(target_dir=None):  # pragma: no cover
     """
     Install all the example Python files into a target directory (and create an "output" subdirectory).
 

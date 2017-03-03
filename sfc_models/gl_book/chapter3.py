@@ -38,6 +38,7 @@ class SIM(GL_book_model):
     Implements the SIM model from Chapter 3 of G&L - Section 3.7.1.  SIM = "Simplest model."
 
     """
+
     def build_model(self):
         country = self.Country
         gov = DoNothingGovernment(country, 'Government', 'GOV')
@@ -60,10 +61,10 @@ class SIM(GL_book_model):
         :return: list
         """
         out = [
-            ('GOV_DEM_GOOD', [0., 20., 20., 20., 20.]), # G
+            ('GOV_DEM_GOOD', [0., 20., 20., 20., 20.]),  # G
             ('GOOD_SUP_GOOD', [0., 38.44, 47.9]),  # Y
             ('GOV_T', [0., 7.7, 9.6]),  # T
-            ('HH_AfterTax', [0., 30.8, 38.3]), # YD
+            ('HH_AfterTax', [0., 30.8, 38.3]),  # YD
             ('HH_F', [0., 12.3, 22.7]),  # H = high-powered money
         ]
         return out
@@ -91,6 +92,7 @@ class SIMEX1(GL_book_model):
     (My thanks to Marc Lavoie for highlighting this text; I did not get the correct interpretation of that
      passage.)I
     """
+
     def build_model(self):
         country = self.Country
         gov = DoNothingGovernment(country, 'Government', 'GOV')
@@ -108,7 +110,6 @@ class SIMEX1(GL_book_model):
             # expected income in period 1 is 16.
             self.Model.AddInitialCondition('HH', 'AfterTax', 16.)
         return self.Model
-
 
     def expected_output(self):
         """

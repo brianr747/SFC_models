@@ -13,6 +13,7 @@ def kill_spaces(s):
     s = s.replace(' ', '')
     return s
 
+
 class TestHouseHold(TestCase):
     def test_GenerateEquations_alpha(self):
         mod = Model()
@@ -50,7 +51,6 @@ class TestCentralBank(TestCase):
         mod.GenerateFullSectorCodes()
         cb.GenerateEquations()
         self.assertEqual(cb.Treasury, tre)
-
 
 
 class TestTaxFlow(TestCase):
@@ -108,7 +108,8 @@ class TestFixedMarginBusiness(TestCase):
         mar = Market(can, 'market', 'GOOD')
         mod.GenerateFullSectorCodes()
         bus.GenerateEquations()
-        self.assertEqual('0.900*GOOD_SUP_GOOD', bus.Equations['DEM_LAB'].replace(' ',''))
+        self.assertEqual('0.900*GOOD_SUP_GOOD', bus.Equations['DEM_LAB'].replace(' ', ''))
+
 
 class TestCapitalists(TestCase):
     def test_dividend(self):
@@ -140,6 +141,7 @@ class TestMoneyMarket(TestCase):
         # At the sector level, demand = F
         self.assertEqual('HH_F', hou.Equations['DEM_MON'])
         self.assertEqual('HH2_F', hou2.Equations['DEM_MON'])
+
 
 class TestDepositMarket(TestCase):
     def test_all(self):

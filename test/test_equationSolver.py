@@ -25,7 +25,6 @@ class TestEquationSolver(TestCase):
         with self.assertWarns(expected_warning=SyntaxWarning):
             obj.ParseString('x= y = 1')
 
-
     def test_ExtractVariableList_1(self):
         obj = EquationSolver()
         obj.ExtractVariableList()
@@ -82,7 +81,7 @@ class TestEquationSolver(TestCase):
         obj.ExtractVariableList()
         obj.SetInitialConditions()
         v = obj.TimeSeries
-        self.assertEqual([10.,]*4, v['t'])
+        self.assertEqual([10., ] * 4, v['t'])
         self.assertEqual([0, 1, 2, 3], v['k'])
         self.assertEqual([0.], v['x'])
         self.assertEqual([math.sqrt(20)], v['z'])
@@ -157,7 +156,6 @@ class TestEquationSolver(TestCase):
         with self.assertRaises(ValueError):
             obj.SetInitialConditions()
 
-
     def test_initial_conditions_bad_ic2(self):
         obj = EquationSolver()
         obj.RunEquationReduction = False
@@ -172,7 +170,6 @@ class TestEquationSolver(TestCase):
         with self.assertRaises(ValueError):
             obj.SetInitialConditions()
 
-
     def test_initial_conditions_const_exo(self):
         obj = EquationSolver()
         obj.RunEquationReduction = False
@@ -185,7 +182,7 @@ class TestEquationSolver(TestCase):
           MaxTime=3""")
         obj.ExtractVariableList()
         obj.SetInitialConditions()
-        self.assertEqual([1., 1., 1., 1.,], obj.TimeSeries['t'])
+        self.assertEqual([1., 1., 1., 1., ], obj.TimeSeries['t'])
 
     def test_initial_conditions_const_endo(self):
         obj = EquationSolver()
@@ -237,9 +234,6 @@ class TestEquationSolver(TestCase):
         obj.Parser.Exogenous = [('t', 1.)]
         obj.SetInitialConditions()
         self.assertEqual([1., 1., 1., 1.], obj.TimeSeries['t'])
-
-
-
 
     def test_initial_conditions_too_short(self):
         obj = EquationSolver()
@@ -320,7 +314,7 @@ class TestEquationSolver(TestCase):
          exogenous
          t=[10.]*20
          MaxTime=3""")
-        obj2. SolveEquation()
+        obj2.SolveEquation()
         self.assertEqual(obj.TimeSeries['x'], obj2.TimeSeries['x'])
 
     def test_SolveEquation_with_initial_equilibrium(self):
@@ -335,13 +329,11 @@ class TestEquationSolver(TestCase):
          t=[10.]*20
          MaxTime=3""")
         Parameters.SolveInitialEquilibrium = True
-        obj2. SolveEquation()
+        obj2.SolveEquation()
         # Must be reset
         self.assertFalse(Parameters.SolveInitialEquilibrium)
         # The Initial equilibrium calculation overrides the initial condition.
         self.assertEqual([11., 11., 11., 11.], obj2.TimeSeries['z'])
-
-
 
     def test_DivideZeroSkip(self):
         obj = EquationSolver()
@@ -394,8 +386,6 @@ class TestEquationSolver(TestCase):
         obj.MaxIterations = 1
         with self.assertRaises(ValueError):
             obj.SolveStep(1)
-
-
 
     def test_csv_text(self):
         obj = EquationSolver()
@@ -454,7 +444,6 @@ class TestEquationSolver(TestCase):
         self.assertEqual([2., 11., 11., 11.], copied_solver.TimeSeries['z'])
         self.assertEqual([0., 2., 11., 11.], copied_solver.TimeSeries['w'])
 
-
     def test_InitialEquilibrium_fail_convergence(self):
         obj = EquationSolver()
         obj.RunEquationReduction = False
@@ -488,7 +477,6 @@ class TestEquationSolver(TestCase):
         obj.MaxIterations = 2
         with self.assertRaises(NameError):
             obj.CalculateInitialEquilibrium()
-
 
     def test_InitialEquilibrium_no_convergence(self):
         obj = EquationSolver()
@@ -527,7 +515,6 @@ class TestEquationSolver(TestCase):
         with self.assertRaises(NoEquilibriumError):
             obj.CalculateInitialEquilibrium()
 
-
     def test_SolveWithFunction(self):
         obj = EquationSolver()
         obj.RunEquationReduction = False
@@ -540,8 +527,10 @@ class TestEquationSolver(TestCase):
           MaxTime=3""")
         obj.ExtractVariableList()
         obj.SetInitialConditions()
+
         def squarer(x):
-            return x*x
+            return x * x
+
         obj.AddFunction('f', squarer)
         obj.SolveStep(1)
         self.assertEqual([0., 10.], obj.TimeSeries['x'])
