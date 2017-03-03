@@ -526,3 +526,25 @@ class TestEquationSolver(TestCase):
         Parameters.InitialEquilibriumExcludedVariables = []
         with self.assertRaises(NoEquilibriumError):
             obj.CalculateInitialEquilibrium()
+
+
+    def test_SolveWithFunction(self):
+        obj = EquationSolver()
+        obj.RunEquationReduction = False
+        # By forcing 't' into the variable list, no automatic creation of time variables
+        obj.ParseString("""
+          x=t
+          z=f(x)
+          exogenous
+          t=[10.]*20
+          MaxTime=3""")
+        obj.ExtractVariableList()
+        obj.SetInitialConditions()
+        def squarer(x):
+            return x*x
+        obj.AddFunction('f', squarer)
+        obj.SolveStep(1)
+        self.assertEqual([0., 10.], obj.TimeSeries['x'])
+        # Note that equation does not hold at t=0
+        self.assertEqual([0., 100.], obj.TimeSeries['z'])
+        obj.SolveStep(2)

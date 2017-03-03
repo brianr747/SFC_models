@@ -103,7 +103,7 @@ class Model(Entity):
             self.GenerateIncomeEquations()
             self.ProcessExogenous()
             self.FinalEquations = self.CreateFinalEquations()
-            self.EquationSolver = sfc_models.equation_solver.EquationSolver(self.FinalEquations)
+            self.EquationSolver.ParseString(self.FinalEquations)
             self.EquationSolver.SolveEquation()
             self.LogInfo()
         except Exception as e:

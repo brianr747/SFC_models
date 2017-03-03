@@ -36,6 +36,10 @@ class NoEquilibriumError(ValueError):
     pass
 
 class EquationSolver(object):
+    """
+    EquationSolver - Object to solve equations.
+
+    """
     def __init__(self, equation_string='', run_equation_reduction=True):
         self.EquationString = equation_string
         self.RunEquationReduction = run_equation_reduction
@@ -43,6 +47,7 @@ class EquationSolver(object):
         self.VariableList = []
         self.TimeSeries = {}
         self.MaxIterations = 400
+        self.Functions = {}
         if len(equation_string) > 0:
             self.ParseString(equation_string)
 
@@ -64,6 +69,15 @@ class EquationSolver(object):
             warnings.warn('Could not parse some sections of input. Examine ParseString() output to view issues.',
                           SyntaxWarning)
         return msg
+
+    def AddFunction(self, function_name, function_object):
+        """
+        Add a function with the given name so that it can be used when solving equations.
+        :param function_name: str
+        :param function_object: function
+        :return: None
+        """
+        self.Functions[function_name] = function_object
 
     def ExtractVariableList(self):
         self.VariableList = []
@@ -241,6 +255,9 @@ class EquationSolver(object):
     def SolveStep(self, step):
         # Set up starting condition (for step)
         initial = {}
+        # Probably could just do a shallow copy...
+        for key, value in self.Functions.items():
+            initial[key] = value
         Logger('Step: {0}'.format(step))
         if step == Parameters.TraceStep:
             Logger('Starting convergence tracing.', log='step')
