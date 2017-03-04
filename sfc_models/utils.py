@@ -295,7 +295,7 @@ class Logger(object):
         Logger.log_file_handles[log] = fname
 
     @staticmethod
-    def register_standard_logs(base_file_name):
+    def register_standard_logs(base_file_name): # pragma: no cover
         loginfo = {
             'log': base_file_name + '_log.txt',
             'timeseries': base_file_name + '_out.txt',

@@ -44,12 +44,13 @@ Code Cleanup
 ------------
 
 The following are the areas of code that will be examined.
+
 - Logging will be back-filled throughout the code base. The user should be able
   to see what is happening by looking at the log.
 - An Equation class may be added. Previously, equations were just lists of
   strings (str). Only limited functionality is expected to be embedded in
   Version 1.0; the main feature is ensure that the user operations are safe.
-- Methods that are viewed as "private" will be renamed with "__" in their
+- Methods that are viewed as "private" will be renamed with "_" in their
   names; they will not show up in help
 - Refactoring to ensure greater consistency of naming and parameter usage.
 - Allow users to define functions to be used within equations. **[DONE]**
@@ -69,7 +70,7 @@ Excerpts of the book will be placed on the BondEconomics blog
 (http://bondeconomics.com ), and may be incorporated within the documentation base.
 
 Since it is expected  that the library will evolve once others start to use it,
-placing too much high level documentation within the library may be
+placing too much high level documentation within the library early on may be
 counter-productive. The book is aimed to work against the fixed Version 1.0 of the
 code base, but the library documentation needs to be compatible with Versions
 2.0, etc.

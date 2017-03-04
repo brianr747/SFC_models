@@ -407,6 +407,14 @@ class TestSector(TestCase):
         self.assertEqual('1.0-WGT_BOND', kill_spaces(s.Equations['WGT_MON']))
         self.assertEqual('F*WGT_MON', kill_spaces(s.Equations['DEM_MON']))
 
+    def test_GenerateAssetWeightingAbsolute(self):
+        mod = Model()
+        us = Country(mod, 'USA', 'US')
+        s = Sector(us, 'Household', 'HH')
+        with self.assertRaises(NotImplementedError):
+            s.GenerateAssetWeighting([('BOND', '0.5'), ], 'MON',
+                                     is_absolute_weighting=True)
+
     def test_SetExogenous(self):
         mod = Model()
         us = Country(mod, 'USA', 'US')
@@ -414,6 +422,16 @@ class TestSector(TestCase):
         s.SetExogenous('varname', 'val')
         self.assertEqual([(s, 'varname', 'val'), ], mod.Exogenous)
 
+    def test_setRHS(self):
+        mod = Model()
+        us = Country(mod, 'USA', 'US')
+        s = Sector(us, 'Household', 'HH')
+        s.AddVariable('foo', 'variable foo', 'x')
+        self.assertEqual('x', s.Equations['foo'])
+        s.SetEquationRightHandSide('foo', 'y')
+        self.assertEqual('y', s.Equations['foo'])
+        with self.assertRaises(KeyError):
+            s.SetEquationRightHandSide('LittleBunnyFooFoo', 'z')
 
 class TestCountry(TestCase):
     def test_AddSector(self):
@@ -536,6 +554,30 @@ class TestMarket(TestCase):
         self.assertIn('+SUP_LAB', hh.CashFlows)
         self.assertEqual('CA_LAB_SUP_CA_HH2', hh2.Equations['SUP_LAB'])
         self.assertIn('+SUP_LAB', hh2.CashFlows)
+
+    def test_GenerateEquations_2_supply_multicountry_2(self):
+        mod = Model()
+        can = Country(mod, 'Canada, Eh?', 'CA')
+        US = Country(mod, 'USA! USA!', 'US')
+        mar = Market(can, 'Market', 'LAB')
+        bus = Sector(can, 'Business', 'BUS')
+        hh = Sector(can, 'Household', 'HH')
+        # Somehow, Americans are supplying labour in Canada...
+        hh2 = Sector(US, 'Household', 'HH2')
+        hh3 = Sector(US, 'Household#3', 'HH3')
+        bus.AddVariable('DEM_LAB', 'desc', 'x')
+        hh.AddVariable('SUP_LAB', 'desc 2', '')
+        hh2.AddVariable('SUP_LAB', 'desc 2', '')
+        mod.GenerateFullSectorCodes()
+        mar.SupplyAllocation = [[(hh, 'SUP_LAB/2'), (hh3, '0.')], hh2]
+        mar.GenerateEquations()
+        self.assertEqual('SUP_LAB/2', mar.Equations['SUP_CA_HH'])
+        self.assertEqual('SUP_LAB-SUP_CA_HH-SUP_US_HH3', kill_spaces(mar.Equations['SUP_US_HH2']))
+        self.assertEqual('CA_LAB_SUP_CA_HH', hh.Equations['SUP_LAB'])
+        self.assertIn('+SUP_LAB', hh.CashFlows)
+        self.assertEqual('CA_LAB_SUP_US_HH2', hh2.Equations['SUP_CA_LAB'])
+        self.assertIn('+SUP_CA_LAB', hh2.CashFlows)
+        self.assertIn('+SUP_CA_LAB', hh3.CashFlows)
 
     def test_GenerateTermsLowLevel(self):
         mod = Model()

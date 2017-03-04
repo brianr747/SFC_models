@@ -697,7 +697,7 @@ class Market(Sector):
             except KeyError:
                 continue
             term_list.append('+ ' + term)
-            if prefix == 'SUP':
+            if prefix == 'SUP': # pragma: no cover
                 # Since we assume that there is a single supplier, we can set the supply equation to
                 # point to the equation in the market.
                 s.AddCashFlow(var_name, self.GetVariableName(var_name), long_desc)
@@ -708,7 +708,7 @@ class Market(Sector):
         eqn = create_equation_from_terms(term_list)
         self.SetEquationRightHandSide(var_name, eqn)
 
-    def FixSingleSupply(self):
+    def FixSingleSupply(self): # pragma: no cover
         """
         Deprecated function.
 

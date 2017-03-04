@@ -88,6 +88,14 @@ class TestLogger(TestCase):
         Logger('higher', priority=5)
         # Low priority messages have an indent.
         self.assertEqual(['text\n', 'text2\n', (' ' * 4) + 'higher\n'], mock.buffer)
+        Logger.cleanup()
+
+    def test_formatting(self):
+        mock = MockFile()
+        Logger.log_file_handles = {'log': mock}
+        Logger('Format={0} {1}', data_to_format=(1, 'yay'), endline=False)
+        self.assertEqual(['Format=1 yay'], mock.buffer)
+        Logger.cleanup()
 
     def test_cleanup(self):
         mock = MockFile()
@@ -102,6 +110,7 @@ class TestLogger(TestCase):
         self.assertEqual({'log': 'filename'}, Logger.log_file_handles)
         with self.assertRaises(ValueError):
             Logger.register_log('fname2', 'log')
+        Logger.cleanup()
 
 
 class TestEquationSolverLogging(TestCase):

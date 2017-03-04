@@ -23,6 +23,36 @@ class TestHouseHold(TestCase):
         self.assertEqual(hh.Equations['AlphaFin'], '0.2000')
         self.assertEqual(hh.Equations['AlphaIncome'], '0.9000')
 
+class TestMultiSupply(TestCase):
+    def test_constructor_nosupply(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'Eh')
+        with self.assertRaises(utils.LogicError):
+            bus= FixedMarginBusinessMultiOutput(can, 'Business', 'BUS', market_list=[])
+
+
+    def test_ctor_default(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'CA')
+        marca = Market(can, 'market', 'GOOD')
+        us = Country(mod, 'US', 'US')
+        marus = Market(us, 'market', 'GOOD')
+        bus = FixedMarginBusinessMultiOutput(can, 'Business', 'BUS',
+                                             market_list=[marca, marus])
+        bus2 = FixedMarginBusinessMultiOutput(us, 'Business', 'BUS',
+                                             market_list=[marca, marus], profit_margin=.1)
+
+        self.assertIn('SUP_GOOD', bus.Equations)
+        self.assertIn('SUP_US_GOOD', bus.Equations)
+        marus.SupplyAllocation = [[[bus2, 'allocation_equation'],], bus]
+        mod.GenerateFullSectorCodes()
+        marus.GenerateEquations()
+        self.assertFalse(marus.ShareParent(bus))
+        self.assertEqual('US_GOOD_SUP_CA_BUS', bus.Equations['SUP_US_GOOD'])
+        self.assertEqual('US_GOOD_SUP_US_BUS', bus2.Equations['SUP_GOOD'])
+        bus2.GenerateEquations()
+        self.assertEqual('0.900 * SUP', bus2.Equations['DEM_LAB'])
+        self.assertEqual('SUP_CA_GOOD+SUP_GOOD', bus2.Equations['SUP'])
 
 class TestDoNothingGovernment(TestCase):
     def test_GenerateEquations(self):

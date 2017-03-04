@@ -126,7 +126,7 @@ class EquationSolver(object):
                 try:
                     val = list(val)
                 except:  # pragma: no cover     I cannot trigger this error, but I will leave in place
-                    raise ValueError('Initial condition must be of the list type: ' + var)
+                    raise ValueError('Exogenous must be of the list type: ' + var)
             else:
                 if type(eqn) == float:
                     val = [eqn, ] * (self.Parser.MaxTime + 1)
@@ -136,7 +136,7 @@ class EquationSolver(object):
                     except:  # pragma: no cover   Hard time figuring how to trigger this
                         raise ValueError('Initial conditions must be directly convertible to a list: ' + var)
             if len(val) < self.Parser.MaxTime + 1:
-                raise ValueError('Initial condition list too short: ' + var)
+                raise ValueError('Exogenous variable list too short: ' + var)
             variables[var] = val[0:self.Parser.MaxTime + 1]
             time_zero_constants[var] = val[0]
         # Third pass: clean up constant endogenous
@@ -234,7 +234,7 @@ class EquationSolver(object):
             prev = TS[-2]
             bad = False
             if abs(lastval) < 1e-4:
-                if not abs(lastval) < 1e-4:
+                if not abs(prev) < 1e-4:
                     bad = True
             else:
                 err = abs(lastval - prev) / lastval
