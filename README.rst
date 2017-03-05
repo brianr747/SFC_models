@@ -23,6 +23,34 @@ Road To Version 1.0
 Another text file "RoadToVersion1.txt" describes the functionality that is aimed to be
 incorporated in Version 1.0 of *sfc_models*.
 
+At the time of writing (2017-03-05), it is expected that version 0.4 will be ready. This version
+involves a major refactoring of the code, and has changed behaviour.
+
+- The framework now injects a double underscore ('__') instead of a single one ('_') between
+  the sector FullCode and the local variable name. For example, the household financial assets
+  are now 'HH__F' instead of 'HH_F'. Furthermore, the creation of local variables with '__' is
+  blocked. This means that the presence of '__' in a variable name means that it is the full name
+  of a variable; otherwise it is a local variable. (Or perhaps, a global variable, like 't'.)
+- An Equation class was created. It has replaced the strings held in the Equations member of
+  the Sector class. It allows us to add terms to equations, so that the financial assets and
+  income equations (see below) are always well-defined. This Equation class should be used by
+  the solver, but it is not yet incorporated; there is no guarantee that such a change will be
+  done before version 1.0 release.
+- A pre-tax income variable ('INC') was created. It is normally equal to cash inflows minus
+  outflows, but there are some exceptions. (Household consumption, business dividends, etc.)
+  The sectors in the framework do their best to classify cash flows as whether they affect income,
+  but users may need to create exceptions (or additions) manually. (Previously, the income was
+  ad hoc.)
+- A new module - *sfc_models.sector* was created; it pulled the Sector class out of the models
+  module. (The existing *sectors.py* may be renamed due to the name similarity.) My old
+  example code that did "import *" from *sfc_models.models* no longer works. (?)
+
+There are no *major* refactorings now expected to take place before version 1.0 release. As a result,
+the project status will be changed to 'beta' in Version 0.4. Methods that are not expected to be
+used by people who are not creating new classes will have '_' added in front of their name (so they
+disappear from help()), but this is viewed as acceptable. Otherwise, variables and methods will
+only be renamed if they are obviously not following a standard pattern.
+
 Sub-package: gl_book
 --------------------
 
