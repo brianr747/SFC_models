@@ -22,7 +22,7 @@ limitations under the License.
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models.models import *
 from sfc_models.sector import Market
-from sfc_models.sectors import Household, Treasury, CentralBank, TaxFlow, FixedMarginBusiness, DepositMarket, \
+from sfc_models.sector_definitions import Household, Treasury, CentralBank, TaxFlow, FixedMarginBusiness, DepositMarket, \
     MoneyMarket
 
 
@@ -48,7 +48,7 @@ def main():
     # --------------------------------------------
     # Financial asset demand equations
     # Need to call this before we set the demand functions for
-    mod.GenerateFullSectorCodes()
+    mod._GenerateFullSectorCodes()
     # Need the full variable name for 'F' in household
     hh_F = hh.GetVariableName('F')
     hh.AddVariable('DEM_MON', 'Demand for Money', '0.5 * ' + hh_F)

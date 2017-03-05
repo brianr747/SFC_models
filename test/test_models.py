@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from sfc_models.models import *
 from sfc_models.sector import Sector, Market
-from sfc_models.sectors import Household, DoNothingGovernment
+from sfc_models.sector_definitions import Household, DoNothingGovernment
 from sfc_models.utils import LogicError
 
 
@@ -57,7 +57,7 @@ class TestModel(TestCase):
         mod = Model()
         country = Country(mod, 'USA!', 'US')
         household = Sector(country, 'Household', 'HH')
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         self.assertEqual(household.FullCode, 'HH')
 
     def test_GenerateFullCodes_2(self):
@@ -66,7 +66,7 @@ class TestModel(TestCase):
         can = Country(mod, 'Canada', 'Eh?')
         household = Sector(us, 'Household', 'HH')
         can_hh = Sector(can, 'Household', 'HH')
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         self.assertEqual(household.FullCode, 'US_HH')
         self.assertEqual(can_hh.FullCode, 'Eh?_HH')
 
@@ -76,7 +76,7 @@ class TestModel(TestCase):
         can = Country(mod, 'Canada', 'Eh?')
         household = Sector(us, 'Household', 'HH')
         can_hh = Sector(can, 'Household', 'HH')
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         self.assertEqual(household, mod.LookupSector('US_HH'))
         self.assertEqual(can_hh, mod.LookupSector('Eh?_HH'))
         with self.assertRaises(KeyError):
@@ -114,28 +114,28 @@ class TestModel(TestCase):
         us = Country(mod, 'USA', 'US')
         household = Sector(us, 'Household', 'HH')
         household.AddVariable('foo', 'desc', 'x')
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         mod.InitialConditions = [('HH', 'foo', '0.1')]
-        out = mod.GenerateInitialConditions()
+        out = mod._GenerateInitialConditions()
         self.assertEqual([('HH__foo(0)', '0.1', 'Initial Condition')], out)
 
     def test_GenerateInitialCondFail(self):
         mod = Model()
         us = Country(mod, 'USA', 'US')
         household = Sector(us, 'Household', 'HH')
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         mod.InitialConditions = [('HH', 'FooFoo', '0.1')]
         with self.assertRaises(KeyError):
-            out = mod.GenerateInitialConditions()
+            out = mod._GenerateInitialConditions()
 
     def test_ProcessExogenous(self):
         mod = Model()
         us = Country(mod, 'USA', 'US')
         household = Sector(us, 'Household', 'HH')
         household.AddVariable('foo', 'desc', 'x')
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         mod.Exogenous = [('HH', 'foo', 'TEST')]
-        mod.ProcessExogenous()
+        mod._ProcessExogenous()
         self.assertEqual('EXOGENOUSTEST', household.EquationBlock['foo'].RHS())
 
     def test_GetSectors(self):
@@ -166,8 +166,8 @@ class TestModel(TestCase):
         sec2 = Sector(c, 'sec2', 'sec2')
         sec2.AddVariable('two_x', 'Test variable', '2 * {0}'.format(varname))
         self.assertEqual('2*' + varname, kill_spaces(sec2.EquationBlock['two_x'].RHS()))
-        mod.GenerateFullSectorCodes()
-        mod.FixAliases()
+        mod._GenerateFullSectorCodes()
+        mod._FixAliases()
         self.assertEqual('2*sec1__x', kill_spaces(sec2.EquationBlock['two_x'].RHS()))
 
     def test_fix_aliases_2(self):
@@ -180,12 +180,11 @@ class TestModel(TestCase):
         self.assertIn('{0}'.format(sec1.ID), varname)
         sec2 = Sector(c, 'sec2', 'sec2')
         mod.RegisterCashFlow(sec1, sec2, 'x')
-        mod.GenerateRegisteredCashFlows()
+        mod._GenerateRegisteredCashFlows()
         self.assertIn('-' + varname, sec1.EquationBlock['F'].RHS())
         self.assertIn(varname, sec2.EquationBlock['F'].RHS())
-        mod.GenerateFullSectorCodes()
-        mod.GenerateIncomeEquations()
-        mod.FixAliases()
+        mod._GenerateFullSectorCodes()
+        mod._FixAliases()
         self.assertIn('-sec1__x', sec1.EquationBlock['F'].RHS())
         self.assertEqual('LAG_F+sec1__x', kill_spaces(sec2.EquationBlock['F'].RHS()))
 
@@ -193,10 +192,10 @@ class TestModel(TestCase):
         mod = Model()
         us = Country(mod, 'USA', 'US')
         household = Sector(us, 'Household', 'HH')
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         mod.Exogenous = [('HH', 'Foo', 'TEST')]
         with self.assertRaises(KeyError):
-            mod.ProcessExogenous()
+            mod._ProcessExogenous()
 
     def test_GenerateEquations(self):
         # Just count the number if times the stub is called
@@ -205,19 +204,10 @@ class TestModel(TestCase):
         us = Country(mod, 'USA', 'US')
         h1 = Sector(us, 'Household', 'HH')
         h2 = Sector(us, 'Capitalists', 'CAP')
-        h1.GenerateEquations = stub.stub_fun
-        h2.GenerateEquations = stub.stub_fun
-        mod.GenerateEquations()
+        h1._GenerateEquations = stub.stub_fun
+        h2._GenerateEquations = stub.stub_fun
+        mod._GenerateEquations()
         self.assertEqual(2, stub.Count)
-
-    def test_GenerateIncomeEquations(self):
-        stub = Stub()
-        mod = Model()
-        us = Country(mod, 'USA', 'US')
-        h1 = Sector(us, 'Household', 'HH')
-        h1.GenerateIncomeEquations = stub.stub_fun
-        mod.GenerateIncomeEquations()
-        self.assertEqual(1, stub.Count)
 
     def test_CreateFinalFunctions(self):
         stub = Stub()
@@ -225,9 +215,9 @@ class TestModel(TestCase):
         us = Country(mod, 'USA', 'US')
         h1 = Sector(us, 'Household', 'HH')
         h2 = Sector(us, 'Household2', 'H2')
-        h1.CreateFinalEquations = stub.stub_return
-        h2.CreateFinalEquations = stub.stub_return
-        out = mod.CreateFinalEquations()
+        h1._CreateFinalEquations = stub.stub_return
+        h2._CreateFinalEquations = stub.stub_return
+        out = mod._CreateFinalEquations()
         out = out.split('\n')
         self.assertTrue('1' in out[0])
         self.assertTrue('2' in out[1])
@@ -237,7 +227,7 @@ class TestModel(TestCase):
               ('y', 'EXOGENOUS 20', 'comment_y'),
               ('z', 'd', 'comment_z')]
         mod = Model()
-        out = mod.FinalEquationFormatting(eq)
+        out = mod._FinalEquationFormatting(eq)
         # Remove spaces; what matters is the content
         out = out.replace(' ', '').split('\n')
         target = ['x=y+1#comment_x', 'z=d#comment_z', '', '#ExogenousVariables', '', 'y=20#comment_y',
@@ -288,7 +278,6 @@ class TestSector(TestCase):
         mod = Model()
         country = Country(mod, 'name', 'code')
         sec = Sector(country, 'Name', 'Code', has_F=False)
-        sec.GenerateIncomeEquations()
         self.assertNotIn('F', sec.GetVariables())
 
     def test_BadUnderBars(self):
@@ -297,7 +286,7 @@ class TestSector(TestCase):
         sec = Sector(country, 'Bad', 'B__A__D')
         sec.AddVariable('foo', 'desc', 'x')
         sec2 = Sector(country, 'OK sector', 'OK')
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         with self.assertRaises(ValueError):
             sec.GetVariableName('foo')
         with self.assertRaises(ValueError):
@@ -322,8 +311,8 @@ class TestSector(TestCase):
         mod = Model()
         us = Country(mod, 'USA', 'US')
         household = Household(us, 'Household', 'HH', .9, .2)
-        mod.GenerateFullSectorCodes()
-        household.GenerateEquations()
+        mod._GenerateFullSectorCodes()
+        household._GenerateEquations()
         self.assertEqual(household.GetVariableName('AlphaFin'), 'HH__AlphaFin')
 
     def test_GetVariableName_2(self):
@@ -338,7 +327,7 @@ class TestSector(TestCase):
         mod = Model()
         us = Country(mod, 'USA', 'US')
         hh = Sector(us, 'Household', 'HH')
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         with self.assertRaises(KeyError):
             hh.GetVariableName('Kaboom')
 
@@ -385,7 +374,6 @@ class TestSector(TestCase):
         mod = Model()
         us = Country(mod, 'USA', 'US')
         s = Sector(us, 'Household', 'HH')
-        s.GenerateIncomeEquations()
         self.assertEqual('LAG_F', s.EquationBlock['F'].RHS())
         self.assertEqual('F(k-1)', s.EquationBlock['LAG_F'].RHS())
 
@@ -394,7 +382,6 @@ class TestSector(TestCase):
         us = Country(mod, 'USA', 'US')
         s = Sector(us, 'Household', 'HH')
         s.AddCashFlow('X', 'eq')
-        s.GenerateIncomeEquations()
         self.assertEqual('LAG_F+X', s.EquationBlock['F'].RHS())
         self.assertEqual('F(k-1)', s.EquationBlock['LAG_F'].RHS())
 
@@ -404,7 +391,6 @@ class TestSector(TestCase):
         s = Sector(us, 'Household', 'HH')
         s.AddCashFlow('X', 'eq')
         s.AddCashFlow('Y', 'eq2')
-        s.GenerateIncomeEquations()
         self.assertEqual('LAG_F+X+Y', s.EquationBlock['F'].RHS())
         self.assertEqual('F(k-1)', s.EquationBlock['LAG_F'].RHS())
 
@@ -412,11 +398,11 @@ class TestSector(TestCase):
         mod = Model()
         us = Country(mod, 'USA', 'US')
         s = Sector(us, 'Household', 'HH', has_F=False)
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         # Can no longer directly inject data into the Sector object
         s.AddVariableFromEquation('x=a+1 # foo')
         s.AddVariableFromEquation('a=cat')
-        out = s.CreateFinalEquations()
+        out = s._CreateFinalEquations()
         # Since F has an empty equation, does not appear.
         targ = [('HH__a', 'cat', '[a] '), ('HH__x', 'HH__a+1', '[x] foo')]
         # Kill spacing in equations
@@ -436,8 +422,7 @@ class TestSector(TestCase):
         us = Country(mod, 'US', 'US')
         hh = Sector(us, 'HH', 'HH')
         hh.AddCashFlow('x', eqn='2.0', is_income=True)
-        mod.GenerateFullSectorCodes()
-        mod.GenerateIncomeEquations()
+        mod._GenerateFullSectorCodes()
         self.assertEqual('x', hh.EquationBlock['INC'].RHS())
 
     def test_IncomeEquation_2(self):
@@ -445,8 +430,7 @@ class TestSector(TestCase):
         us = Country(mod, 'US', 'US')
         hh = Sector(us, 'HH', 'HH', has_F=True)
         hh.AddCashFlow('x', eqn='2.0', is_income=False)
-        mod.GenerateFullSectorCodes()
-        mod.GenerateIncomeEquations()
+        mod._GenerateFullSectorCodes()
         self.assertEqual('0.0', hh.EquationBlock['INC'].RHS())
 
     def test_GenerateAssetWeightings_2(self):
@@ -512,8 +496,8 @@ class TestMarket(TestCase):
         hh = Sector(can, 'Household', 'HH')
         bus.AddVariable('DEM_LAB', 'desc', 'x')
         hh.AddVariable('SUP_LAB', 'desc 2', '')
-        mod.GenerateFullSectorCodes()
-        mar.GenerateEquations()
+        mod._GenerateFullSectorCodes()
+        mar._GenerateEquations()
         self.assertIn('-DEM_LAB', bus.EquationBlock['F'].RHS())
         self.assertEqual('x', bus.EquationBlock['DEM_LAB'].RHS())
         self.assertEqual('LAG_F+SUP_LAB', hh.EquationBlock['F'].RHS())
@@ -527,9 +511,9 @@ class TestMarket(TestCase):
         mar = Market(can, 'Market', 'LAB')
         bus = Sector(can, 'Business', 'BUS')
         bus.AddVariable('DEM_LAB', 'desc', '')
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         with self.assertRaises(ValueError):
-            mar.GenerateEquations()
+            mar._GenerateEquations()
 
     def test_GenerateEquations_2_supply_fail(self):
         mod = Model()
@@ -541,9 +525,9 @@ class TestMarket(TestCase):
         bus.AddVariable('DEM_LAB', 'desc', 'x')
         hh.AddVariable('SUP_LAB', 'desc 2', '')
         hh2.AddVariable('SUP_LAB', 'desc 2', '')
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         with self.assertRaises(LogicError):
-            mar.GenerateEquations()
+            mar._GenerateEquations()
 
     def test_GenerateEquations_2_supply(self):
         mod = Model()
@@ -555,9 +539,9 @@ class TestMarket(TestCase):
         bus.AddVariable('DEM_LAB', 'desc', 'x')
         hh.AddVariable('SUP_LAB', 'desc 2', '')
         hh2.AddVariable('SUP_LAB', 'desc 2', '')
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         mar.SupplyAllocation = [[(hh, 'SUP_LAB/2')], hh2]
-        mar.GenerateEquations()
+        mar._GenerateEquations()
         self.assertEqual('SUP_LAB/2', mar.EquationBlock['SUP_HH'].RHS())
         self.assertEqual('SUP_LAB-SUP_HH', kill_spaces(mar.EquationBlock['SUP_HH2'].RHS()))
         self.assertEqual('LAB__SUP_HH', hh.EquationBlock['SUP_LAB'].RHS())
@@ -575,9 +559,9 @@ class TestMarket(TestCase):
         bus.AddVariable('DEM_LAB', 'desc', 'x')
         hh.AddVariable('SUP_LAB', 'desc 2', '')
         hh2.AddVariable('SUP_CA_LAB', 'desc 2', '')
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         mar.SupplyAllocation = [[(hh, 'SUP_LAB/2')], hh2]
-        mar.GenerateEquations()
+        mar._GenerateEquations()
         self.assertEqual('SUP_LAB/2', mar.EquationBlock['SUP_CA_HH'].RHS())
         self.assertEqual('SUP_LAB-SUP_CA_HH', kill_spaces(mar.EquationBlock['SUP_US_HH2'].RHS()))
         self.assertEqual('CA_LAB__SUP_CA_HH', hh.EquationBlock['SUP_LAB'].RHS())
@@ -596,9 +580,9 @@ class TestMarket(TestCase):
         bus.AddVariable('DEM_LAB', 'desc', 'x')
         hh.AddVariable('SUP_LAB', 'desc 2', '')
         hh2.AddVariable('SUP_LAB', 'desc 2', '')
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         mar.SupplyAllocation = [[(hh, 'SUP_LAB/2')], hh2]
-        mar.GenerateEquations()
+        mar._GenerateEquations()
         self.assertEqual('SUP_LAB/2', mar.EquationBlock['SUP_CA_HH'].RHS())
         self.assertEqual('SUP_LAB-SUP_CA_HH', mar.EquationBlock['SUP_CA_HH2'].RHS())
         self.assertEqual('CA_LAB__SUP_CA_HH', hh.EquationBlock['SUP_LAB'].RHS())
@@ -620,9 +604,9 @@ class TestMarket(TestCase):
         hh.AddVariable('SUP_LAB', 'desc 2', '')
         hh2.AddVariable('SUP_CA_LAB', 'desc 2', '')
         hh3.AddVariable('SUP_CA_LAB', 'desc 2', '')
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         mar.SupplyAllocation = [[(hh, 'SUP_LAB/2'), (hh3, '0.')], hh2]
-        mar.GenerateEquations()
+        mar._GenerateEquations()
         self.assertEqual('SUP_LAB/2', mar.EquationBlock['SUP_CA_HH'].RHS())
         self.assertEqual('SUP_LAB-SUP_CA_HH-SUP_US_HH3', kill_spaces(mar.EquationBlock['SUP_US_HH2'].RHS()))
         self.assertEqual('CA_LAB__SUP_CA_HH', hh.EquationBlock['SUP_LAB'].RHS())
@@ -637,7 +621,7 @@ class TestMarket(TestCase):
         mar = Market(can, 'Market', 'LAB')
         bus = Sector(can, 'Business', 'BUS')
         bus.AddVariable('DEM_LAB', 'desc', '')
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         mar._GenerateTermsLowLevel('DEM', 'Demand')
         self.assertIn('-DEM_LAB', bus.EquationBlock['F'].RHS())
         self.assertTrue('error' in bus.EquationBlock['DEM_LAB'].RHS().lower())
@@ -676,9 +660,8 @@ class TestRegisterCashFlows(TestCase):
         mod, sec1, sec2 = self.get_objects()
         sec1.AddVariable('DIV', 'desc', '$1')
         mod.RegisterCashFlow(sec1, sec2, 'DIV')
-        mod.GenerateFullSectorCodes()
-        mod.GenerateEquations()
-        mod.GenerateRegisteredCashFlows()
-        mod.GenerateIncomeEquations()
+        mod._GenerateFullSectorCodes()
+        mod._GenerateEquations()
+        mod._GenerateRegisteredCashFlows()
         self.assertEqual('LAG_F+SEC1__DIV', kill_spaces(sec2.EquationBlock['F'].RHS()))
         self.assertEqual('LAG_F-SEC1__DIV', kill_spaces(sec1.EquationBlock['F'].RHS()))

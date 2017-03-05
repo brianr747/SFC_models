@@ -29,7 +29,7 @@ limitations under the License.
 """
 
 from sfc_models.gl_book import GL_book_model
-from sfc_models.sectors import DoNothingGovernment, Household, FixedMarginBusiness, TaxFlow, HouseholdWithExpectations
+from sfc_models.sector_definitions import DoNothingGovernment, Household, FixedMarginBusiness, TaxFlow, HouseholdWithExpectations
 from sfc_models.sector import Market
 
 

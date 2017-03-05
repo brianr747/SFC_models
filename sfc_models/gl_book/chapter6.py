@@ -28,7 +28,7 @@ limitations under the License.
 
 from sfc_models.gl_book import GL_book_model
 from sfc_models.models import *
-from sfc_models.sectors import *
+from sfc_models.sector_definitions import *
 
 
 class REG(GL_book_model):

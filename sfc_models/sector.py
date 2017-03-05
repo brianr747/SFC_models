@@ -23,10 +23,11 @@ class Sector(Entity):
             # self.AddVariable('F', 'Financial assets', '<TO BE GENERATED>')
             F = Equation('F', 'Financial assets')
             F.AddTerm('LAG_F')
-            self.EquationBlock.AddEquation(F)
+            self.AddVariableFromEquation(F)
             # self.AddVariable('LAG_F', 'Previous period''s financial assets.', 'F(k-1)')
-            INC = Equation('INC', 'Income (PreTax)')
-            self.EquationBlock.AddEquation(INC)
+            INC = Equation('INC', 'Income (PreTax)', rhs=[])
+            self.AddVariableFromEquation(INC)
+            self.AddVariable('LAG_F', 'Previous period''s financial assets.', 'F(k-1)')
 
     def AddVariable(self, varname, desc='', eqn=''):
         """
@@ -43,7 +44,10 @@ class Sector(Entity):
             raise ValueError('Cannot use "__" inside local variable names: ' + varname)
         if desc is None:
             desc = ''
-        equation = Equation(varname, desc, [Term(eqn, is_blob=True),])
+        if type(eqn) == Equation:
+            equation = eqn
+        else:
+            equation = Equation(varname, desc, [Term(eqn, is_blob=True),])
         if varname in self.GetVariables():
             Logger('[ID={0}] Variable Overwritten: {1}', priority=3,
                    data_to_format=(self.ID, varname))
@@ -60,7 +64,7 @@ class Sector(Entity):
         """
         if type(eqn) == str:
             eqn = Equation(eqn)
-        self.AddVariable(eqn.LeftHandSide, eqn.Description, eqn.RHS())
+        self.AddVariable(eqn.LeftHandSide, eqn.Description, eqn)
 
     def SetEquationRightHandSide(self, varname, rhs):
         """
@@ -121,7 +125,7 @@ class Sector(Entity):
         if self.FullCode == '':
             alias = '_{0}__{1}'.format(self.ID, varname)
             Logger('Registering alias: {0}', priority=5, data_to_format=(alias))
-            self.GetModel().RegisterAlias(alias, self, varname)
+            self.GetModel()._RegisterAlias(alias, self, varname)
             return alias
         else:
             # Put in a sanity check here
@@ -188,7 +192,7 @@ class Sector(Entity):
         else:
             self.AddVariable(term, desc, eqn)
 
-    def GenerateEquations(self):
+    def _GenerateEquations(self):
         """
         Work is done in derived classes.
         :return: None
@@ -197,7 +201,10 @@ class Sector(Entity):
 
     def Dump(self):
         """
-        Create a string with information about this object. Format will vary over time.
+        Create a string with information about this object. This is for debugging
+        purposes, and the format will change over time. In other words, do not rely on
+        this output if you want specific information.
+
         :return: str
         """
         out = '[%s] %s. FullCode = "%s" \n' % (self.Code, self.LongName, self.FullCode)
@@ -206,19 +213,7 @@ class Sector(Entity):
             out += str(self.EquationBlock[var]) + '\n'
         return out
 
-    def GenerateIncomeEquations(self):
-        if not self.HasF:
-            return
-        # We could trap the case where F is always equal to LAG_F and eliminate
-        # equations, but leave them in case someone wants to refer to the F variable.
-        self.AddVariableFromEquation(self.EquationBlock['F'])
-        self.AddVariable('LAG_F', 'Previous period''s financial assets.', 'F(k-1)')
-        # if not self.EquationBlock['INC'].RHS() == '0.0':
-        #     if 'INC' in self.Equations:
-        #         raise LogicError('The variable INC should not be declared')
-        #     self.AddVariableFromEquation(self.EquationBlock['INC'])
-
-    def CreateFinalEquations(self):
+    def _CreateFinalEquations(self):
         out = []
         lookup = {}
         for varname in self.EquationBlock.GetEquationList():
@@ -309,7 +304,7 @@ class Market(Sector):
             raise LogicError('No supplier: ' + self.Code)
         return ret_value
 
-    def GenerateEquations(self):
+    def _GenerateEquations(self):
         """
         Generate the equations associated with this market.
         :return:

@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from sfc_models.models import Model, Country
-from sfc_models.sectors import *
+from sfc_models.sector_definitions import *
 
 
 def kill_spaces(s):
@@ -19,7 +19,7 @@ class TestHouseHold(TestCase):
         mod = Model()
         can = Country(mod, 'Canada', 'Eh')
         hh = Household(can, 'Household', 'HH', alpha_fin=.2, alpha_income=.9)
-        hh.GenerateEquations()
+        hh._GenerateEquations()
         self.assertEqual(hh.EquationBlock['AlphaFin'].RHS(), '0.2000')
         self.assertEqual(hh.EquationBlock['AlphaIncome'].RHS(), '0.9000')
 
@@ -44,12 +44,12 @@ class TestMultiSupply(TestCase):
         self.assertIn('SUP_GOOD', bus.EquationBlock.Equations)
         self.assertIn('SUP_US_GOOD', bus.EquationBlock.Equations)
         marus.SupplyAllocation = [[[bus2, 'allocation_equation'],], bus]
-        mod.GenerateFullSectorCodes()
-        marus.GenerateEquations()
+        mod._GenerateFullSectorCodes()
+        marus._GenerateEquations()
         self.assertFalse(marus.ShareParent(bus))
         self.assertEqual('US_GOOD__SUP_CA_BUS', bus.EquationBlock['SUP_US_GOOD'].RHS())
         self.assertEqual('US_GOOD__SUP_US_BUS', bus2.EquationBlock['SUP_GOOD'].RHS())
-        bus2.GenerateEquations()
+        bus2._GenerateEquations()
         self.assertEqual('0.900*SUP', bus2.EquationBlock['DEM_LAB'].RHS())
         self.assertEqual('SUP_CA_GOOD+SUP_GOOD', bus2.EquationBlock['SUP'].RHS())
 
@@ -58,7 +58,7 @@ class TestDoNothingGovernment(TestCase):
         mod = Model()
         can = Country(mod, 'Canada', 'Eh')
         gov = DoNothingGovernment(can, 'Government', 'GOV')
-        gov.GenerateEquations()
+        gov._GenerateEquations()
         self.assertEqual(gov.EquationBlock['DEM_GOOD'].RHS(), '0.0')
 
 
@@ -67,7 +67,7 @@ class TestTreasury(TestCase):
         mod = Model()
         can = Country(mod, 'Canada', 'Eh')
         gov = Treasury(can, 'Government', 'GOV')
-        gov.GenerateEquations()
+        gov._GenerateEquations()
         self.assertEqual(gov.EquationBlock['DEM_GOOD'].RHS(), '0.0')
 
 
@@ -77,8 +77,8 @@ class TestCentralBank(TestCase):
         can = Country(mod, 'Canada', 'Eh')
         tre = Treasury(can, 'Treasury', 'TRE')
         cb = CentralBank(can, 'Central Bank', 'CB', tre)
-        mod.GenerateFullSectorCodes()
-        cb.GenerateEquations()
+        mod._GenerateFullSectorCodes()
+        cb._GenerateEquations()
         self.assertEqual(cb.Treasury, tre)
 
 
@@ -91,8 +91,8 @@ class TestTaxFlow(TestCase):
         self.assertTrue('TaxRate' in tf.EquationBlock.Equations)
         hh = Household(can, 'Household', 'HH', alpha_fin=.2, alpha_income=.9)
         gov = DoNothingGovernment(can, 'Gummint', 'GOV')
-        mod.GenerateFullSectorCodes()
-        tf.GenerateEquations()
+        mod._GenerateFullSectorCodes()
+        tf._GenerateEquations()
         self.assertEqual('0.1000', tf.EquationBlock['TaxRate'].RHS())
         self.assertEqual('Tax__TaxRate*HH__INC', tf.EquationBlock['T'].RHS().replace(' ', ''))
         self.assertIn('-T',hh.EquationBlock['F'].RHS())
@@ -109,8 +109,8 @@ class TestTaxFlow(TestCase):
         hh = Household(can, 'Household', 'HH', alpha_fin=.2, alpha_income=.9)
         hh.AddVariable('TaxRate', 'Sector level tax rate', '0,2')
         gov = DoNothingGovernment(can, 'Gummint', 'GOV')
-        mod.GenerateFullSectorCodes()
-        tf.GenerateEquations()
+        mod._GenerateFullSectorCodes()
+        tf._GenerateEquations()
         self.assertEqual('0.1000', tf.EquationBlock['TaxRate'].RHS())
         self.assertEqual('HH__TaxRate*HH__INC', tf.EquationBlock['T'].RHS().replace(' ', ''))
         self.assertIn('-T', hh.EquationBlock['F'].RHS())
@@ -126,8 +126,8 @@ class TestFixedMarginBusiness(TestCase):
         bus = FixedMarginBusiness(can, 'Business', 'BUS')
         self.assertEqual(0., bus.ProfitMargin)
         mar = Market(can, 'market', 'GOOD')
-        mod.GenerateFullSectorCodes()
-        bus.GenerateEquations()
+        mod._GenerateFullSectorCodes()
+        bus._GenerateEquations()
         self.assertEqual('GOOD__SUP_GOOD', bus.EquationBlock['DEM_LAB'].RHS().replace(' ', ''))
 
     def test_GenerateEquations(self):
@@ -135,8 +135,8 @@ class TestFixedMarginBusiness(TestCase):
         can = Country(mod, 'Canada', 'Eh')
         bus = FixedMarginBusiness(can, 'Business', 'BUS', profit_margin=0.1)
         mar = Market(can, 'market', 'GOOD')
-        mod.GenerateFullSectorCodes()
-        bus.GenerateEquations()
+        mod._GenerateFullSectorCodes()
+        bus._GenerateEquations()
         self.assertEqual('0.900*GOOD__SUP_GOOD', bus.EquationBlock['DEM_LAB'].RHS().replace(' ', ''))
 
 
@@ -148,8 +148,8 @@ class TestCapitalists(TestCase):
         bus = FixedMarginBusiness(can, 'Business', 'BUS', profit_margin=.1)
         mar = Market(can, 'market', 'GOOD')
         cap = Capitalists(can, 'Capitalists', 'CAP', .4, .4)
-        mod.GenerateFullSectorCodes()
-        bus.GenerateEquations()
+        mod._GenerateFullSectorCodes()
+        bus._GenerateEquations()
         self.assertEqual('CA_BUS__PROF', cap.EquationBlock['DIV'].RHS())
 
 
@@ -161,8 +161,8 @@ class TestMoneyMarket(TestCase):
         hou = Household(can, 'Household', 'HH', .5, .5)
         hou2 = Household(can, 'Household2', 'HH2', .5, .5)
         mm = MoneyMarket(can)
-        mod.GenerateFullSectorCodes()
-        mod.GenerateEquations()
+        mod._GenerateFullSectorCodes()
+        mod._GenerateEquations()
         # Supply = Demand
         self.assertEqual('GOV__SUP_MON', mm.EquationBlock['SUP_MON'].RHS())
         # Demand = Demand of two sectors
@@ -182,10 +182,10 @@ class TestDepositMarket(TestCase):
         mm = MoneyMarket(can)
         dep = DepositMarket(can)
         # Need to add demand functions in household sector
-        mod.GenerateFullSectorCodes()
+        mod._GenerateFullSectorCodes()
         hou.AddVariable('DEM_MON', 'Demand for Money', '0.5 * ' + hou.GetVariableName('F'))
         hou.AddVariable('DEM_DEP', 'Demand for Deposits', '0.5 * ' + hou.GetVariableName('F'))
-        mod.GenerateEquations()
+        mod._GenerateEquations()
         # Supply = Demand
         self.assertEqual('GOV__SUP_DEP', dep.EquationBlock['SUP_DEP'].RHS())
         # Demand = Demand of two sectors

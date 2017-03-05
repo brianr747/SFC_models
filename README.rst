@@ -6,12 +6,10 @@ Introduction
 
 Creation and solution of stock-flow consistent (SFC) models. Currently under construction.
 
-At present, the module *sfc_models.iterative_machie_generator.py* imports a text block of
-equations, and then writes a python module that implements that system of equations.
-
-Although such functionality is nice, the objective is to build modules that generate the systems of
-equations. That is, the user will specify the high-level sector description of the economy (which may include
-multiple countries), and the high-level description will be parsed to generate the low-level equations.
+This framework generates equations algorithmically based on the connections between Sector and
+Model objects. These equations are then solved using an iterative solution. The objective is that
+complex models with dozens of equations can be generated with a few lines of high level code. The
+user can then see how the equations arise from the sector behaviour.
 
 For another take on SFC models in Python see: https://github.com/kennt/monetary-economics
 
@@ -42,7 +40,7 @@ involves a major refactoring of the code, and has changed behaviour.
   but users may need to create exceptions (or additions) manually. (Previously, the income was
   ad hoc.)
 - A new module - *sfc_models.sector* was created; it pulled the Sector class out of the models
-  module. (The existing *sectors.py* may be renamed due to the name similarity.) My old
+  module. The existing *sectors.py* was renamed to *sector_definitions.py*. My old
   example code that did "import *" from *sfc_models.models* no longer works. (?)
 
 There are no *major* refactorings now expected to take place before version 1.0 release. As a result,
@@ -92,8 +90,9 @@ Change Log
 ----------
 
 - **Development** Multi-file Logger, initial (constant) equilibrium calculation, markets
-  with multiple supply sources, custom functions. Equation objects; used for cash flow and income.
-  **Changed variable naming convention.**
+  with multiple supply sources, custom functions. Equation objects used in model creation.
+  **Changed variable naming convention, eliminated the Sector.Equations member.** Considerable
+  refactoring, methods for developer use have been hidden with leading underscore.
 - **0.3.0** Rebuilt the solver, heavy refactoring, example installation, Godley & Lavoie example framework.
 - **0.2.1** Cleaned up examples layout.
 - **Version 0.2**  (Should have been 0.2.0 - oops)

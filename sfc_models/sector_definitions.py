@@ -99,7 +99,7 @@ class CentralBank(Sector):
         # Demand for deposits = F + Supply of money (Central bank net worth plus money supply)
         self.AddVariable('DEM_DEP', 'Demand for deposits', 'F + SUP_MON')
 
-    def GenerateEquations(self):
+    def _GenerateEquations(self):
         self.GetModel().RegisterCashFlow(self, self.Treasury, 'INTDEP')
         # self.AddCashFlow('-CBDIV', 'INTDEP', 'Dividends paid to Treasury')
         # self.Treasury.AddCashFlow('CBDIV', self.GetVariableName('CBDIV'), 'Dividends paid by the central bank')
@@ -114,7 +114,7 @@ class FixedMarginBusiness(Sector):
         self.AddVariable('SUP_' + output_name, 'Supply of goods', '')
         self.AddVariable('PROF', 'Profits', 'SUP_GOOD - DEM_' + labour_input_name)
 
-    def GenerateEquations(self):
+    def _GenerateEquations(self):
         # self.AddVariable('SUP_GOOD', 'Supply of goods', '<TO BE DETERMINED>')
         wage_share = 1.0 - self.ProfitMargin
         market_sup_good = self.Parent.LookupSector(self.OutputName).GetVariableName('SUP_' + self.OutputName)
@@ -161,7 +161,7 @@ class FixedMarginBusinessMultiOutput(Sector):
         self.AddVariable('PROF', 'Profits', 'SUP - DEM_{0}'.format(labour_input_name))
         self.AddVariable('DEM_' + labour_input_name, 'Demand for labour.', '')
 
-    def GenerateEquations(self):
+    def _GenerateEquations(self):
         wage_share = 1.0 - self.ProfitMargin
         demand_labour = 'DEM_' + self.LabourInputName
         if self.ProfitMargin == 0:
@@ -191,7 +191,7 @@ class TaxFlow(Sector):
         self.AddVariable('T', 'Taxes Paid', '<To be determined>')
         self.TaxingSector = taxes_paid_to
 
-    def GenerateEquations(self):
+    def _GenerateEquations(self):
         terms = []
         # Find all sector that are taxable
         taxrate_name = self.GetVariableName('TaxRate')
@@ -237,7 +237,7 @@ class MoneyMarket(FinancialAssetMarket):
     def __init__(self, country, long_name='Money', code='MON', issuer_short_code='GOV'):
         FinancialAssetMarket.__init__(self, country, long_name, code, issuer_short_code)
 
-    def GenerateEquations(self):
+    def _GenerateEquations(self):
         """
         Generate equation.
          :return: None
@@ -288,7 +288,7 @@ class DepositMarket(FinancialAssetMarket):
         self.AddVariable('r', 'Interest rate', '0.')
         self.AddVariable('LAG_r', 'Lagged Interest rate', 'r(k-1)')
 
-    def GenerateEquations(self):
+    def _GenerateEquations(self):
         """
         Generate equations.
  

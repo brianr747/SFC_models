@@ -30,7 +30,9 @@ from sfc_models.utils import Logger
 class Entity(object):
     """
     Entity class
-    Base class for all model entities. Gives them a unique numeric id to make debugging easier.
+    Base class for model entities. Gives them a unique numeric id to make debugging and
+    some coding tasks easier. For example, if two Entity's have a different ID, they are distinct,
+    and so an Entity can exclude itself when iterating through a list of Sector objects.
 
     Can create function for displaying, etc.
     """
@@ -66,12 +68,20 @@ class Entity(object):
 class Model(Entity):
     """
     Model class.
+
     All other entities live within a model.
-
-
     """
 
     def __init__(self):
+        """
+        Create the Model object. All the economic class objects (Country, Sector) live within
+        a Model.
+
+        Unlike other Entity subclasses, the Model object is a base object, and has no parent.
+
+        It is possible for two Model objects to coexist; there is no interaction between them
+        (other than side effects from global Parameters).
+        """
         Entity.__init__(self)
         self.CountryList = []
         self.Exogenous = []
@@ -88,9 +98,33 @@ class Model(Entity):
 
     def main(self, base_file_name=None):  # pragma: no cover
         """
+        Routine that does most of the work of model building. The model is build based upon
+        the Sector objects that have been registered as children of this Model.
+
+        The base_file_name is the base filename that is used for Logging operations; just used
+        to call Logger.register_standard_logs(base_file_name). It is recommended that you call
+        Logger.register_standard_logs() before main, so that Sector creation can be logged.
+
+        The major operations:
+        [1] Call GenerateEquations() on all Sectors. The fact that GenerateEquations() is only
+         called now at the Sector level means that Sectors can be created independently, and the
+        GenerateEquations() call which ties it to other sectors is only called after all other sectors
+        are created. (There is at least one exception where Sectors have to be created in a specific
+        order, which we want to avoid.)
+
+        [2] Cleanup work: processing initial conditions, exogenous variables, replacing
+            aliases in equations.
+
+        [3] Tie the sector level equations into a single block of equations. (Currently strings, not
+            Equation objects.)
+
+        [4] The equations are passed to self.EquationSolver, and they are solved.
+
+        The user can then use GetTimeSeries() to access the output time series (if they can be
+        calculated.)
 
         :param base_file_name: str
-        :return:
+        :return: None
         """
         # Skip testing, this, rather test underlying steps.
         # Once we have a solid end-to-end test (which is easier now), can test this.
@@ -98,13 +132,12 @@ class Model(Entity):
             if base_file_name is not None:
                 Logger.register_standard_logs(base_file_name)
             Logger('Starting Model main()')
-            self.GenerateFullSectorCodes()
-            self.GenerateEquations()
-            self.FixAliases()
-            self.GenerateRegisteredCashFlows()
-            self.GenerateIncomeEquations()
-            self.ProcessExogenous()
-            self.FinalEquations = self.CreateFinalEquations()
+            self._GenerateFullSectorCodes()
+            self._GenerateEquations()
+            self._FixAliases()
+            self._GenerateRegisteredCashFlows()
+            self._ProcessExogenous()
+            self.FinalEquations = self._CreateFinalEquations()
             self.EquationSolver.ParseString(self.FinalEquations)
             self.EquationSolver.SolveEquation()
             self.LogInfo()
@@ -128,12 +161,11 @@ class Model(Entity):
         try:
             if base_file_name is not None:
                 Logger.register_standard_logs(base_file_name)
-            self.GenerateFullSectorCodes()
-            self.GenerateEquations()
-            self.GenerateRegisteredCashFlows()
-            self.GenerateIncomeEquations()
-            self.ProcessExogenous()
-            self.FinalEquations = self.CreateFinalEquations()
+            self._GenerateFullSectorCodes()
+            self._GenerateEquations()
+            self._GenerateRegisteredCashFlows()
+            self._ProcessExogenous()
+            self.FinalEquations = self._CreateFinalEquations()
             if base_file_name is not None:
                 model_file = base_file_name + '.py'
                 obj = iterative_machine_generator.IterativeMachineGenerator(self.FinalEquations,
@@ -207,12 +239,22 @@ class Model(Entity):
         """
         self.IncomeExclusions.append((sector, cash_flow_name))
 
-    def RegisterAlias(self, alias, sector, varname):
-        self.Aliases[alias] = (sector, varname)
+    def _RegisterAlias(self, alias, sector, local_variable_name):
+        """
+        Used by Sector objects to register aliases for local variables.
+
+        :param alias: str
+        :param sector: Sector
+        :param local_variable_name: str
+        :return:
+        """
+        self.Aliases[alias] = (sector, local_variable_name)
 
     def AddGlobalEquation(self, var, description, eqn):
         """
         Add a variable that is not associated with a sector.
+        Typical example: 't'
+
         :param var: str
         :param description: str
         :param eqn: str
@@ -221,6 +263,11 @@ class Model(Entity):
         self.GlobalVariables.append((var, eqn, description))
 
     def GetSectors(self):
+        """
+        Returns a list of Sector objects held within this Model.
+
+        :return: list
+        """
         out = []
         for cntry in self.CountryList:
             for sector in cntry.SectorList:
@@ -229,6 +276,12 @@ class Model(Entity):
 
     def GetTimeSeries(self, series, cutoff=None):
         """
+        Convenience function to retrieve time series from the EquationSolver.
+
+        Use cutoff to truncate the length of the output.
+
+        If self.TimeSeriesSupressZero is True, the first point is removed (the initial
+        conditions period).
 
         :param series: str
         :param cutoff: int
@@ -247,7 +300,11 @@ class Model(Entity):
             val.pop(0)
         return val
 
-    def FixAliases(self):
+    def _FixAliases(self):
+        """
+        Assign the proper names to variables in Sector objects (that were perviously aliases).
+        :return:
+        """
         lookup = {}
         for alias in self.Aliases:
             sector, varname = self.Aliases[alias]
@@ -267,7 +324,7 @@ class Model(Entity):
         """
         # Not covered with unit tests [for now]. Output format will change a lot.
         if generate_full_codes:
-            self.GenerateFullSectorCodes()
+            self._GenerateFullSectorCodes()
             for c in self.CountryList:
                 Logger('Country: Code= "%s" %s\n' % (c.Code, c.LongName))
                 Logger('=' * 60 + '\n\n')
@@ -287,15 +344,17 @@ class Model(Entity):
     def AddCountry(self, country):
         """
         Add a country to the list.
+
         :param country: Country
         :return: None
         """
         self.CountryList.append(country)
 
-    def GenerateFullSectorCodes(self):
+    def _GenerateFullSectorCodes(self):
         """
         Create full sector names (which is equal to '[country.Code]_[sector.Code]' - if there is more than one country.
         Equals the sector code otherwise.
+
         :return: None
         """
         add_country_code = len(self.CountryList) > 1
@@ -316,23 +375,46 @@ class Model(Entity):
         We should not need to use this function often; generally only when we need
         FullCodes in constructors. For example, the multi-supply business sector
         needs the full codes of markets passed into the constructor.
-        :param sector:
-        :return:
+        :param sector: Sector
+        :return: str
         """
         return '{0}_{1}'.format(sector.Parent.Code, sector.Code)
 
     def RegisterCashFlow(self, source_sector, target_sector, amount_variable):
+        """
+        Register a cash flow between two sectors.
+
+        The amount_variable is the name of the local variable within the source sector.
+
+        TODO: Add variable indicating whether the flow affects incomes for the source and
+        destination.
+
+        :param source_sector: Sector
+        :param target_sector: Sector
+        :param amount_variable: str
+        :return:
+        """
         # if amount_variable not in source_sector.Equations:
         #     raise KeyError('Must define the variable that is the amount of the cash flow')
         self.RegisteredCashFlows.append((source_sector, target_sector, amount_variable))
 
-    def GenerateRegisteredCashFlows(self):
+    def _GenerateRegisteredCashFlows(self):
+        """
+        Create cash flows based on those previously registered.
+
+        :return:
+        """
         for source_sector, target_sector, amount_variable in self.RegisteredCashFlows:
             full_variable_name = source_sector.GetVariableName(amount_variable)
             source_sector.AddCashFlow('-' + full_variable_name, eqn=None)
             target_sector.AddCashFlow('+' + full_variable_name, eqn=None)
 
     def LookupSector(self, fullcode):
+        """
+        Find a sector based on its FullCode.
+        :param fullcode: str
+        :return: Sector
+        """
         for cntry in self.CountryList:
             try:
                 s = cntry.LookupSector(fullcode, is_full_code=True)
@@ -341,7 +423,12 @@ class Model(Entity):
                 pass
         raise KeyError('Sector with FullCode does not exist: ' + fullcode)
 
-    def ProcessExogenous(self):
+    def _ProcessExogenous(self):
+        """
+        Handles the exogenous variables.
+
+        :return: None
+        """
         for sector_code, varname, eqn in self.Exogenous:
             if type(sector_code) is str:
                 sector = self.LookupSector(sector_code)
@@ -352,7 +439,13 @@ class Model(Entity):
             # Need to mark exogenous variables
             sector.SetEquationRightHandSide(varname, 'EXOGENOUS ' + eqn)
 
-    def GenerateInitialConditions(self):
+    def _GenerateInitialConditions(self):
+        """
+        Create block of equations for initial conditions.
+
+        Validates that the variables exist.
+        :return:
+        """
         out = []
         for sector_code, varname, value in self.InitialConditions:
             sector = self.LookupSector(sector_code)
@@ -361,24 +454,33 @@ class Model(Entity):
             out.append(('%s(0)' % (sector.GetVariableName(varname),), value, 'Initial Condition'))
         return out
 
-    def GenerateEquations(self):
+    def _GenerateEquations(self):
+        """
+        Call _GenerateEquations on all child Sector objects.
+        :return:
+        """
         for cntry in self.CountryList:
             for sector in cntry.SectorList:
-                sector.GenerateEquations()
+                sector._GenerateEquations()
 
     def DumpEquations(self):
+        """
+        Returns a string with basic information about the entities within this Model.
+        Output is primitive, and aimed at debugging purposes. In other words, the format
+        will change without warning.
+
+        If you want information of a specific format, please create a specific reporting
+        function for your needs.
+
+        :return: str
+        """
         out = ''
         for cntry in self.CountryList:
             for sector in cntry.SectorList:
                 out += sector.Dump()
         return out
 
-    def GenerateIncomeEquations(self):
-        for cntry in self.CountryList:
-            for sector in cntry.SectorList:
-                sector.GenerateIncomeEquations()
-
-    def CreateFinalEquations(self):
+    def _CreateFinalEquations(self):
         """
         Create Final equations.
 
@@ -388,12 +490,18 @@ class Model(Entity):
         out = []
         for cntry in self.CountryList:
             for sector in cntry.SectorList:
-                out.extend(sector.CreateFinalEquations())
-        out.extend(self.GenerateInitialConditions())
+                out.extend(sector._CreateFinalEquations())
+        out.extend(self._GenerateInitialConditions())
         out.extend(self.GlobalVariables)
-        return self.FinalEquationFormatting(out)
+        return self._FinalEquationFormatting(out)
 
-    def FinalEquationFormatting(self, out):
+    def _FinalEquationFormatting(self, out):
+        """
+        Convert equation information in list into formatted strings.
+
+        :param out: list
+        :return:
+        """
         endo = []
         exo = []
         for row in out:

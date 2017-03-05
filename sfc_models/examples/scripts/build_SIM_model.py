@@ -23,7 +23,7 @@ import os
 from sfc_models.examples import get_file_base
 from sfc_models.models import *
 from sfc_models.sector import Market
-from sfc_models.sectors import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness
+from sfc_models.sector_definitions import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness
 
 
 def main():
