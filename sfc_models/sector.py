@@ -15,8 +15,7 @@ class Sector(Entity):
         # This is calculated by the Model
         self.FullCode = ''
         self.LongName = long_name
-        self.VariableDescription = {}
-        self.Equations = {}
+        # self.Equations = {}
         self.HasF = has_F
         self.IsTaxable = False
         self.EquationBlock = EquationBlock()
@@ -42,15 +41,14 @@ class Sector(Entity):
         """
         if '__' in varname:
             raise ValueError('Cannot use "__" inside local variable names: ' + varname)
-        equation = Equation(varname, desc, [Term(eqn, is_blob=True),])
-        self.EquationBlock.AddEquation(equation)
-        if varname in self.Equations:
-            Logger('[ID={0}] Variable Overwritten: {1}', priority=3,
-                   data_to_format=(self.ID, varname))
         if desc is None:
             desc = ''
-        self.VariableDescription[varname] = desc
-        self.Equations[varname] = eqn
+        equation = Equation(varname, desc, [Term(eqn, is_blob=True),])
+        if varname in self.GetVariables():
+            Logger('[ID={0}] Variable Overwritten: {1}', priority=3,
+                   data_to_format=(self.ID, varname))
+        self.EquationBlock.AddEquation(equation)
+        # self.Equations[varname] = eqn
         Logger('[ID={0}] Variable Added: {1} = {2} # {3}', priority=5,
                data_to_format=(self.ID, varname, eqn, desc))
 
@@ -71,13 +69,16 @@ class Sector(Entity):
         :param rhs: str
         :return: None
         """
-        self.EquationBlock[varname].TermList = [Term(rhs, is_blob=True),]
-        # Could try: Equation.ParseString(rhs), but is too slow in unit tests...
-        if varname not in self.Equations:
+        try:
+            self.EquationBlock[varname].TermList = [Term(rhs, is_blob=True),]
+        except KeyError:
             raise KeyError('Variable {0} does not exist'.format(varname))
+        # Could try: Equation.ParseString(rhs), but is too slow in unit tests...
+        # if varname not in self.Equations:
+        #     raise KeyError('Variable {0} does not exist'.format(varname))
         Logger('[ID={0}] Equation set: {1} = {2} ', priority=5,
                data_to_format=(self.ID, varname, rhs))
-        self.Equations[varname] = rhs
+        # self.Equations[varname] = rhs
 
     def SetExogenous(self, varname, val):
         """
@@ -93,11 +94,11 @@ class Sector(Entity):
         Return a sorted list of variables.
 
         (Need to sort to make testing easier; dict's store in "random" hash order.
+
+        This is a convenience function; it just passes along self.EquationBlock.GetEquationList()
         :return: list
         """
-        variables = list(self.Equations.keys())
-        variables.sort()
-        return variables
+        return self.EquationBlock.GetEquationList()
 
     def GetVariableName(self, varname):
         """
@@ -115,7 +116,7 @@ class Sector(Entity):
         :param varname: str
         :return: str
         """
-        if varname not in self.Equations and varname not in self.EquationBlock.GetEquationList():
+        if varname not in self.EquationBlock.GetEquationList():
             raise KeyError('Variable %s not in sector %s' % (varname, self.FullCode))
         if self.FullCode == '':
             alias = '_{0}__{1}'.format(self.ID, varname)
@@ -130,10 +131,13 @@ class Sector(Entity):
                 raise ValueError('The use of "__" in variable local names is invalid: ' + varname)
             return self.FullCode + '__' + varname
 
-    def ReplaceAliases(self, lookup):
+    def _ReplaceAliases(self, lookup):
+        """
+        Use the lookup dictionary to replace aliases.
+        :param lookup: dict
+        :return:
+        """
         self.EquationBlock.ReplaceTokensFromLookup(lookup)
-        for var in self.Equations:
-            self.Equations[var] = replace_token_from_lookup(self.Equations[var], lookup)
 
     def AddCashFlow(self, term, eqn=None, desc=None, is_income=True):
         """
@@ -177,8 +181,9 @@ class Sector(Entity):
             return
         # Remove the +/- from the term
         term = term_obj.Term
-        if term in self.Equations:
-            if len(self.Equations[term]) == 0:
+        if term in self.GetVariables():
+            rhs = self.EquationBlock[term].RHS()
+            if rhs == '' or rhs == '0.0':
                 self.SetEquationRightHandSide(term, eqn)
         else:
             self.AddVariable(term, desc, eqn)
@@ -191,10 +196,14 @@ class Sector(Entity):
         return
 
     def Dump(self):
+        """
+        Create a string with information about this object. Format will vary over time.
+        :return: str
+        """
         out = '[%s] %s. FullCode = "%s" \n' % (self.Code, self.LongName, self.FullCode)
         out += '-' * 60 + '\n'
-        for var in self.Equations:
-            out += '%s = %s\n' % (var, self.Equations[var])
+        for var in self.EquationBlock.GetEquationList():
+            out += str(self.EquationBlock[var]) + '\n'
         return out
 
     def GenerateIncomeEquations(self):
@@ -204,28 +213,24 @@ class Sector(Entity):
         # equations, but leave them in case someone wants to refer to the F variable.
         self.AddVariableFromEquation(self.EquationBlock['F'])
         self.AddVariable('LAG_F', 'Previous period''s financial assets.', 'F(k-1)')
-        if not self.EquationBlock['INC'].RHS() == '0.0':
-            if 'INC' in self.Equations:
-                raise LogicError('The variable INC should not be declared')
-            self.AddVariableFromEquation(self.EquationBlock['INC'])
+        # if not self.EquationBlock['INC'].RHS() == '0.0':
+        #     if 'INC' in self.Equations:
+        #         raise LogicError('The variable INC should not be declared')
+        #     self.AddVariableFromEquation(self.EquationBlock['INC'])
 
     def CreateFinalEquations(self):
         out = []
         lookup = {}
-        for varname in self.Equations:
+        for varname in self.EquationBlock.GetEquationList():
             lookup[varname] = self.GetVariableName(varname)
-        # Use GetVariables() so that we re always sorted; needed for unit tests
-        def kill_spaces(x):
-            x = x.replace(' ','')
-            return x
-        for varname in self.GetVariables():
-            if len(self.Equations[varname].strip()) == 0:
+        for varname in self.EquationBlock.GetEquationList():
+            eq = self.EquationBlock[varname]
+            rhs = eq.GetRightHandSide()
+            if len(rhs.strip()) == 0:
                 continue
-            if kill_spaces(self.Equations[varname]) !=  kill_spaces(self.EquationBlock[varname].RHS()):
-                print('{0} VS {1}'.format(self.Equations[varname], self.EquationBlock[varname].RHS()))
             out.append((self.GetVariableName(varname),
-                        replace_token_from_lookup(self.Equations[varname], lookup),
-                        '[%s] %s' % (varname, self.VariableDescription[varname])))
+                        replace_token_from_lookup(rhs, lookup),
+                        '[%s] %s' % (varname, eq.Description)))
         return out
 
     def GenerateAssetWeighting(self, asset_weighting_dict, residual_asset_code, is_absolute_weighting=False):
@@ -295,7 +300,7 @@ class Market(Sector):
         for sector in country.SectorList:
             if sector.ID == self.ID:
                 continue
-            if 'SUP_' + self.Code in sector.Equations:
+            if 'SUP_' + self.Code in sector.EquationBlock.Equations:
                 if ret_value is None:
                     ret_value = sector
                 else:
@@ -383,7 +388,7 @@ class Market(Sector):
             if s.ID == self.ID:
                 continue
             if sup_name in s.Equations:
-                s.SetEquationRightHandSide(sup_name, self.Equations[dem_name])
+                s.SetEquationRightHandSide(sup_name, self.EquationBlock[dem_name].RHS())
                 return
 
     def _GenerateMultiSupply(self):

@@ -136,7 +136,7 @@ class TestModel(TestCase):
         mod.GenerateFullSectorCodes()
         mod.Exogenous = [('HH', 'foo', 'TEST')]
         mod.ProcessExogenous()
-        self.assertEqual('EXOGENOUS TEST', household.Equations['foo'])
+        self.assertEqual('EXOGENOUSTEST', household.EquationBlock['foo'].RHS())
 
     def test_GetSectors(self):
         mod = Model()
@@ -165,10 +165,10 @@ class TestModel(TestCase):
         self.assertIn(ID, varname)
         sec2 = Sector(c, 'sec2', 'sec2')
         sec2.AddVariable('two_x', 'Test variable', '2 * {0}'.format(varname))
-        self.assertEqual('2*' + varname, kill_spaces(sec2.Equations['two_x']))
+        self.assertEqual('2*' + varname, kill_spaces(sec2.EquationBlock['two_x'].RHS()))
         mod.GenerateFullSectorCodes()
         mod.FixAliases()
-        self.assertEqual('2*sec1__x', kill_spaces(sec2.Equations['two_x']))
+        self.assertEqual('2*sec1__x', kill_spaces(sec2.EquationBlock['two_x'].RHS()))
 
     def test_fix_aliases_2(self):
         mod = Model()
@@ -186,8 +186,8 @@ class TestModel(TestCase):
         mod.GenerateFullSectorCodes()
         mod.GenerateIncomeEquations()
         mod.FixAliases()
-        self.assertIn('-sec1__x', sec1.Equations['F'])
-        self.assertEqual('LAG_F+sec1__x', kill_spaces(sec2.Equations['F']))
+        self.assertIn('-sec1__x', sec1.EquationBlock['F'].RHS())
+        self.assertEqual('LAG_F+sec1__x', kill_spaces(sec2.EquationBlock['F'].RHS()))
 
     def test_ForceExogenous2(self):
         mod = Model()
@@ -312,7 +312,8 @@ class TestSector(TestCase):
     def test_GetVariables(self):
         mod = Model()
         can = Country(mod, 'Canada', 'Eh')
-        can_hh = Sector(can, 'Household', 'HH')
+        # Need to block the automatic creation of F, INC
+        can_hh = Sector(can, 'Household', 'HH', has_F=False)
         can_hh.AddVariable('y', 'Vertical axis', '2.0')
         can_hh.AddVariable('x', 'Horizontal axis', 'y - t')
         self.assertEqual(can_hh.GetVariables(), ['x', 'y'])
@@ -361,7 +362,7 @@ class TestSector(TestCase):
         with self.assertRaises(ValueError):
             s.AddCashFlow('+', 'X', 'Desc C')
         self.assertEqual('LAG_F+A', s.EquationBlock['F'].RHS())
-        self.assertEqual('equation', s.Equations['A'])
+        self.assertEqual('equation', s.EquationBlock['A'].RHS())
 
     def test_AddCashFlow_3(self):
         mod = Model()
@@ -369,7 +370,7 @@ class TestSector(TestCase):
         s = Sector(us, 'Household', 'HH')
         s.AddVariable('X', 'desc', '')
         s.AddCashFlow('X', 'equation', 'Desc A')
-        self.assertEqual('equation', s.Equations['X'])
+        self.assertEqual('equation', s.EquationBlock['X'].RHS())
 
     def test_AddCashFlow_bad(self):
         mod = Model()
@@ -385,8 +386,8 @@ class TestSector(TestCase):
         us = Country(mod, 'USA', 'US')
         s = Sector(us, 'Household', 'HH')
         s.GenerateIncomeEquations()
-        self.assertEqual('LAG_F', s.Equations['F'])
-        self.assertEqual('F(k-1)', s.Equations['LAG_F'])
+        self.assertEqual('LAG_F', s.EquationBlock['F'].RHS())
+        self.assertEqual('F(k-1)', s.EquationBlock['LAG_F'].RHS())
 
     def test_GenerateIncomeEquations_2(self):
         mod = Model()
@@ -394,8 +395,8 @@ class TestSector(TestCase):
         s = Sector(us, 'Household', 'HH')
         s.AddCashFlow('X', 'eq')
         s.GenerateIncomeEquations()
-        self.assertEqual('LAG_F+X', s.Equations['F'])
-        self.assertEqual('F(k-1)', s.Equations['LAG_F'])
+        self.assertEqual('LAG_F+X', s.EquationBlock['F'].RHS())
+        self.assertEqual('F(k-1)', s.EquationBlock['LAG_F'].RHS())
 
     def test_GenerateIncomeEquations_3(self):
         mod = Model()
@@ -404,19 +405,20 @@ class TestSector(TestCase):
         s.AddCashFlow('X', 'eq')
         s.AddCashFlow('Y', 'eq2')
         s.GenerateIncomeEquations()
-        self.assertEqual('LAG_F+X+Y', s.Equations['F'])
-        self.assertEqual('F(k-1)', s.Equations['LAG_F'])
+        self.assertEqual('LAG_F+X+Y', s.EquationBlock['F'].RHS())
+        self.assertEqual('F(k-1)', s.EquationBlock['LAG_F'].RHS())
 
     def test_GenerateFinalEquations(self):
         mod = Model()
         us = Country(mod, 'USA', 'US')
-        s = Sector(us, 'Household', 'HH')
+        s = Sector(us, 'Household', 'HH', has_F=False)
         mod.GenerateFullSectorCodes()
-        s.Equations = {'F': '', 'X': 't+1', 'Y': 'X+1'}
-        s.VariableDescription = {'F': 'DESC F', 'X': 'DESC X', 'Y': 'DESC Y'}
+        # Can no longer directly inject data into the Sector object
+        s.AddVariableFromEquation('x=a+1 # foo')
+        s.AddVariableFromEquation('a=cat')
         out = s.CreateFinalEquations()
         # Since F has an empty equation, does not appear.
-        targ = [('HH__X', 't+1', '[X] DESC X'), ('HH__Y', 'HH__X+1', '[Y] DESC Y')]
+        targ = [('HH__a', 'cat', '[a] '), ('HH__x', 'HH__a+1', '[x] foo')]
         # Kill spacing in equations
         out = [(x[0], x[1].replace(' ', ''), x[2]) for x in out]
         self.assertEqual(targ, out)
@@ -426,8 +428,8 @@ class TestSector(TestCase):
         us = Country(mod, 'USA', 'US')
         s = Sector(us, 'Household', 'HH')
         s.GenerateAssetWeighting((), 'MON')
-        self.assertEqual('1.0', s.Equations['WGT_MON'])
-        self.assertEqual('F*WGT_MON', kill_spaces(s.Equations['DEM_MON']))
+        self.assertEqual('1.0', s.EquationBlock['WGT_MON'].RHS())
+        self.assertEqual('F*WGT_MON', kill_spaces(s.EquationBlock['DEM_MON'].RHS()))
 
     def test_IncomeEquation(self):
         mod = Model()
@@ -436,36 +438,26 @@ class TestSector(TestCase):
         hh.AddCashFlow('x', eqn='2.0', is_income=True)
         mod.GenerateFullSectorCodes()
         mod.GenerateIncomeEquations()
-        self.assertEqual('x', hh.Equations['INC'])
+        self.assertEqual('x', hh.EquationBlock['INC'].RHS())
 
     def test_IncomeEquation_2(self):
         mod = Model()
         us = Country(mod, 'US', 'US')
-        hh = Sector(us, 'HH', 'HH')
+        hh = Sector(us, 'HH', 'HH', has_F=True)
         hh.AddCashFlow('x', eqn='2.0', is_income=False)
         mod.GenerateFullSectorCodes()
         mod.GenerateIncomeEquations()
-        self.assertNotIn('INC', hh.Equations)
-
-    def test_IncomeEquation_3(self):
-        mod = Model()
-        us = Country(mod, 'US', 'US')
-        hh = Sector(us, 'HH', 'HH')
-        hh.AddVariable('INC', 'bad', '1.0')
-        hh.AddCashFlow('x', eqn='2.0', is_income=True)
-        mod.GenerateFullSectorCodes()
-        with self.assertRaises(LogicError):
-            mod.GenerateIncomeEquations()
+        self.assertEqual('0.0', hh.EquationBlock['INC'].RHS())
 
     def test_GenerateAssetWeightings_2(self):
         mod = Model()
         us = Country(mod, 'USA', 'US')
         s = Sector(us, 'Household', 'HH')
         s.GenerateAssetWeighting([('BOND', '0.5'), ], 'MON')
-        self.assertEqual('0.5', s.Equations['WGT_BOND'])
-        self.assertEqual('F*WGT_BOND', kill_spaces(s.Equations['DEM_BOND']))
-        self.assertEqual('1.0-WGT_BOND', kill_spaces(s.Equations['WGT_MON']))
-        self.assertEqual('F*WGT_MON', kill_spaces(s.Equations['DEM_MON']))
+        self.assertEqual('0.5', s.EquationBlock['WGT_BOND'].RHS())
+        self.assertEqual('F*WGT_BOND', kill_spaces(s.EquationBlock['DEM_BOND'].RHS()))
+        self.assertEqual('1.0-WGT_BOND', kill_spaces(s.EquationBlock['WGT_MON'].RHS()))
+        self.assertEqual('F*WGT_MON', kill_spaces(s.EquationBlock['DEM_MON'].RHS()))
 
     def test_GenerateAssetWeightingAbsolute(self):
         mod = Model()
@@ -487,9 +479,9 @@ class TestSector(TestCase):
         us = Country(mod, 'USA', 'US')
         s = Sector(us, 'Household', 'HH')
         s.AddVariable('foo', 'variable foo', 'x')
-        self.assertEqual('x', s.Equations['foo'])
+        self.assertEqual('x', s.EquationBlock['foo'].RHS())
         s.SetEquationRightHandSide('foo', 'y')
-        self.assertEqual('y', s.Equations['foo'])
+        self.assertEqual('y', s.EquationBlock['foo'].RHS())
         with self.assertRaises(KeyError):
             s.SetEquationRightHandSide('LittleBunnyFooFoo', 'z')
 
@@ -523,11 +515,11 @@ class TestMarket(TestCase):
         mod.GenerateFullSectorCodes()
         mar.GenerateEquations()
         self.assertIn('-DEM_LAB', bus.EquationBlock['F'].RHS())
-        self.assertEqual('x', bus.Equations['DEM_LAB'])
+        self.assertEqual('x', bus.EquationBlock['DEM_LAB'].RHS())
         self.assertEqual('LAG_F+SUP_LAB', hh.EquationBlock['F'].RHS())
         # self.assertEqual('BUS_DEM_LAB', hh.Equations['SUP_LAB'].strip())
-        self.assertEqual('SUP_LAB', mar.Equations['SUP_HH'])
-        self.assertEqual('LAB__SUP_HH', hh.Equations['SUP_LAB'].strip())
+        self.assertEqual('SUP_LAB', mar.EquationBlock['SUP_HH'].RHS())
+        self.assertEqual('LAB__SUP_HH', hh.EquationBlock['SUP_LAB'].RHS().strip())
 
     def test_GenerateEquations_no_supply(self):
         mod = Model()
@@ -566,10 +558,10 @@ class TestMarket(TestCase):
         mod.GenerateFullSectorCodes()
         mar.SupplyAllocation = [[(hh, 'SUP_LAB/2')], hh2]
         mar.GenerateEquations()
-        self.assertEqual('SUP_LAB/2', mar.Equations['SUP_HH'])
-        self.assertEqual('SUP_LAB-SUP_HH', kill_spaces(mar.Equations['SUP_HH2']))
-        self.assertEqual('LAB__SUP_HH', hh.Equations['SUP_LAB'])
-        self.assertEqual('LAB__SUP_HH2', hh2.Equations['SUP_LAB'])
+        self.assertEqual('SUP_LAB/2', mar.EquationBlock['SUP_HH'].RHS())
+        self.assertEqual('SUP_LAB-SUP_HH', kill_spaces(mar.EquationBlock['SUP_HH2'].RHS()))
+        self.assertEqual('LAB__SUP_HH', hh.EquationBlock['SUP_LAB'].RHS())
+        self.assertEqual('LAB__SUP_HH2', hh2.EquationBlock['SUP_LAB'].RHS())
 
     def test_GenerateEquations_2_supply_multicountry(self):
         mod = Model()
@@ -582,15 +574,15 @@ class TestMarket(TestCase):
         hh2 = Sector(US, 'Household', 'HH2')
         bus.AddVariable('DEM_LAB', 'desc', 'x')
         hh.AddVariable('SUP_LAB', 'desc 2', '')
-        hh2.AddVariable('SUP_LAB', 'desc 2', '')
+        hh2.AddVariable('SUP_CA_LAB', 'desc 2', '')
         mod.GenerateFullSectorCodes()
         mar.SupplyAllocation = [[(hh, 'SUP_LAB/2')], hh2]
         mar.GenerateEquations()
-        self.assertEqual('SUP_LAB/2', mar.Equations['SUP_CA_HH'])
-        self.assertEqual('SUP_LAB-SUP_CA_HH', kill_spaces(mar.Equations['SUP_US_HH2']))
-        self.assertEqual('CA_LAB__SUP_CA_HH', hh.Equations['SUP_LAB'])
+        self.assertEqual('SUP_LAB/2', mar.EquationBlock['SUP_CA_HH'].RHS())
+        self.assertEqual('SUP_LAB-SUP_CA_HH', kill_spaces(mar.EquationBlock['SUP_US_HH2'].RHS()))
+        self.assertEqual('CA_LAB__SUP_CA_HH', hh.EquationBlock['SUP_LAB'].RHS())
         self.assertIn('SUP_LAB', hh.EquationBlock['F'].RHS())
-        self.assertEqual('CA_LAB__SUP_US_HH2', hh2.Equations['SUP_CA_LAB'])
+        self.assertEqual('CA_LAB__SUP_US_HH2', hh2.EquationBlock['SUP_CA_LAB'].RHS())
         self.assertIn('SUP_CA_LAB', hh2.EquationBlock['F'].RHS())
 
     def test_GenerateEquations_2_supply_multicountry_2(self):
@@ -600,7 +592,6 @@ class TestMarket(TestCase):
         mar = Market(can, 'Market', 'LAB')
         bus = Sector(can, 'Business', 'BUS')
         hh = Sector(can, 'Household', 'HH')
-        # Although we have two countries, both suppliers are from Canada
         hh2 = Sector(can, 'Household', 'HH2')
         bus.AddVariable('DEM_LAB', 'desc', 'x')
         hh.AddVariable('SUP_LAB', 'desc 2', '')
@@ -608,14 +599,14 @@ class TestMarket(TestCase):
         mod.GenerateFullSectorCodes()
         mar.SupplyAllocation = [[(hh, 'SUP_LAB/2')], hh2]
         mar.GenerateEquations()
-        self.assertEqual('SUP_LAB/2', mar.Equations['SUP_CA_HH'])
-        self.assertEqual('SUP_LAB-SUP_CA_HH', mar.Equations['SUP_CA_HH2'])
-        self.assertEqual('CA_LAB__SUP_CA_HH', hh.Equations['SUP_LAB'])
+        self.assertEqual('SUP_LAB/2', mar.EquationBlock['SUP_CA_HH'].RHS())
+        self.assertEqual('SUP_LAB-SUP_CA_HH', mar.EquationBlock['SUP_CA_HH2'].RHS())
+        self.assertEqual('CA_LAB__SUP_CA_HH', hh.EquationBlock['SUP_LAB'].RHS())
         self.assertIn('SUP_LAB', hh.EquationBlock['F'].RHS())
-        self.assertEqual('CA_LAB__SUP_CA_HH2', hh2.Equations['SUP_LAB'])
-        self.assertIn('SUP_LAB', hh2.EquationBlock.RHS())
+        self.assertEqual('CA_LAB__SUP_CA_HH2', hh2.EquationBlock['SUP_LAB'].RHS())
+        self.assertIn('SUP_LAB', hh2.EquationBlock['F'].RHS())
 
-    def test_GenerateEquations_2_supply_multicountry_2(self):
+    def test_GenerateEquations_2_supply_multicountry_3(self):
         mod = Model()
         can = Country(mod, 'Canada, Eh?', 'CA')
         US = Country(mod, 'USA! USA!', 'US')
@@ -627,15 +618,16 @@ class TestMarket(TestCase):
         hh3 = Sector(US, 'Household#3', 'HH3')
         bus.AddVariable('DEM_LAB', 'desc', 'x')
         hh.AddVariable('SUP_LAB', 'desc 2', '')
-        hh2.AddVariable('SUP_LAB', 'desc 2', '')
+        hh2.AddVariable('SUP_CA_LAB', 'desc 2', '')
+        hh3.AddVariable('SUP_CA_LAB', 'desc 2', '')
         mod.GenerateFullSectorCodes()
         mar.SupplyAllocation = [[(hh, 'SUP_LAB/2'), (hh3, '0.')], hh2]
         mar.GenerateEquations()
-        self.assertEqual('SUP_LAB/2', mar.Equations['SUP_CA_HH'])
-        self.assertEqual('SUP_LAB-SUP_CA_HH-SUP_US_HH3', kill_spaces(mar.Equations['SUP_US_HH2']))
-        self.assertEqual('CA_LAB__SUP_CA_HH', hh.Equations['SUP_LAB'])
+        self.assertEqual('SUP_LAB/2', mar.EquationBlock['SUP_CA_HH'].RHS())
+        self.assertEqual('SUP_LAB-SUP_CA_HH-SUP_US_HH3', kill_spaces(mar.EquationBlock['SUP_US_HH2'].RHS()))
+        self.assertEqual('CA_LAB__SUP_CA_HH', hh.EquationBlock['SUP_LAB'].RHS())
         self.assertIn('SUP_LAB', hh.EquationBlock['F'].RHS())
-        self.assertEqual('CA_LAB__SUP_US_HH2', hh2.Equations['SUP_CA_LAB'])
+        self.assertEqual('CA_LAB__SUP_US_HH2', hh2.EquationBlock['SUP_CA_LAB'].RHS())
         self.assertIn('SUP_CA_LAB', hh2.EquationBlock['F'].RHS())
         self.assertIn('SUP_CA_LAB', hh3.EquationBlock['F'].RHS())
 
@@ -648,7 +640,7 @@ class TestMarket(TestCase):
         mod.GenerateFullSectorCodes()
         mar._GenerateTermsLowLevel('DEM', 'Demand')
         self.assertIn('-DEM_LAB', bus.EquationBlock['F'].RHS())
-        self.assertTrue('error' in bus.Equations['DEM_LAB'].lower())
+        self.assertTrue('error' in bus.EquationBlock['DEM_LAB'].RHS().lower())
 
     def test_GenerateTermsLowLevel_3(self):
         mod = Model()
@@ -688,5 +680,5 @@ class TestRegisterCashFlows(TestCase):
         mod.GenerateEquations()
         mod.GenerateRegisteredCashFlows()
         mod.GenerateIncomeEquations()
-        self.assertEqual('LAG_F+SEC1__DIV', kill_spaces(sec2.Equations['F']))
-        self.assertEqual('LAG_F-SEC1__DIV', kill_spaces(sec1.Equations['F']))
+        self.assertEqual('LAG_F+SEC1__DIV', kill_spaces(sec2.EquationBlock['F'].RHS()))
+        self.assertEqual('LAG_F-SEC1__DIV', kill_spaces(sec1.EquationBlock['F'].RHS()))

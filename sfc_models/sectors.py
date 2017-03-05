@@ -20,6 +20,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 from sfc_models.sector import Sector, Market, FinancialAssetMarket
+from sfc_models.utils import Logger
 import sfc_models.utils as utils
 
 
@@ -125,7 +126,8 @@ class FixedMarginBusiness(Sector):
                              '%0.3f * %s' % (wage_share, market_sup_good))
             self.SetEquationRightHandSide('PROF', '%0.3f * %s' % (self.ProfitMargin, market_sup_good))
         for s in self.Parent.SectorList:
-            if 'DIV' in s.Equations:
+            if 'DIV' in s.EquationBlock.Equations:
+                Logger('Adding dividend flow', priority=5)
                 self.AddCashFlow('-DIV', 'PROF', 'Dividends paid', is_income=False)
                 s.AddCashFlow('DIV', self.GetVariableName('PROF'), 'Dividends received', is_income=True)
                 break
@@ -168,7 +170,7 @@ class FixedMarginBusinessMultiOutput(Sector):
             self.SetEquationRightHandSide(demand_labour, '%0.3f * SUP' % (wage_share,))
             # self.Equations['PROF'] = '%0.3f * %s' % (self.ProfitMargin, market_sup_good)
         for s in self.Parent.SectorList:
-            if 'DIV' in s.Equations:  # pragma: no cover
+            if 'DIV' in s.EquationBlock.Equations:  # pragma: no cover
                 raise NotImplementedError('Not tested yet')
                 self.AddCashFlow('-DIV', 'PROF', 'Dividends paid', is_income=False)
                 s.AddCashFlow('DIV', self.GetVariableName('PROF'), 'Dividends received',
@@ -199,7 +201,7 @@ class TaxFlow(Sector):
             if s.IsTaxable:
                 # If the sector has a tax rate defined for it, use that tax rate instead of this object's rate.
                 # Need to add support for fdiffering rates for each type of income?
-                if 'TaxRate' in s.Equations:
+                if 'TaxRate' in s.EquationBlock.Equations:
                     tax_name_used = s.GetVariableName('TaxRate')
                 else:
                     tax_name_used = taxrate_name

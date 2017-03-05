@@ -253,7 +253,7 @@ class Model(Entity):
             sector, varname = self.Aliases[alias]
             lookup[alias] = sector.GetVariableName(varname)
         for sector in self.GetSectors():
-            sector.ReplaceAliases(lookup)
+            sector._ReplaceAliases(lookup)
 
     def LogInfo(self, generate_full_codes=True, ex=None):  # pragma: no cover
         """
@@ -347,7 +347,7 @@ class Model(Entity):
                 sector = self.LookupSector(sector_code)
             else:
                 sector = sector_code
-            if varname not in sector.Equations:
+            if varname not in sector.EquationBlock.Equations:
                 raise KeyError('Sector %s does not have variable %s' % (sector_code, varname))
             # Need to mark exogenous variables
             sector.SetEquationRightHandSide(varname, 'EXOGENOUS ' + eqn)
@@ -356,7 +356,7 @@ class Model(Entity):
         out = []
         for sector_code, varname, value in self.InitialConditions:
             sector = self.LookupSector(sector_code)
-            if varname not in sector.Equations:
+            if varname not in sector.EquationBlock.Equations:
                 raise KeyError('Sector %s does not have variable %s' % (sector_code, varname))
             out.append(('%s(0)' % (sector.GetVariableName(varname),), value, 'Initial Condition'))
         return out
