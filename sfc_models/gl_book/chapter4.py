@@ -30,7 +30,6 @@ limitations under the License.
 """
 
 from sfc_models.gl_book import GL_book_model
-from sfc_models.models import *
 from sfc_models.sectors import *
 
 
@@ -62,12 +61,10 @@ class PC(GL_book_model):
         # The format() call will replace '{0}' with the contents of the 'r' variable.
         eqn = 'L0 + L1 * {0} - L2 * (AfterTax/F)'.format(r)
         hh.GenerateAssetWeighting({'DEP': eqn}, 'MON')
-        # Fix the Pretax income equation to include deposit income.
-        hh.SetEquationRightHandSide('PreTax', 'SUP_LAB + INTDEP')
         # Add a decorative equation: Government Fiscal Balance
         # = Primary Balance - Interest expense + Central Bank Dividend (= interest
         # received by the central bank).
-        tre.AddVariable('FISCBAL', 'Fiscal Balance', 'PRIM_BAL - INTDEP + CB_INTDEP')
+        tre.AddVariable('FISCBAL', 'Fiscal Balance', 'PRIM_BAL - INTDEP + CB__INTDEP')
 
         if self.UseBookExogenous:
             # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
@@ -96,17 +93,17 @@ class PC(GL_book_model):
         """
         out = [
             ('t', [None, 1951., 1952., 1953., ]),
-            ('TRE_DEM_GOOD', [None, 20., 20., 20., 20.]),  # G
-            ('DEP_r', [0.025, ] * 10 + [.035] * 5),
-            ('HH_WGT_DEP', [None, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.80, 0.80, 0.80, 0.80, 0.80,
+            ('TRE__DEM_GOOD', [None, 20., 20., 20., 20.]),  # G
+            ('DEP__r', [0.025, ] * 10 + [.035] * 5),
+            ('HH__WGT_DEP', [None, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.80, 0.80, 0.80, 0.80, 0.80,
                             0.80, 0.80]),  # Weight of deposits (bills)
-            ('HH_AfterTax', [None, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 87.72,
+            ('HH__AfterTax', [None, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 86.49, 87.72,
                              88.04, 88.32, 88.56, 88.77, 88.95, 89.11]),  # YD
-            ('TRE_T', [None, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.93, 22.01, 22.08,
+            ('TRE__T', [None, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.93, 22.01, 22.08,
                        22.14, 22.19, 22.24, 22.28]),  # T
-            ('GOOD_SUP_GOOD', [None, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49,
+            ('GOOD__SUP_GOOD', [None, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49, 106.49,
                                107.22, 107.62, 107.95, 108.25, 108.50, 108.71, 108.90, 109.06, 109.20, 109.33]),  # Y
-            ('HH_DEM_MON', [None, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 17.30, 17.40, 17.49,
+            ('HH__DEM_MON', [None, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 21.62, 17.30, 17.40, 17.49,
                             17.56, 17.62, 17.68, 17.72, 17.76, 17.80]),  # high-powered money (H)
         ]
         return out

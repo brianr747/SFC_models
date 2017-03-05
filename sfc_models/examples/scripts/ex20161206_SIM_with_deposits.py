@@ -22,6 +22,7 @@ limitations under the License.
 
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models.models import *
+from sfc_models.sector import Market
 from sfc_models.sectors import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness, DepositMarket, MoneyMarket
 
 
@@ -62,7 +63,7 @@ def main():
     # (1) [out_ex20161206_SIM_with_deposits]_log.txt:  Log file
     # (2) [out_ex20161206_SIM_with_Deposits].py:  File that solves the system of equations
     mod.MaxTime = 100
-    eqns = mod.main_deprecated('out_ex20161206_SIM_with_deposits')
+    eqns = mod._main_deprecated('out_ex20161206_SIM_with_deposits')
 
     # Only import after the file is created (which is unusual).
     import out_ex20161206_SIM_with_deposits as SFCmod

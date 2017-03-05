@@ -373,7 +373,7 @@ iteration. Decorative variables calculated later).""", log='step')
                     failed.append((var, eqn))
             # If we failed on every single decoration variable, something is wrong.
             if len(failed) == len(vars_to_compute):
-                # NOTE: We should not get here; it manes that the decoration variables are
+                # NOTE: We should not get here; it means that the decoration variables are
                 # created incorrectly. Leave check to break infinite loops.
                 raise ValueError('Cannot solve decoration equations! <?>')
             vars_to_compute = failed

@@ -1,6 +1,16 @@
 from unittest import TestCase
+import doctest
+
 from sfc_models.equation import Term, Equation, EquationBlock
 from sfc_models.utils import LogicError
+import sfc_models.equation
+
+def load_tests(loader, tests, ignore):
+    """
+    Load doctests, so unittest discovery can find them.
+    """
+    tests.addTests(doctest.DocTestSuite(sfc_models.equation))
+    return tests
 
 
 class TestTerm(TestCase):
@@ -39,9 +49,10 @@ class TestTerm(TestCase):
 
     def test_simple_2(self):
         # NOTE: constants not supported yet as "Simple"
-        t = Term('2')
-        self.assertFalse(t.IsSimple)
-        self.assertEqual('2', t.Term)
+        with self.assertRaises(NotImplementedError):
+            t = Term('2')
+        # self.assertFalse(t.IsSimple)
+        # self.assertEqual('2', t.Term)
 
     def test_simple_3(self):
         t = Term('x')
@@ -66,15 +77,21 @@ class TestTerm(TestCase):
         t.Constant = -2.
         self.assertEqual('-{0}*x'.format(str(2.)), str(t))
 
+    def test_blob(self):
+        t = Term('(bazoonga*kablooie)^2', is_blob=True)
+        self.assertEqual('(bazoonga*kablooie)^2', str(t))
+
     def test_not_simple(self):
-        t = Term('f(x)')
-        self.assertFalse(t.IsSimple)
+        with self.assertRaises(NotImplementedError):
+            t = Term('f(x)')
+        # self.assertFalse(t.IsSimple)
 
     def test_str_not_simple(self):
-        t = Term('f(x)')
-        self.assertFalse(t.IsSimple)
         with self.assertRaises(NotImplementedError):
-            str(t)
+            t = Term('f(x)')
+        # self.assertFalse(t.IsSimple)
+        # with self.assertRaises(NotImplementedError):
+        #     str(t)
 
 
 class TestEquation(TestCase):
@@ -83,6 +100,12 @@ class TestEquation(TestCase):
         t2 = Term('-z')
         eq = Equation('x', 'define x', (t1, t2))
         self.assertEqual('y-z', eq.GetRightHandSide())
+
+    def bad_ctor(self):
+        t1 = Term('x')
+        t2 = Term('y^2', is_blob=True)
+        with self.assertRaises(LogicError):
+            Equation('lhs', '', (t1,t2))
 
     def test_str_2(self):
         t1 = Term('y')
@@ -104,6 +127,20 @@ class TestEquation(TestCase):
         eq.AddTerm('-y')
         self.assertEqual('0.0', eq.GetRightHandSide())
 
+    def test_AddTermFail(self):
+        eq = Equation('x', 'desc', 'y')
+        t2 = Term('y^2', is_blob=True)
+        with self.assertRaises(LogicError):
+            eq.AddTerm(t2)
+
+    def test_String_ctor(self):
+        eq3 = Equation("e = m*c^2 # Einstein's thingy")
+        self.assertEqual("e=m*c^2 # Einstein's thingy", str(eq3))
+
+    def test_string_ctor_fail(self):
+        eq = Equation('x=(y)+1')
+        # There's a syntax error, but ParseString eats it.
+        self.assertEqual('(y)+1', str(eq.TermList[0]))
 
 class TestEquationBlock(TestCase):
     def test_access(self):

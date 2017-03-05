@@ -21,6 +21,7 @@ limitations under the License.
 
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models.models import *
+from sfc_models.sector import Market
 from sfc_models.sectors import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness, Capitalists
 
 
@@ -68,7 +69,7 @@ def main():
     # Output is put into two files, based on the file name passed into main() ['ex20161128_tax_cut_comparison']
     # (1) [...]_log.txt:  Log file
     # (2) [...].py:  File that solves the system of equations
-    eqns = mod.main_deprecated('out_ex20161128_tax_cut_comparison')
+    eqns = mod._main_deprecated('out_ex20161128_tax_cut_comparison')
     import out_ex20161128_tax_cut_comparison as SIM_Capitalist
     obj = SIM_Capitalist.SFCModel()
     obj.MaxTime = 40

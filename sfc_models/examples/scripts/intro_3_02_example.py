@@ -26,7 +26,8 @@ limitations under the License.
 # os - operating system calls
 import os
 # sfc_models code
-from sfc_models.models import Model, Country, Market
+from sfc_models.models import Model, Country
+from sfc_models.sector import Market
 from sfc_models.sectors import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness
 # Quick2DPlot() - Plotting functions used by examples; relies upon matplotlib
 from sfc_models.examples.Quick2DPlot import Quick2DPlot

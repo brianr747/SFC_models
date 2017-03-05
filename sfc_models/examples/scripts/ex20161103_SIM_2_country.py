@@ -21,6 +21,7 @@ limitations under the License.
 
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models.models import *
+from sfc_models.sector import Market
 from sfc_models.sectors import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness
 
 
@@ -62,7 +63,7 @@ def main():
     # Output is put into two files, based on the file name passed into main() ['out_SIM_Machine_Model_2']
     # (1) [out_ex20161103]_log.txt:  Log file
     # (2) [out_ex20161103].py:  File that solves the system of equations
-    eqns = mod.main_deprecated('out_ex20161103')
+    eqns = mod._main_deprecated('out_ex20161103')
 
     # Only import after the file is created (which is unusual).
     import out_ex20161103 as SFCmod

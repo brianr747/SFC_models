@@ -21,8 +21,8 @@ limitations under the License.
 import os
 
 from sfc_models.examples import get_file_base
-from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models.models import *
+from sfc_models.sector import Market
 from sfc_models.sectors import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness
 
 

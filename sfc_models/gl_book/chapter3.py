@@ -29,8 +29,8 @@ limitations under the License.
 """
 
 from sfc_models.gl_book import GL_book_model
-from sfc_models.models import *
-from sfc_models.sectors import *
+from sfc_models.sectors import DoNothingGovernment, Household, FixedMarginBusiness, TaxFlow, HouseholdWithExpectations
+from sfc_models.sector import Market
 
 
 class SIM(GL_book_model):
@@ -61,11 +61,11 @@ class SIM(GL_book_model):
         :return: list
         """
         out = [
-            ('GOV_DEM_GOOD', [0., 20., 20., 20., 20.]),  # G
-            ('GOOD_SUP_GOOD', [0., 38.44, 47.9]),  # Y
-            ('GOV_T', [0., 7.7, 9.6]),  # T
-            ('HH_AfterTax', [0., 30.8, 38.3]),  # YD
-            ('HH_F', [0., 12.3, 22.7]),  # H = high-powered money
+            ('GOV__DEM_GOOD', [0., 20., 20., 20., 20.]),  # G
+            ('GOOD__SUP_GOOD', [0., 38.44, 47.9]),  # Y
+            ('GOV__T', [0., 7.7, 9.6]),  # T
+            ('HH__AfterTax', [0., 30.8, 38.3]),  # YD
+            ('HH__F', [0., 12.3, 22.7]),  # H = high-powered money
         ]
         return out
 
@@ -118,11 +118,11 @@ class SIMEX1(GL_book_model):
         :return: list
         """
         out = [
-            ('GOV_DEM_GOOD', [0., 20., 20., 20., 20.]),  # G
-            ('GOOD_SUP_GOOD', [0., 29.6, 39.8]),  # Y   NOTE: Book has 39.9 as the final figure...
-            ('GOV_T', [0., 5.9, 8.0]),  # T
-            ('HH_AfterTax', [16., 23.7, 31.9]),  # YD
-            ('HH_EXP_AfterTax', [0., 16., 23.7]),  # Expected YD
-            ('HH_F', [0., 14.1, 26.1]),  # H = high-powered money
+            ('GOV__DEM_GOOD', [0., 20., 20., 20., 20.]),  # G
+            ('GOOD__SUP_GOOD', [0., 29.6, 39.8]),  # Y   NOTE: Book has 39.9 as the final figure...
+            ('GOV__T', [0., 5.9, 8.0]),  # T
+            ('HH__AfterTax', [16., 23.7, 31.9]),  # YD
+            ('HH__EXP_AfterTax', [0., 16., 23.7]),  # Expected YD
+            ('HH__F', [0., 14.1, 26.1]),  # H = high-powered money
         ]
         return out

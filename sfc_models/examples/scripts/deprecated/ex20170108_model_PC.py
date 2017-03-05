@@ -21,6 +21,7 @@ limitations under the License.
 
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models.models import *
+from sfc_models.sector import Market
 from sfc_models.sectors import Household, Treasury, CentralBank, TaxFlow, FixedMarginBusiness, DepositMarket, \
     MoneyMarket
 
@@ -63,7 +64,7 @@ def main():
     # (1) [out_YYY]_log.txt:  Log file
     # (2) [out_YYY].py:  File that solves the system of equations
     mod.MaxTime = 100
-    eqns = mod.main_deprecated('out_ex20170108_model_PC')
+    eqns = mod._main_deprecated('out_ex20170108_model_PC')
 
     # Only import after the file is created (which is unusual).
     import out_ex20170108_model_PC as SFCmod

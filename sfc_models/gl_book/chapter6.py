@@ -70,8 +70,8 @@ class REG(GL_book_model):
         mm = MoneyMarket(country, issuer_short_code='CB')
         dep = DepositMarket(country, issuer_short_code='TRE')
         # Create the goods demand function
-        Y_N = hh_n.GetVariableName('PreTax')
-        Y_S = hh_s.GetVariableName('PreTax')
+        Y_N = hh_n.GetVariableName('INC')
+        Y_S = hh_s.GetVariableName('INC')
         goods_n.SupplyAllocation = ([[bus_s, 'MU*{0}'.format(Y_N)], ], bus_n)
         goods_s.SupplyAllocation = ([[bus_n, 'MU*{0}'.format(Y_S)], ], bus_s)
 
@@ -94,13 +94,10 @@ class REG(GL_book_model):
         eqn = 'L0 + L1 * {0} - L2 * (AfterTax/F)'.format(r)
         hh_s.GenerateAssetWeighting([('DEP', eqn)], 'MON')
 
-        # Fix the Pretax income equation to include deposit income.
-        hh_n.SetEquationRightHandSide('PreTax', 'SUP_LAB_N + INTDEP')
-        hh_s.SetEquationRightHandSide('PreTax', 'SUP_LAB_S + INTDEP')
         # Add a decorative equation: Government Fiscal Balance
         # = Primary Balance - Interest expense + Central Bank Dividend (= interest
         # received by the central bank).
-        tre.AddVariable('FISCBAL', 'Fiscal Balance', 'PRIM_BAL - INTDEP + CB_INTDEP')
+        tre.AddVariable('FISCBAL', 'Fiscal Balance', 'PRIM_BAL - INTDEP + CB__INTDEP')
         tre.SetEquationRightHandSide('DEM_GOOD', 'DEM_GOOD_N + DEM_GOOD_S')
         tre.AddVariable('DEM_GOOD_N', 'Demand for goods in the North', '')
         tre.AddVariable('DEM_GOOD_S', 'Demand for goods in the South', '')
@@ -138,21 +135,21 @@ class REG(GL_book_model):
         """
         out = [
             ('t', [None, 1956., 1957., 1958., ]),
-            ('TRE_DEM_GOOD', [None, 40., 40., 40., 40.]),  # G
-            ('DEP_r', [0.025, ] * 10),
-            ('HH_N_WGT_DEP', [None,  0.75, 0.75, 0.75, 0.75, ]),
+            ('TRE__DEM_GOOD', [None, 40., 40., 40., 40.]),  # G
+            ('DEP__r', [0.025, ] * 10),
+            ('HH_N__WGT_DEP', [None,  0.75, 0.75, 0.75, 0.75, ]),
             # Weight of deposits (bills)
-            ('HH_N_AfterTax',
+            ('HH_N__AfterTax',
              '86.49\t86.49\t86.49\t86.49\t86.49\t88.27\t88.57\t88.79\t88.96\t89.09\t89.19\t89.26\t89.31\t89.35'),
             # YD
             # ('TRE_T', ),  # T
-            ('HH_N_DEM_GOOD_N',
+            ('HH_N__DEM_GOOD_N',
              'None\t86.48667\t86.48656\t86.48655\t86.48654\t87.55877\t88.02118\t88.37395\t88.64268\t88.84701\t89.00206'),
-            ('HH_N_SUP_LAB_N',
+            ('HH_N__SUP_LAB_N',
              'None\t106.4866\t106.4866\t106.4866\t106.4865\t108.7204\t109.0749\t109.3441\t109.5482\t109.7027\t109.8192\t109.9068\t109.9724\t110.0213\t110.0575\t110.0841\t110.1035'),
-            ('HH_S_AfterTax',
+            ('HH_S__AfterTax',
              '86.48666\t86.48656\t86.48655\t86.48654\t86.48654\t84.37456\t84.20819\t84.07316\t83.96609\t83.88098\t83.81313\t83.75889\t83.7154\t83.68043\t83.65222\t83.62939\t83.61085\t83.59574\t83.58338\t83.57325\t83.5649\t83.55801\t83.5523\t83.54755\t83.5436\t83.54028\t83.53751\t83.53517\t83.5332\t83.53154\t83.53013\t83.52893'),
-            ('HH_N_DEM_MON',
+            ('HH_N__DEM_MON',
              'None\t21.62\t21.62\t21.62\t21.62\t21.81\t21.95\t22.05\t22.13\t22.19\t22.23\t22.26\t22.29'),
             # high-powered money (H)
         ]

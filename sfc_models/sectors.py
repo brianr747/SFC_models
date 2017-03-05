@@ -19,7 +19,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from sfc_models.models import Sector, FinancialAssetMarket, Market
+from sfc_models.sector import Sector, Market, FinancialAssetMarket
 import sfc_models.utils as utils
 
 
@@ -32,12 +32,14 @@ class BaseHousehold(Sector):
         Sector.__init__(self, country, long_name, code)
         self.AlphaIncome = alpha_income
         self.AlphaFin = alpha_fin
+        self.IsTaxable = True
+        self.GetModel().AddCashFlowIncomeExclusion(self, 'DEM_' + consumption_good_name)
         self.AddVariable('AlphaIncome', 'Parameter for consumption out of income', '%0.4f' % (self.AlphaIncome,))
         self.AddVariable('AlphaFin', 'Parameter for consumption out of financial assets', '%0.4f' % (self.AlphaFin,))
         self.AddVariable('DEM_' + consumption_good_name, 'Expenditure on goods consumption',
                          'AlphaIncome * AfterTax + AlphaFin * LAG_F')
-        self.AddVariable('PreTax', 'Pretax income', 'SET IN DERIVED CLASSES')
-        self.AddVariable('AfterTax', 'Aftertax income', 'PreTax - T')
+        # self.AddVariable('PreTax', 'Pretax income', 'SET IN DERIVED CLASSES')
+        self.AddVariable('AfterTax', 'Aftertax income', 'INC - T')
         self.AddVariable('T', 'Taxes paid.', '')
 
 
@@ -47,7 +49,7 @@ class Household(BaseHousehold):
         BaseHousehold.__init__(self, country, long_name, code, alpha_income, alpha_fin,
                                consumption_good_name=consumption_good_name)
         self.AddVariable('SUP_' + labour_name, 'Supply of Labour', '<To be determined>')
-        self.SetEquationRightHandSide('PreTax', 'SUP_' + labour_name)
+        # self.SetEquationRightHandSide('PreTax', 'SUP_' + labour_name)
 
 
 class HouseholdWithExpectations(Household):
@@ -70,7 +72,7 @@ class Capitalists(BaseHousehold):
     def __init__(self, country, long_name, code, alpha_income, alpha_fin):
         BaseHousehold.__init__(self, country, long_name, code, alpha_income, alpha_fin)
         self.AddVariable('DIV', 'Dividends', '')
-        self.SetEquationRightHandSide('PreTax', 'DIV')
+        # self.SetEquationRightHandSide('PreTax', 'DIV')
 
 
 class DoNothingGovernment(Sector):
@@ -124,8 +126,8 @@ class FixedMarginBusiness(Sector):
             self.SetEquationRightHandSide('PROF', '%0.3f * %s' % (self.ProfitMargin, market_sup_good))
         for s in self.Parent.SectorList:
             if 'DIV' in s.Equations:
-                self.AddCashFlow('-DIV', 'PROF', 'Dividends paid')
-                s.AddCashFlow('DIV', self.GetVariableName('PROF'), 'Dividends received')
+                self.AddCashFlow('-DIV', 'PROF', 'Dividends paid', is_income=False)
+                s.AddCashFlow('DIV', self.GetVariableName('PROF'), 'Dividends received', is_income=True)
                 break
 
 
@@ -168,8 +170,9 @@ class FixedMarginBusinessMultiOutput(Sector):
         for s in self.Parent.SectorList:
             if 'DIV' in s.Equations:  # pragma: no cover
                 raise NotImplementedError('Not tested yet')
-                self.AddCashFlow('-DIV', 'PROF', 'Dividends paid')
-                s.AddCashFlow('DIV', self.GetVariableName('PROF'), 'Dividends received')
+                self.AddCashFlow('-DIV', 'PROF', 'Dividends paid', is_income=False)
+                s.AddCashFlow('DIV', self.GetVariableName('PROF'), 'Dividends received',
+                              is_income=True)
                 break
 
 
@@ -193,15 +196,16 @@ class TaxFlow(Sector):
         for s in self.Parent.SectorList:
             if s.ID == self.ID:
                 continue
-            if 'PreTax' in s.Equations:
+            if s.IsTaxable:
                 # If the sector has a tax rate defined for it, use that tax rate instead of this object's rate.
                 # Need to add support for fdiffering rates for each type of income?
                 if 'TaxRate' in s.Equations:
                     tax_name_used = s.GetVariableName('TaxRate')
                 else:
                     tax_name_used = taxrate_name
-                term = '%s * %s' % (tax_name_used, s.GetVariableName('PreTax'))
-                s.AddCashFlow('-T', term, 'Taxes paid.')
+                term = '%s * %s' % (tax_name_used, s.GetVariableName('INC'))
+                # The INC variable is pretax.
+                s.AddCashFlow('-T', term, 'Taxes paid.', is_income=False)
                 terms.append('+' + term)
         self.SetEquationRightHandSide('T', utils.create_equation_from_terms(terms))
         # work on other sectors
