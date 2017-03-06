@@ -23,7 +23,6 @@ from __future__ import print_function
 
 import traceback
 
-import sfc_models.deprecated.iterative_machine_generator as iterative_machine_generator
 import sfc_models.equation_solver
 from sfc_models.equation_parser import EquationParser
 from sfc_models.utils import Logger
@@ -151,39 +150,6 @@ class Model(Entity):
             raise
         finally:
             Logger(self.EquationSolver.GenerateCSVtext(), 'timeseries')
-            Logger.cleanup()
-        return self.FinalEquations
-
-    def _main_deprecated(self, base_file_name=None):  # pragma: no cover
-        """
-        This method is deprecated; only keeping until examples are reworked to use new system.
-
-        Builds model, once all sector and exogenous definitions are in place.
-        :return: str
-        """
-        # Excluded from unit test coverage for now. The components are all tested; this function is really a
-        # end-to-end test. Only include in coverage once output file format is finalised.
-        try:
-            if base_file_name is not None:
-                Logger.register_standard_logs(base_file_name)
-            self._GenerateFullSectorCodes()
-            self._GenerateEquations()
-            self._GenerateRegisteredCashFlows()
-            self._ProcessExogenous()
-            self.FinalEquations = self._CreateFinalEquations()
-            if base_file_name is not None:
-                model_file = base_file_name + '.py'
-                obj = iterative_machine_generator.IterativeMachineGenerator(self.FinalEquations,
-                                                                            run_equation_reduction=True)
-                obj.main(model_file)
-                self.LogInfo()
-            else:
-                # noinspection PyUnusedLocal
-                solver = sfc_models.equation_solver.EquationSolver(self.FinalEquations)
-        except Exception as e:
-            self.LogInfo(ex=e)
-            raise
-        finally:
             Logger.cleanup()
         return self.FinalEquations
 

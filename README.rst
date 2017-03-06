@@ -41,7 +41,7 @@ involves a major refactoring of the code, and has changed behaviour.
   ad hoc.)
 - A new module - *sfc_models.sector* was created; it pulled the Sector class out of the models
   module. The existing *sectors.py* was renamed to *sector_definitions.py*. My old
-  example code that did "import **" from *sfc_models.models* no longer works. (?)
+  example code that did "import \*" from *sfc_models.models* no longer works. (?)
 
 There are no *major* refactorings now expected to take place before version 1.0 release. As a result,
 the project status will be changed to 'beta' in Version 0.4. Methods that are not expected to be
