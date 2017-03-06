@@ -46,15 +46,15 @@ Code Cleanup
 The following are the areas of code that will be examined.
 
 - Logging will be back-filled throughout the code base. The user should be able
-  to see what is happening by looking at the log.
+  to see what is happening by looking at the log. **[Started.]**
 - An Equation class may be added. Previously, equations were just lists of
   strings (str). Only limited functionality is expected to be embedded in
-  Version 1.0; the main feature is ensure that the user operations are safe.
+  Version 1.0; the main feature is ensure that the user operations are safe. **[DONE]**
 - Methods that are viewed as "private" will be renamed with "_" in their
-  names; they will not show up in help
+  names; they will not show up in help **[Started.]**
 - Refactoring to ensure greater consistency of naming and parameter usage.
 - Allow users to define functions to be used within equations. **[DONE]**
-- Example scripts will either be updated or moved to the "deprecated" folder.
+- Example scripts will either be updated or moved to the "deprecated" folder. **[DONE]**
 
 Documentation
 -------------

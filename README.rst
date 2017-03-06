@@ -18,7 +18,7 @@ Developed under Python 3.4, and is compatible with Python 2.7.
 Road To Version 1.0
 -------------------
 
-Another text file "RoadToVersion1.txt" describes the functionality that is aimed to be
+Another text file "RoadToVersion1.rst" describes the functionality that is aimed to be
 incorporated in Version 1.0 of *sfc_models*.
 
 Version 0.4.0 is being released on 2017-03-06. This version

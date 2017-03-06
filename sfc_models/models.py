@@ -19,6 +19,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+from __future__ import print_function
+
 import traceback
 
 import sfc_models.deprecated.iterative_machine_generator as iterative_machine_generator
@@ -140,6 +142,10 @@ class Model(Entity):
             self.EquationSolver.ParseString(self.FinalEquations)
             self.EquationSolver.SolveEquation()
             self.LogInfo()
+        except Warning as e:
+            self.LogInfo(ex=e)
+            print('Warning triggered: ' + str(e))
+            return self.FinalEquations
         except Exception as e:
             self.LogInfo(ex=e)
             raise
@@ -333,7 +339,7 @@ class Model(Entity):
         """
         # Not covered with unit tests [for now]. Output format will change a lot.
         if ex is not None:
-            Logger('\nError raised:\n')
+            Logger('\nError or Warning raised:\n')
             traceback.print_exc(file=Logger.get_handle())
         Logger('-'*30)
         Logger('Starting LogInfo() Data Dump')
@@ -523,6 +529,8 @@ class Model(Entity):
                 out.extend(sector._CreateFinalEquations())
         out.extend(self._GenerateInitialConditions())
         out.extend(self.GlobalVariables)
+        if len(out) == 0:
+            raise Warning('There are no equations in the system.')
         return self._FinalEquationFormatting(out)
 
     def _FinalEquationFormatting(self, out):

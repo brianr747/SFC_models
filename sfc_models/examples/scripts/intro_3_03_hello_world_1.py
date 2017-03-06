@@ -21,22 +21,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-# Imports
 # This next line looks bizarre, but is needed for backwards compatibility with Python 2.7.
 from __future__ import print_function
 
 import sfc_models
 from sfc_models.models import Model
 
-print('Starting up logging')
-print('Log files are based on name of this module: ', __file__)
+print('*Starting up logging*')
+# Log files are based on name of this module, which is given by: __file__
 sfc_models.register_standard_logs(output_dir='output',
                                   base_file_name=__file__)
-print('Build Model')
+print('*Build Model*')
 mod = Model()
-print('Running main()!')
-try:
-    mod.main()
-except:
-    print('Kaboom!')
-    print('Model class is not happy dealing with models with no equations...')
+print('*Running main()*')
+print('*(This will cause a warning...)*')
+mod.main()
