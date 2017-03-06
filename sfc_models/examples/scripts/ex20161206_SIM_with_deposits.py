@@ -20,13 +20,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from sfc_models.utils import register_standard_logs
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
-from sfc_models.models import *
+from sfc_models.models import Model, Country
 from sfc_models.sector import Market
 from sfc_models.sector_definitions import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness, DepositMarket, MoneyMarket
 
 
 def main():
+    # The next line of code sets the name of the output files based on the code file's name.
+    # This means that if you paste this code into a new file, get a new log name.
+    register_standard_logs('output', __file__)
     # Create model, which holds all entities
     mod = Model()
     # Create first country - Canada. (This model only has one country.)
@@ -46,8 +50,6 @@ def main():
     dep = DepositMarket(can, issuer_short_code='GOV')
     # --------------------------------------------
     # Financial asset demand equations
-    # Need to call this before we set the demand functions for
-    mod._GenerateFullSectorCodes()
     # Need the full variable name for 'F' in household
     hh_F = hh.GetVariableName('F')
     hh.AddVariable('DEM_MON', 'Demand for Money', '0.5 * ' + hh_F)
@@ -58,20 +60,14 @@ def main():
     mod.AddExogenous('GOV', 'DEM_GOOD', '[20.,] * 105')
     mod.AddExogenous('DEP', 'r', '[0.0,] * 5 + [0.04]*100')
     mod.AddInitialCondition('HH', 'F', 80.)
-    # Build the model
-    # Output is put into two files, based on the file name passed into main() ['out_SIM_Machine_Model']
-    # (1) [out_ex20161206_SIM_with_deposits]_log.txt:  Log file
-    # (2) [out_ex20161206_SIM_with_Deposits].py:  File that solves the system of equations
-    mod.MaxTime = 100
-    eqns = mod._main_deprecated('out_ex20161206_SIM_with_deposits')
+    mod.main()
 
-    # Only import after the file is created (which is unusual).
-    import out_ex20161206_SIM_with_deposits as SFCmod
-    obj = SFCmod.SFCModel()
-    obj.main()
-    obj.WriteCSV('out_ex20161206_SIM_with_deposits.csv')
-    Quick2DPlot(obj.t[1:], obj.GOOD_SUP_GOOD[1:], 'Goods supplied (national production Y)')
-    Quick2DPlot(obj.t[1:], obj.HH_F[1:], 'Household Financial Assets (F)')
+    mod.TimeSeriesSupressTimeZero = True
+    mod.TimeSeriesCutoff = 20
+    Quick2DPlot(mod.GetTimeSeries('t'), mod.GetTimeSeries('GOOD__SUP_GOOD'),
+                'Goods supplied (national production Y)')
+    Quick2DPlot(mod.GetTimeSeries('t'), mod.GetTimeSeries('HH__F'),
+                'Household Financial Assets (F)')
 
 
 if __name__ == '__main__':

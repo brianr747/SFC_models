@@ -10,8 +10,8 @@ class Sector(Entity):
 
     def __init__(self, country, long_name, code, has_F=True):
         Entity.__init__(self, country)
-        country.AddSector(self)
         self.Code = code
+        country.AddSector(self)
         # This is calculated by the Model
         self.FullCode = ''
         self.LongName = long_name
@@ -53,7 +53,7 @@ class Sector(Entity):
                    data_to_format=(self.ID, varname))
         self.EquationBlock.AddEquation(equation)
         # self.Equations[varname] = eqn
-        Logger('[ID={0}] Variable Added: {1} = {2} # {3}', priority=5,
+        Logger('[ID={0}] Variable Added: {1} = {2} # {3}', priority=2,
                data_to_format=(self.ID, varname, eqn, desc))
 
     def AddVariableFromEquation(self, eqn):
@@ -80,7 +80,7 @@ class Sector(Entity):
         # Could try: Equation.ParseString(rhs), but is too slow in unit tests...
         # if varname not in self.Equations:
         #     raise KeyError('Variable {0} does not exist'.format(varname))
-        Logger('[ID={0}] Equation set: {1} = {2} ', priority=5,
+        Logger('[ID={0}] Equation set: {1} = {2} ', priority=2,
                data_to_format=(self.ID, varname, rhs))
         # self.Equations[varname] = rhs
 
@@ -124,7 +124,7 @@ class Sector(Entity):
             raise KeyError('Variable %s not in sector %s' % (varname, self.FullCode))
         if self.FullCode == '':
             alias = '_{0}__{1}'.format(self.ID, varname)
-            Logger('Registering alias: {0}', priority=5, data_to_format=(alias))
+            Logger('Registering alias: {0}', priority=5, data_to_format=(alias,))
             self.GetModel()._RegisterAlias(alias, self, varname)
             return alias
         else:
@@ -266,7 +266,6 @@ class Sector(Entity):
         self.AddVariable('WGT_' + residual_asset_code, 'Asset weight for ' + residual_asset_code, residual_weight)
         self.AddVariable('DEM_' + residual_asset_code, 'Demand for asset ' + residual_asset_code,
                          'F * {0}'.format('WGT_' + residual_asset_code))
-
 
 class Market(Sector):
     """

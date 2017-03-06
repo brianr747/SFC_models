@@ -1,9 +1,9 @@
-from unittest import TestCase
 import doctest
 import sys
+from unittest import TestCase
 
-from sfc_models.iterative_machine_generator import IterativeMachineGenerator
-import sfc_models.iterative_machine_generator as iterative_machine_generator
+import sfc_models.deprecated.iterative_machine_generator as iterative_machine_generator
+from sfc_models.deprecated.iterative_machine_generator import IterativeMachineGenerator
 
 # assertWarns does not exist in Python 2.7...
 is_python_3 = sys.version_info[0] == 3
@@ -216,8 +216,8 @@ G = [20., ] * 20
         with self.assertWarns(SyntaxWarning):
             msg = obj.ParseString(eqns)
         self.assertTrue('oops' in msg)
-        self.assertEqual(obj.Endogenous, [('x', '2*y'), ('y', '.5'), ('t', 't_minus_1 + 1.0')])
-        self.assertEqual(obj.Lagged, [('z', 'y'), ('t_minus_1', 't')])
+        self.assertEqual(obj.Endogenous, [('x', '2*y'), ('y', '.5'), ('t', 'k')])
+        self.assertEqual(obj.Lagged, [('z', 'y'),])
         self.assertEqual(obj.Exogenous, [('G', '[5., 5.]'), ])
         self.assertTrue('Ignored' in obj.GeneratedBy)
 

@@ -25,18 +25,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import os
-
 import sfc_models.examples.install_example_scripts
-
-
-def get_file_base(fullfile):
-    fname = os.path.basename(fullfile)
-    pos = fname.find('.')
-    if pos == -1:
-        return fname
-    else:
-        return fname[0:pos]
 
 
 def install_scripts(target_dir=None):  # pragma: no cover

@@ -18,9 +18,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
-from sfc_models.models import *
+from sfc_models.utils import register_standard_logs
+from sfc_models.models import Model, Country
 from sfc_models.sector import Market
+from sfc_models.utils import Logger, get_file_base
 from sfc_models.sector_definitions import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness, Capitalists
 
 
@@ -41,6 +44,9 @@ def CreateCountry(mod, name, code):
 
 
 def main():
+    # The next line of code sets the name of the output files based on the code file's name.
+    # This means that if you paste this code into a new file, get a new log name.
+    register_standard_logs('output', __file__)
     # Create model, which holds all entities
     mod = Model()
     can = CreateCountry(mod, 'Canada', 'CA')
@@ -48,27 +54,7 @@ def main():
     # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
     mod.AddExogenous('CA_GOV', 'DEM_GOOD', '[20.,] * 105')
     mod.AddExogenous('US_GOV', 'DEM_GOOD', '[20.,] * 105')
-    # Build the model
-    # Output is put into two files, based on the file name passed into main() ['ex20161128_tax_cut_comparison']
-    # (1) [...]_log.txt:  Log file
-    # (2) [...].py:  File that solves the system of equations
-    eqns = mod._main_deprecated('ex20161128_tax_cut_comparison')
-    obj = SIM_Capitalist.SFCModel()
-    obj.MaxTime = 20
-    obj.PrintIterations = True
-    obj.main()
-    obj.WriteCSV('ex20161128_tax_cut_comparison.csv')
-
-    p = Quick2DPlot([obj.t, obj.t], [obj.CA_GOOD_SUP_GOOD, obj.US_GOOD_SUP_GOOD], 'Output - Y', run_now=False)
-    p.Legend = ['Scenario #1', 'Scenario #2']
-    p.DoPlot()
-    # p = Quick2DPlot([obj.t, obj.t], [obj.BUS_F, obj2.BUS_F], 'Business Sector Financial Assets (F)', run_now=False)
-    # p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']
-    # p.DoPlot()
-    # p = Quick2DPlot([obj.t, obj.t], [obj.GOV_FISC_BAL, obj2.GOV_FISC_BAL], 'Government Financial Balance',
-    #                 run_now=False)
-    # p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']
-    # p.DoPlot()
+    mod.main()
 
 
 if __name__ == '__main__':

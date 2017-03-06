@@ -18,14 +18,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import os
 
+from sfc_models.examples import get_file_base
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
-from sfc_models.models import *
+from sfc_models.models import Model, Country
 from sfc_models.sector import Market
+from sfc_models.utils import Logger, get_file_base
 from sfc_models.sector_definitions import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness
 
 
 def main():
+    # The next line of code sets the name of the output files based on the code file's name.
+    # This means that if you paste this code into a new file, get a new log name.
+    base_name = os.path.join('output', get_file_base(__file__))
+    Logger.register_standard_logs(base_name)
     # Create model, which holds all entities
     mod = Model()
     # Create first country - Canada.
@@ -59,25 +66,24 @@ def main():
     # Since we have a two country model, we need to specify the full sector code, which includes the country code.
     mod.AddExogenous('CA_GOV', 'DEM_GOOD', '[20.,] * 105')
     mod.AddExogenous('US_GOV', 'DEM_GOOD', '[20.,] * 105')
-    # Build the model
-    # Output is put into two files, based on the file name passed into main() ['out_SIM_Machine_Model_2']
-    # (1) [out_ex20161103]_log.txt:  Log file
-    # (2) [out_ex20161103].py:  File that solves the system of equations
-    eqns = mod._main_deprecated('out_ex20161103')
 
-    # Only import after the file is created (which is unusual).
-    import out_ex20161103 as SFCmod
-    obj = SFCmod.SFCModel()
-    obj.main()
-    obj.WriteCSV('out_ex20161103.csv')
-    p = Quick2DPlot([obj.t, obj.t], [obj.CA_GOOD_SUP_GOOD, obj.US_GOOD_SUP_GOOD], 'Output - Y', run_now=False)
+    # Do the main work of building and solving the model
+    mod.main()
+    CUT = 25
+    t = mod.GetTimeSeries('t', cutoff=CUT)
+    Y_CA = mod.GetTimeSeries('CA_GOOD__SUP_GOOD', cutoff=CUT)
+    Y_US = mod.GetTimeSeries('US_GOOD__SUP_GOOD', cutoff=CUT)
+    p = Quick2DPlot([t,t], [Y_CA, Y_US], 'Output - Y', run_now=False)
     p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']
     p.DoPlot()
-    p = Quick2DPlot([obj.t, obj.t], [obj.CA_BUS_F, obj.US_BUS_F], 'Business Sector Financial Assets (F)', run_now=False)
+    F_CA = mod.GetTimeSeries('CA_BUS__F', cutoff=CUT)
+    F_US = mod.GetTimeSeries('US_BUS__F', cutoff=CUT)
+    p = Quick2DPlot([t, t], [F_CA, F_US], 'Business Sector Financial Assets (F)', run_now=False)
     p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']
     p.DoPlot()
-    p = Quick2DPlot([obj.t, obj.t], [obj.CA_GOV_FISC_BAL, obj.US_GOV_FISC_BAL], 'Government Financial Balance',
-                    run_now=False)
+    BAL_CA = mod.GetTimeSeries('CA_GOV__FISC_BAL', cutoff=CUT)
+    BAL_US = mod.GetTimeSeries('US_GOV__FISC_BAL', cutoff=CUT)
+    p = Quick2DPlot([t, t], [BAL_CA, BAL_US], 'Government Financial Balance', run_now=False)
     p.Legend = ['Canada (0% profit)', 'U.S. (10% Profit)']
     p.DoPlot()
 

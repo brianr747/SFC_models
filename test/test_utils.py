@@ -1,6 +1,7 @@
 import doctest
 from unittest import TestCase
 
+import sfc_models.utils
 import sfc_models.utils as utils
 from sfc_models.utils import Logger
 from sfc_models.equation_solver import EquationSolver
@@ -39,8 +40,8 @@ class TestGetValid(TestCase):
         self.assertIn('sqrt', bad)
 
     def test_examples_fn(self):
-        self.assertEqual('cat', sfc_models.examples.get_file_base('C:\\temp\\cat.txt'))
-        self.assertEqual('cat', sfc_models.examples.get_file_base('C:\\temp\\cat'))
+        self.assertEqual('cat', sfc_models.utils.get_file_base('C:\\temp\\cat.txt'))
+        self.assertEqual('cat', sfc_models.utils.get_file_base('C:\\temp\\cat'))
 
     def test_token_list(self):
         bad = utils.get_invalid_tokens()

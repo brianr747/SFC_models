@@ -19,6 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from sfc_models.utils import register_standard_logs
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models.models import *
 from sfc_models.sector import Market
@@ -43,6 +44,7 @@ def CreateCountry(mod, name, code):
 
 
 def main():
+    register_standard_logs('output', __file__)
     # Create model, which holds all entities
     mod = Model()
     can = CreateCountry(mod, 'Scenario 1', 'SCEN1')
@@ -50,11 +52,7 @@ def main():
     # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
     mod.AddExogenous('SCEN1_GOV', 'DEM_GOOD', '[20.,] * 105')
     mod.AddExogenous('SCEN2_GOV', 'DEM_GOOD', '[20.,] * 105')
-    # clean up output by starting at steady state by setting initial F
-    mod.AddInitialCondition('SCEN1_HH', 'F', 29.09)
-    mod.AddInitialCondition('SCEN1_CAP', 'F', 33.94)
-    mod.AddInitialCondition('SCEN2_HH', 'F', 29.09)
-    mod.AddInitialCondition('SCEN2_CAP', 'F', 33.94)
+    sfc_models.Parameters.SolveInitialEquilibrium = True
     # Generate a $1 tax cut based on steady state values.
     # Scenario #1: Tax cut for workers at t=5
     # Initial tax rate is 20%, and pays $14.545 in tax, so cut tax rate to 18.6%.
@@ -65,20 +63,11 @@ def main():
     # (tax rate = [.3, .3, .3, .3, .3, .245 , ,245 ...]
     mod.AddExogenous('SCEN2_CAP', 'TaxRate', '[0.3,]*5 + [0.245,]*100')
 
-    # Build the model
-    # Output is put into two files, based on the file name passed into main() ['ex20161128_tax_cut_comparison']
-    # (1) [...]_log.txt:  Log file
-    # (2) [...].py:  File that solves the system of equations
-    eqns = mod._main_deprecated('out_ex20161128_tax_cut_comparison')
-    import out_ex20161128_tax_cut_comparison as SIM_Capitalist
-    obj = SIM_Capitalist.SFCModel()
-    obj.MaxTime = 40
-    obj.PrintIterations = True
-    obj.main()
-    obj.WriteCSV('out_ex20161128_tax_cut_comparison.csv')
-
-    p = Quick2DPlot([obj.t[1:], obj.t[1:]], [obj.SCEN1_GOOD_SUP_GOOD[1:], obj.SCEN2_GOOD_SUP_GOOD[1:]], 'Output - Y',
-                    run_now=False)
+    mod.main()
+    t = mod.GetTimeSeries('t', cutoff=30)
+    scen1 = mod.GetTimeSeries('SCEN1_GOOD__SUP_GOOD', cutoff=30)
+    scen2 = mod.GetTimeSeries('SCEN2_GGOD__SUP_GOOD', cutoff=30)
+    p = Quick2DPlot([t,t], [scen1, scen2], 'Output - Y',run_now=False)
     p.Legend = ['Scenario #1 - Worker Tax Cut', 'Scenario #2 - Capitalist Tax Cut']
     p.LegendPos = 'center right'
     p.DoPlot()

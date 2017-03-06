@@ -4,7 +4,7 @@ run_SIM_machine_generated.py
 Script to generate model SIM from [G&L 2012] from text equation specification.
 """
 
-import sfc_models.iterative_machine_generator as generator
+import sfc_models.deprecated.iterative_machine_generator as generator
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 
 filename = 'SIM_model.py'

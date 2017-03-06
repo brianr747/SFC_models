@@ -121,10 +121,8 @@ class EquationParser(object):
             else:
                 self.Exogenous.append((varname, eqn))
         if not found_t:
-            self.Endogenous.append(('t', 't_minus_1 + 1.0'))
-            self.Lagged.append(('t_minus_1', 't'))
-            self.AllEquations['t'] = 't_minus_1 + 1.0'
-            self.AllEquations['t_minus_1'] = 't(k-1)'
+            self.Endogenous.append(('t', 'k'))
+            self.AllEquations['t'] = 'k'
         return msg
 
     def DumpEquations(self):  # pragma: no cover    [Should be free to change dump format without breaking tests...]

@@ -28,7 +28,7 @@ involves a major refactoring of the code, and has changed behaviour.
   the sector FullCode and the local variable name. For example, the household financial assets
   are now 'HH__F' instead of 'HH_F'. Furthermore, the creation of local variables with '__' is
   blocked. This means that the presence of '__' in a variable name means that it is the full name
-  of a variable; otherwise it is a local variable. (Or perhaps, a global variable, like 't'.)
+  of a variable; otherwise it is a local variable. (Or perhaps a global variable like 't'.)
 - An Equation class was created. It has replaced the strings held in the Equations member of
   the Sector class. It allows us to add terms to equations, so that the financial assets and
   income equations (see below) are always well-defined. This Equation class should be used by
@@ -41,7 +41,7 @@ involves a major refactoring of the code, and has changed behaviour.
   ad hoc.)
 - A new module - *sfc_models.sector* was created; it pulled the Sector class out of the models
   module. The existing *sectors.py* was renamed to *sector_definitions.py*. My old
-  example code that did "import *" from *sfc_models.models* no longer works. (?)
+  example code that did "import **" from *sfc_models.models* no longer works. (?)
 
 There are no *major* refactorings now expected to take place before version 1.0 release. As a result,
 the project status will be changed to 'beta' in Version 0.4. Methods that are not expected to be

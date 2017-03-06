@@ -40,10 +40,9 @@ class SFCModel(BaseSolver):
     x = y,
     y = t + 2.0,
     z = LAG_x + 1.0,
-    t = t_minus_1 + 1.0.
+    t = k.
     Where lagged variables are:
-    LAG_x(t) = x(k-1),
-    t_minus_1(t) = t(k-1).
+    LAG_x(t) = x(k-1).
     
     
     Exogenous Variables
@@ -71,15 +70,14 @@ class SFCModel(BaseSolver):
 
     @staticmethod
     def Iterator(in_vec):
-        x, y, z, t, LAG_x, t_minus_1, G = in_vec 
+        x, y, z, t, LAG_x, G = in_vec 
         NEW_x = y
         NEW_y = t + 2.0
         NEW_z = LAG_x + 1.0
-        NEW_t = t_minus_1 + 1.0
+        NEW_t = k
         NEW_LAG_x = LAG_x
-        NEW_t_minus_1 = t_minus_1
         NEW_G = G
-        return NEW_x, NEW_y, NEW_z, NEW_t, NEW_LAG_x, NEW_t_minus_1, NEW_G
+        return NEW_x, NEW_y, NEW_z, NEW_t, NEW_LAG_x, NEW_G
 
 
     def main(self):
@@ -93,10 +91,9 @@ class SFCModel(BaseSolver):
         z = self.z[-1]
         t = self.t[-1]
         LAG_x = self.x[self.STEP -1]
-        t_minus_1 = self.t[self.STEP -1]
         G = self.G[self.STEP]
 
-        orig_vector = (x, y, z, t, LAG_x, t_minus_1, G)
+        orig_vector = (x, y, z, t, LAG_x, G)
         err = 1.
         cnt = 0
         while err > self.Err_Tolerance:

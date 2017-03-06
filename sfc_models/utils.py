@@ -20,10 +20,12 @@ limitations under the License.
 
 import keyword
 import math
+import os
 import sys
 import tokenize
 from io import BytesIO
 from tokenize import untokenize, NAME
+
 
 is_python_3 = sys.version_info[0] == 3
 
@@ -334,3 +336,35 @@ class Logger(object):
                 if type(f) is not str:
                     f.close()
         Logger.log_file_handles = {}
+
+
+def get_file_base(fullfile):
+    """
+    Get the base name of a file
+    :param fullfile: str
+    :return:
+    """
+    fname = os.path.basename(fullfile)
+    pos = fname.find('.')
+    if pos == -1:
+        return fname
+    else:
+        return fname[0:pos]
+
+
+def register_standard_logs(output_dir, base_file_name):
+    """
+    Convenience function to stick logs in a directory, based base_file_name.
+
+    Typical usage: In examples/scripts, use register_standard_logs('output', __FILE__)
+    - Puts the files in the output subdirectory.
+    - Uses the code file name (__FILE__) as the base. [The .py will be stripped]
+
+    Operation is operating system safe (as long the output_dir is safe).
+
+    :param output_dir: str
+    :param base_file_name: str
+    :return:
+    """
+    base_file_name = os.path.join(output_dir, get_file_base(base_file_name))
+    Logger.register_standard_logs(base_file_name)

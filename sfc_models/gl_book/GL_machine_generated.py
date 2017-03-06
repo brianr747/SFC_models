@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from sfc_models.iterative_machine_generator import IterativeMachineGenerator
+from sfc_models.deprecated.iterative_machine_generator import IterativeMachineGenerator
 
 model_list = {
     'TEST': """# Test model for internal testing purposes...

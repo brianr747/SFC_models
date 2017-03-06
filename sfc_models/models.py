@@ -21,8 +21,8 @@ limitations under the License.
 """
 import traceback
 
+import sfc_models.deprecated.iterative_machine_generator as iterative_machine_generator
 import sfc_models.equation_solver
-import sfc_models.iterative_machine_generator as iterative_machine_generator
 from sfc_models.equation_parser import EquationParser
 from sfc_models.utils import Logger
 
@@ -44,7 +44,7 @@ class Entity(object):
         self.Parent = parent
         self.Code = ''
         self.LongName = ''
-        Logger('{0} Created, ID={1}', priority=2, data_to_format=(type(self), self.ID))
+        Logger('Entity Created: {0} ID = {1}', priority=2, data_to_format=(type(self),self.ID))
 
     def GetModel(self):
         """
@@ -63,7 +63,6 @@ class Entity(object):
         :return: bool
         """
         return self.Parent == other.Parent
-
 
 class Model(Entity):
     """
@@ -200,6 +199,8 @@ class Model(Entity):
         :param value: str
         :return:
         """
+        Logger('Adding exogenous variable: {0} in {1}', priority=5,
+               data_to_format=(varname, sector_fullcode))
         # If the user passes in a list or tuple, convert it to a string representation.
         if type(value) in (list, tuple):
             value = repr(value)
@@ -214,6 +215,8 @@ class Model(Entity):
         :param value: float
         :return:
         """
+        Logger('Adding initial condition: {0} in {1}', priority=5,
+               data_to_format=(varname, sector_fullcode))
         # Convert the "value" to a float, in case someone uses a string
         try:
             value = float(value)
@@ -237,6 +240,8 @@ class Model(Entity):
         :param cash_flow_name: str
         :return: None
         """
+        Logger('Registering cash flow exclusion: {0} for ID={1}', priority=5,
+               data_to_format=(cash_flow_name, sector.ID))
         self.IncomeExclusions.append((sector, cash_flow_name))
 
     def _RegisterAlias(self, alias, sector, local_variable_name):
@@ -248,6 +253,8 @@ class Model(Entity):
         :param local_variable_name: str
         :return:
         """
+        Logger('Registering alias {0} for {1} in ID={2}', priority=5,
+               data_to_format=(alias, local_variable_name, sector.ID))
         self.Aliases[alias] = (sector, local_variable_name)
 
     def AddGlobalEquation(self, var, description, eqn):
@@ -260,6 +267,7 @@ class Model(Entity):
         :param eqn: str
         :return: None
         """
+        Logger('Registering global equation: {0} = {1}', priority=5, data_to_format=(var, eqn))
         self.GlobalVariables.append((var, eqn, description))
 
     def GetSectors(self):
@@ -305,6 +313,7 @@ class Model(Entity):
         Assign the proper names to variables in Sector objects (that were perviously aliases).
         :return:
         """
+        Logger('Fixing aliases (Model._FixAliases)', priority=3)
         lookup = {}
         for alias in self.Aliases:
             sector, varname = self.Aliases[alias]
@@ -330,6 +339,7 @@ class Model(Entity):
                 Logger('=' * 60 + '\n\n')
                 for s in c.SectorList:
                     Logger(s.Dump() + '\n')
+        Logger('Writing LogInfo to log="eqn"')
         Logger('\n\nFinal Equations:\n', log='eqn')
         Logger(self.FinalEquations + '\n', log='eqn')
         parser = EquationParser()
@@ -348,6 +358,7 @@ class Model(Entity):
         :param country: Country
         :return: None
         """
+        Logger('Adding Country: {0} ID={1}', data_to_format=(country.Code, country.ID))
         self.CountryList.append(country)
 
     def _GenerateFullSectorCodes(self):
@@ -357,6 +368,7 @@ class Model(Entity):
 
         :return: None
         """
+        Logger('Generating FullSector codes (Model._GenerateFullSectorCodes()', priority=3)
         add_country_code = len(self.CountryList) > 1
         for cntry in self.CountryList:
             for sector in cntry.SectorList:
@@ -396,6 +408,9 @@ class Model(Entity):
         """
         # if amount_variable not in source_sector.Equations:
         #     raise KeyError('Must define the variable that is the amount of the cash flow')
+        Logger('Cash flow registered {0}: {1} -> {2}  [ID: {3} -> {4}]', priority=3,
+               data_to_format=(amount_variable, source_sector.Code, target_sector.Code,
+                               source_sector.ID, target_sector.ID))
         self.RegisteredCashFlows.append((source_sector, target_sector, amount_variable))
 
     def _GenerateRegisteredCashFlows(self):
@@ -404,6 +419,9 @@ class Model(Entity):
 
         :return:
         """
+        Logger('Model._GenerateRegisteredCashFlows()')
+        Logger('Adding {0} cash flows to sectors', priority=3,
+               data_to_format=(len(self.RegisteredCashFlows),))
         for source_sector, target_sector, amount_variable in self.RegisteredCashFlows:
             full_variable_name = source_sector.GetVariableName(amount_variable)
             source_sector.AddCashFlow('-' + full_variable_name, eqn=None)
@@ -429,6 +447,7 @@ class Model(Entity):
 
         :return: None
         """
+        Logger('Processing {0} exogenous variables', priority=3, data_to_format=(len(self.Exogenous),))
         for sector_code, varname, eqn in self.Exogenous:
             if type(sector_code) is str:
                 sector = self.LookupSector(sector_code)
@@ -446,6 +465,8 @@ class Model(Entity):
         Validates that the variables exist.
         :return:
         """
+        Logger('Generating {0} initial conditions', priority=3,
+               data_to_format=(len(self.InitialConditions),))
         out = []
         for sector_code, varname, value in self.InitialConditions:
             sector = self.LookupSector(sector_code)
@@ -457,8 +478,10 @@ class Model(Entity):
     def _GenerateEquations(self):
         """
         Call _GenerateEquations on all child Sector objects.
+
         :return:
         """
+        Logger('Model._GenerateEquations()', priority=1)
         for cntry in self.CountryList:
             for sector in cntry.SectorList:
                 sector._GenerateEquations()
@@ -487,6 +510,7 @@ class Model(Entity):
         Final output, which is a text block of equations
         :return: str
         """
+        Logger('Model._CreateFinalEquations()')
         out = []
         for cntry in self.CountryList:
             for sector in cntry.SectorList:
@@ -502,6 +526,7 @@ class Model(Entity):
         :param out: list
         :return:
         """
+        Logger('_FinalEquationFormatting()', priority=5)
         endo = []
         exo = []
         for row in out:
@@ -535,6 +560,14 @@ class Country(Entity):
         self.SectorList = []
 
     def AddSector(self, sector):
+        """
+        Add a sector to this country.
+
+        :param sector: Sector
+        :return:
+        """
+        Logger('Adding Sector {0} To Country {1}', priority=1,
+               data_to_format=(sector.Code, self.Code))
         self.SectorList.append(sector)
 
     def LookupSector(self, code, is_full_code=False):
