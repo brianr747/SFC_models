@@ -21,7 +21,7 @@ Road To Version 1.0
 Another text file "RoadToVersion1.txt" describes the functionality that is aimed to be
 incorporated in Version 1.0 of *sfc_models*.
 
-At the time of writing (2017-03-05), it is expected that version 0.4 will be ready. This version
+Version 0.4.0 is being released on 2017-03-06. This version
 involves a major refactoring of the code, and has changed behaviour.
 
 - The framework now injects a double underscore ('__') instead of a single one ('_') between
@@ -89,10 +89,11 @@ as being marked as unreached; they have been eliminated with::
 Change Log
 ----------
 
-- **Development** Multi-file Logger, initial (constant) equilibrium calculation, markets
+- **0.4.0** Multi-file Logger, initial (constant) equilibrium calculation, markets
   with multiple supply sources, custom functions. Equation objects used in model creation.
   **Changed variable naming convention, eliminated the Sector.Equations member.** Considerable
-  refactoring, methods for developer use have been hidden with leading underscore.
+  refactoring, methods for developer use have been hidden with leading underscore. Example code
+  cleanup.
 - **0.3.0** Rebuilt the solver, heavy refactoring, example installation, Godley & Lavoie example framework.
 - **0.2.1** Cleaned up examples layout.
 - **Version 0.2**  (Should have been 0.2.0 - oops)
