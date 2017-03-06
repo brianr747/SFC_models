@@ -25,12 +25,19 @@ limitations under the License.
 # Step 1: Import modules
 # os - operating system calls
 import os
+
 # sfc_models code
+import sfc_models
 from sfc_models.models import Model, Country
 from sfc_models.sector import Market
 from sfc_models.sector_definitions import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness
 # Quick2DPlot() - Plotting functions used by examples; relies upon matplotlib
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
+
+# Step 1.5: set up logging
+# The next line of code sets the name of the output files based on the code file's name.
+# This means that if you paste this code into a new file, get a new log name.
+sfc_models.register_standard_logs('output', __file__)
 
 # Step 2: build the model objects
 # Create model, which holds all entities
@@ -49,15 +56,11 @@ goods = Market(can, 'Goods market', 'GOOD')
 # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
 mod.AddExogenous('GOV', 'DEM_GOOD', '[20.,] * 105')
 # Step 3: Invoke the method ("main") that builds the model.
-# The framework creates outpur files, with names based upon the base_file_name parameter.
-# Use os.path.join to create the file name in an operating system independent fashion.
-fname = 'intro_3_02_example'
-basefilename = os.path.join('output', fname)
-mod.main(base_file_name=basefilename)
+mod.main()
 
 # Once the framework has built and solved the model equations, we can either work with the output files,
 # or within Python. Here, we do a plot with Quick2DPlot.
 mod.TimeSeriesCutoff = 20
 time = mod.GetTimeSeries('k')
-Y_SIM = mod.GetTimeSeries('GOOD_SUP_GOOD')
-Quick2DPlot(time, Y_SIM, 'Output (Y) - Model SIM', filename=fname + '.png')
+Y_SIM = mod.GetTimeSeries('GOOD__SUP_GOOD')
+Quick2DPlot(time, Y_SIM, 'Output (Y) - Model SIM', filename='intro_3_02_Y.png')

@@ -66,6 +66,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from sfc_models.utils import register_standard_logs
 
 class Parameters(object):
     """

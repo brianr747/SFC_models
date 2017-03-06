@@ -271,12 +271,19 @@ class Logger(object):
             return
         if data_to_format is not None:
             txt = txt.format(*data_to_format)
+        if priority < 1:
+            priority = 1
+        txt = (' ' * (priority-1)) + txt
+        # Need to remove empty strings, or txt[-1] barfs
+        if len(txt) == 0:
+            if endline:
+                txt = ' '
+            else:
+                return
         # Add an endline automatically (unless endline=False).
         if txt[-1] != '\n' and endline:
             txt += '\n'
-        if priority < 1:
-            priority = 1
-        f.write((' ' * (priority - 1)) + txt)
+        f.write(txt)
 
     @staticmethod
     def register_log(fname, log='log'):

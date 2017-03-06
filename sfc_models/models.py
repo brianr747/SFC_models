@@ -44,7 +44,7 @@ class Entity(object):
         self.Parent = parent
         self.Code = ''
         self.LongName = ''
-        Logger('Entity Created: {0} ID = {1}', priority=2, data_to_format=(type(self),self.ID))
+        Logger('Entity Created: {0} ID = {1}', priority=1, data_to_format=(type(self),self.ID))
 
     def GetModel(self):
         """
@@ -332,6 +332,12 @@ class Model(Entity):
         :return:
         """
         # Not covered with unit tests [for now]. Output format will change a lot.
+        if ex is not None:
+            Logger('\nError raised:\n')
+            traceback.print_exc(file=Logger.get_handle())
+        Logger('-'*30)
+        Logger('Starting LogInfo() Data Dump')
+        Logger('-'*30)
         if generate_full_codes:
             self._GenerateFullSectorCodes()
             for c in self.CountryList:

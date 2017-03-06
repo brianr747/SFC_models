@@ -20,7 +20,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from sfc_models.utils import register_standard_logs
+# from sfc_models.utils import register_standard_logs
+import sfc_models
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models.models import Model, Country
 from sfc_models.sector import Market
@@ -30,7 +31,7 @@ from sfc_models.sector_definitions import Household, DoNothingGovernment, TaxFlo
 def main():
     # The next line of code sets the name of the output files based on the code file's name.
     # This means that if you paste this code into a new file, get a new log name.
-    register_standard_logs('output', __file__)
+    sfc_models.register_standard_logs('output', __file__)
     # Create model, which holds all entities
     mod = Model()
     # Create first country - Canada. (This model only has one country.)

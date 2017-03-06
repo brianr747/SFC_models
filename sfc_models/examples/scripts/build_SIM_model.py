@@ -18,9 +18,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import os
-
-from sfc_models.examples import get_file_base
+import sfc_models
 from sfc_models.models import Model, Country
 from sfc_models.sector import Market
 from sfc_models.sector_definitions import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness
@@ -31,8 +29,7 @@ from sfc_models.examples.Quick2DPlot import Quick2DPlot
 def main():
     # The next line of code sets the name of the output files based on the code file's name.
     # This means that if you paste this code into a new file, get a new log name.
-    base_name = os.path.join('output', get_file_base(__file__))
-    Logger.register_standard_logs(base_name)
+    sfc_models.register_standard_logs('output', __file__)
     # Create model, which holds all entities
     mod = Model()
     # Create first country - Canada. (This model only has one country.)
@@ -49,7 +46,7 @@ def main():
     # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
     mod.AddExogenous('GOV', 'DEM_GOOD', '[0.,]*5 + [20.,] * 105')
     # Build the model
-    mod.main(base_name)
+    mod.main()
     CUT = 30
     k = mod.GetTimeSeries('k', cutoff=CUT)
     goods_produced = mod.GetTimeSeries('BUS__SUP_GOOD', cutoff=CUT)

@@ -7,7 +7,7 @@ This script just generates the script_list.txt file which is used for packaging.
 
 import os
 
-excluded = ['__init__.py', 'build_script_list.py']
+excluded = ['__init__.py', 'build_script_list.py', 'run_all_scripts.py', 'build_run_all_scripts.py']
 
 
 def main():

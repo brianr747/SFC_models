@@ -66,7 +66,7 @@ def main():
     mod.main()
     t = mod.GetTimeSeries('t', cutoff=30)
     scen1 = mod.GetTimeSeries('SCEN1_GOOD__SUP_GOOD', cutoff=30)
-    scen2 = mod.GetTimeSeries('SCEN2_GGOD__SUP_GOOD', cutoff=30)
+    scen2 = mod.GetTimeSeries('SCEN2_GOOD__SUP_GOOD', cutoff=30)
     p = Quick2DPlot([t,t], [scen1, scen2], 'Output - Y',run_now=False)
     p.Legend = ['Scenario #1 - Worker Tax Cut', 'Scenario #2 - Capitalist Tax Cut']
     p.LegendPos = 'center right'

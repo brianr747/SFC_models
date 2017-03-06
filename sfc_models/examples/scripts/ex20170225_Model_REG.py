@@ -21,11 +21,12 @@ limitations under the License.
 """
 
 
-import os
+import sfc_models
 from sfc_models.gl_book.chapter6 import REG
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models import Parameters
 
+sfc_models.register_standard_logs('output', __file__)
 Parameters.TraceStep = 1
 builder_REG = REG(country_code='C1', use_book_exogenous=True)
 
@@ -36,7 +37,7 @@ Parameters.TraceStep = 1
 
 
 # Generate the file name using an operating system independent tool - os.path.join
-model.main(base_file_name=os.path.join('output', 'ex20170225_REG'))
+model.main()
 
 
 model.TimeSeriesCutoff = 40

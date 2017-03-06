@@ -49,7 +49,7 @@ class Household(BaseHousehold):
                  labour_name='LAB'):
         BaseHousehold.__init__(self, country, long_name, code, alpha_income, alpha_fin,
                                consumption_good_name=consumption_good_name)
-        self.AddVariable('SUP_' + labour_name, 'Supply of Labour', '<To be determined>')
+        self.AddVariable('SUP_' + labour_name, 'Supply of Labour', '0.')
         # self.SetEquationRightHandSide('PreTax', 'SUP_' + labour_name)
 
 
@@ -117,6 +117,8 @@ class FixedMarginBusiness(Sector):
     def _GenerateEquations(self):
         # self.AddVariable('SUP_GOOD', 'Supply of goods', '<TO BE DETERMINED>')
         wage_share = 1.0 - self.ProfitMargin
+        Logger('Searching for Market Sector with Code {0} in parent country', priority=4,
+               data_to_format=(self.OutputName,))
         market_sup_good = self.Parent.LookupSector(self.OutputName).GetVariableName('SUP_' + self.OutputName)
         if self.ProfitMargin == 0:
             self.AddVariable('DEM_' + self.LabourInputName, 'Demand for labour', market_sup_good)

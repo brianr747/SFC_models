@@ -21,14 +21,13 @@ limitations under the License.
 """
 
 
-import os
 from sfc_models.gl_book.chapter4 import PC
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models import Parameters
-import sfc_models.utils
+import sfc_models
 
 # Set up the standard logs in the "output" subdirectory.
-sfc_models.utils.Logger.register_standard_logs(base_file_name=os.path.join('output', 'ex20170221_PC'))
+sfc_models.register_standard_logs('output', __file__)
 
 Parameters.TraceStep = 1
 builder_PC = PC(country_code='C1', use_book_exogenous=True)
