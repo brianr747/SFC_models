@@ -139,6 +139,12 @@ class TestFixedMarginBusiness(TestCase):
         bus._GenerateEquations()
         self.assertEqual('0.900*GOOD__SUP_GOOD', bus.EquationBlock['DEM_LAB'].RHS().replace(' ', ''))
 
+    def test_no_market(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'Eh')
+        bus = FixedMarginBusiness(can, 'Business', 'BUS')
+        with self.assertRaises(Warning):
+            bus._GenerateEquations()
 
 class TestCapitalists(TestCase):
     def test_dividend(self):

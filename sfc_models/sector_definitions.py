@@ -119,7 +119,10 @@ class FixedMarginBusiness(Sector):
         wage_share = 1.0 - self.ProfitMargin
         Logger('Searching for Market Sector with Code {0} in parent country', priority=4,
                data_to_format=(self.OutputName,))
-        market_sup_good = self.Parent.LookupSector(self.OutputName).GetVariableName('SUP_' + self.OutputName)
+        try:
+            market_sup_good = self.Parent.LookupSector(self.OutputName).GetVariableName('SUP_' + self.OutputName)
+        except KeyError:
+            raise Warning('Business {0} Cannot Find Market for {1}'.format(self.Code, self.OutputName))
         if self.ProfitMargin == 0:
             self.AddVariable('DEM_' + self.LabourInputName, 'Demand for labour', market_sup_good)
             # self.Equations['PROF'] = ''

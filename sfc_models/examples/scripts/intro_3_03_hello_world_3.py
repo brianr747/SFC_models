@@ -31,17 +31,10 @@ from sfc_models.sector_definitions import Household, FixedMarginBusiness
 
 sfc_models.register_standard_logs(output_dir='output',
                                   base_file_name=__file__)
-print('Build Model')
+
 mod = Model()
 can = Country(mod, 'Canada', 'CA')
 household = Household(can, 'Household Sector', 'HH',
                       alpha_income=.7, alpha_fin=.3)
 business = FixedMarginBusiness(can, 'Business Sector', 'BUS')
-
-print('Running main()!')
-try:
-    mod.main()
-except:
-    # At the time of writing, the Business sector looks for a market with code
-    # 'GOOD', and this fails...
-    print('Error! Model is missing components')
+mod.main()
