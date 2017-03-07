@@ -68,22 +68,16 @@ limitations under the License.
 
 from sfc_models.utils import register_standard_logs
 
+__all__ = ['models', 'sector', 'sector_definitions', 'utils']
+
 class Parameters(object):
     """
     (Static) class that holds various parameters.
 
     These are effectively global variables, and are somewhat error-prone.
 
-    The reason for its existence is that I needed to pass settings to the
-    EquationSolver object, and it would require passing them along a chain of
-    multiple objects (since the user does not normally create EquationSolver
-    objects directly).
-
-    These settings probably should be embedded in the Model object. However,
-    that raises some other potential technical problems. This class may be
-    refactored later, or particular parameters will be migrated into other
-    objects. At this point, code cleanness outweighs the potential problems
-    with having a few global variables.
+    They were created in order to clean up some parameter passing, but it is likely that they
+    can be eliminated as part of code cleanup.
     """
     # If we are having convergence issues, set TraceStep equal to the step
     # that you want to be logged to.

@@ -306,7 +306,11 @@ class Model(Entity):
         # Not covered with unit tests [for now]. Output format will change a lot.
         if ex is not None:
             Logger('\nError or Warning raised:\n')
-            traceback.print_exc(file=Logger.get_handle())
+            try:
+                traceback.print_exc(file=Logger.get_handle())
+            except KeyError:
+                # Log was not registered; do nothing!
+                return
         Logger('-'*30)
         Logger('Starting LogInfo() Data Dump')
         Logger('-'*30)

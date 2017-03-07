@@ -18,18 +18,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import sfc_models
-from sfc_models.models import Model, Country
-from sfc_models.sector import Market
-from sfc_models.sector_definitions import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness
-from sfc_models.utils import Logger, get_file_base
+# This next line imports all of the objects used.
+# The syntax "from <module> import *" is frowned upon, but I want to reduce the number of lines of
+# code in these simpler examples.
+from sfc_models.objects import *
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 
 
 def main():
     # The next line of code sets the name of the output files based on the code file's name.
     # This means that if you paste this code into a new file, get a new log name.
-    sfc_models.register_standard_logs('output', __file__)
+    register_standard_logs('output', __file__)
     # Create model, which holds all entities
     mod = Model()
     # Create first country - Canada. (This model only has one country.)

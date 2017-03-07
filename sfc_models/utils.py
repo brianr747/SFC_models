@@ -326,10 +326,10 @@ class Logger(object):
 
         If the file was not yet opened, it is opened for writing.
 
-        Throws a KeyError if log was not registered.
+        Throws a KeyError
         :param log: str
         :return:
-        """""
+        """
         f = Logger.log_file_handles[log]
         if type(f) is str:
             f = open(f, 'w')

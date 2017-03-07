@@ -23,21 +23,16 @@ limitations under the License.
 
 
 # Step 1: Import modules
-# os - operating system calls
-import os
-
-# sfc_models code
-import sfc_models
-from sfc_models.models import Model, Country
-from sfc_models.sector import Market
-from sfc_models.sector_definitions import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness
+# sfc_models code objects. Using "from <module> import *" is frowned upon, but I wanted to
+# have less lines of code for beginners to parse.
+from sfc_models.objects import *
 # Quick2DPlot() - Plotting functions used by examples; relies upon matplotlib
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 
 # Step 1.5: set up logging
 # The next line of code sets the name of the output files based on the code file's name.
 # This means that if you paste this code into a new file, get a new log name.
-sfc_models.register_standard_logs('output', __file__)
+register_standard_logs('output', __file__)
 
 # Step 2: build the model objects
 # Create model, which holds all entities
