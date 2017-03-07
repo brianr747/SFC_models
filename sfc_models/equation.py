@@ -292,7 +292,7 @@ class Term(object):
             if self.Term in lookup:
                 self.Term = lookup[self.Term]
             return
-        raise NotImplementedError('Need to handle non-simple terms somehow...')
+        raise NotImplementedError('Need to handle non-simple terms somehow...') # pragma: no cover
 
 
 

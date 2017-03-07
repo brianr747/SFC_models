@@ -31,6 +31,20 @@ class TestEquationParser(TestCase):
     def test_EquationReduction(self):
         pass
 
+    def test_empty(self):
+        obj = sfc_models.equation_parser.EquationParser()
+        self.assertIn('ignored line', obj.ParseString('Cat!').lower())
+
+    def test_bad_maxIter(self):
+        obj = sfc_models.equation_parser.EquationParser()
+        with self.assertRaises(ValueError):
+            obj.ParseString('MaxTime=CAT')
+
+    def test_bad_ErrToler(self):
+        obj = sfc_models.equation_parser.EquationParser()
+        with self.assertRaises(ValueError):
+            obj.ParseString('Err_Tolerance=CAT')
+
     def test_CleanupRightHandSide(self):
         obj = sfc_models.equation_parser.EquationParser()
         self.assertEqual('', obj.CleanupRightHandSide(' '))

@@ -221,7 +221,7 @@ class Sector(Entity):
         for varname in self.EquationBlock.GetEquationList():
             eq = self.EquationBlock[varname]
             rhs = eq.GetRightHandSide()
-            if len(rhs.strip()) == 0:
+            if len(rhs.strip()) == 0:   # pragma: no cover  [Does not happen any more; leave in just in case.]
                 continue
             out.append((self.GetVariableName(varname),
                         replace_token_from_lookup(rhs, lookup),

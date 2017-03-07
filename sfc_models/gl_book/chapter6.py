@@ -156,7 +156,7 @@ class REG(GL_book_model):
         return out
 
 
-class REG2(GL_book_model):
+class REG2(GL_book_model): # pragma: no cover
     """
     Implements Model REG from Chapter 6 of G&L. REG = "Regional."
 

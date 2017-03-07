@@ -98,6 +98,15 @@ class TestLogger(TestCase):
         self.assertEqual(['Format=1 yay'], mock.buffer)
         Logger.cleanup()
 
+    def test_empty(self):
+        mock = MockFile()
+        Logger.log_file_handles = {'log': mock}
+        Logger('', endline=False)
+        self.assertEqual([], mock.buffer)
+        Logger('', endline=True)
+        self.assertEqual([' \n'], mock.buffer)
+        Logger.cleanup()
+
     def test_cleanup(self):
         mock = MockFile()
         Logger.log_file_handles = {'log': mock}

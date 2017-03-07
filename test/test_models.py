@@ -222,6 +222,11 @@ class TestModel(TestCase):
         self.assertTrue('1' in out[0])
         self.assertTrue('2' in out[1])
 
+    def test_CreateEquationEmpty(self):
+        mod = Model()
+        with self.assertRaises(Warning):
+            mod._CreateFinalEquations()
+
     def test_FinalEquationFormating(self):
         eq = [('x', 'y + 1', 'comment_x'),
               ('y', 'EXOGENOUS 20', 'comment_y'),

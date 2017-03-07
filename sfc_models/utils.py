@@ -359,7 +359,7 @@ def get_file_base(fullfile):
         return fname[0:pos]
 
 
-def register_standard_logs(output_dir, base_file_name):
+def register_standard_logs(output_dir, base_file_name): # pragma: no cover
     """
     Convenience function to stick logs in a directory, based base_file_name.
 
