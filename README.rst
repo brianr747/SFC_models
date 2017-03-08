@@ -89,6 +89,7 @@ as being marked as unreached; they have been eliminated with::
 Change Log
 ----------
 
+- **0.4.2** Small changes, import from *sfc_models.objects* supported.
 - **0.4.1** Fixed packaging problem from Version 0.4.0.
 - **0.4.0** *Packaged incorrectly* Multi-file Logger, initial (constant) equilibrium calculation, markets
   with multiple supply sources, custom functions. Equation objects used in model creation.

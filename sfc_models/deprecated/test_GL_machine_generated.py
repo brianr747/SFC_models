@@ -1,5 +1,6 @@
 from unittest import TestCase
-import sfc_models.gl_book.GL_machine_generated as GL_machine_generated
+
+import sfc_models.deprecated.GL_machine_generated as GL_machine_generated
 
 
 class TestFunctions(TestCase):
