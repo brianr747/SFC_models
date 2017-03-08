@@ -248,26 +248,33 @@ class MoneyMarket(FinancialAssetMarket):
         Generate equation.
          :return: None
         """
-        country = self.Parent
+        Logger('MoneyMarket _GenerateEquations', priority=5)
         dem_name = 'DEM_' + self.Code
+        self.AddVariable(dem_name, 'Total demand for ' + self.LongName,'')
         dem_terms = []
-        for s in country.SectorList:
+        for s in self.SearchListSource.GetSectors():
             if not s.HasF:
                 continue
             if s.Code == self.IssuerShortCode:
+                Logger('Found Issuer', priority=3)
                 s.AddVariable('SUP_' + self.Code, 'Supply of ' + self.LongName, self.GetVariableName(dem_name))
                 self.AddVariable('SUP_' + self.Code, 'Supply of ' + self.LongName,
                                  s.GetVariableName('SUP_' + self.Code))
                 continue
             try:
+                # If the Sector already has demand for this, add the term.
                 term = s.GetVariableName(dem_name)
-                dem_terms.append(term)
+                self.AddTermToEquation(dem_name, term)
+                # dem_terms.append(term)
                 continue
             except KeyError:
                 pass
+            Logger('Sector is missing demand for {0}; automatically filled in', priority=3,
+                   data_to_format=(dem_name,))
             s.AddVariable(dem_name, 'Demand for ' + self.LongName, s.GetVariableName('F'))
-            dem_terms.append(s.GetVariableName(dem_name))
-        self.AddVariable(dem_name, 'Total demand for ' + self.LongName, utils.create_equation_from_terms(dem_terms))
+            self.AddTermToEquation(dem_name, s.GetVariableName(dem_name))
+            #dem_terms.append(s.GetVariableName(dem_name))
+        #self.AddVariable(dem_name, 'Total demand for ' + self.LongName, utils.create_equation_from_terms(dem_terms))
 
 
 class DepositMarket(FinancialAssetMarket):
@@ -300,10 +307,9 @@ class DepositMarket(FinancialAssetMarket):
  
         :return: None
         """
-        country = self.Parent
         dem_terms = []
         dem_name = 'DEM_' + self.Code
-        for s in country.SectorList:
+        for s in self.SearchListSource.GetSectors():
             if isinstance(s, Market):
                 continue
             if s.Code == self.IssuerShortCode:

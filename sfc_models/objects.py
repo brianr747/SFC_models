@@ -38,7 +38,7 @@ limitations under the License.
 
 
 from sfc_models.utils import register_standard_logs
-from sfc_models.models import Model, Country
+from sfc_models.models import Model, Country, Region
 from sfc_models.sector import Market
 from sfc_models.sector_definitions import Household, HouseholdWithExpectations, DoNothingGovernment
 from sfc_models.sector_definitions import Treasury, CentralBank, TaxFlow

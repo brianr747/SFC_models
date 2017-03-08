@@ -362,6 +362,7 @@ class Model(Entity):
         Logger('Creating new currency zone {0}, adding {1} to it',
                data_to_format=(country.Currency, country.LongName))
         czone = CurrencyZone(self, country.Currency)
+        czone.CountryList.append(country)
         self.CurrencyZoneList.append(czone)
         return czone
 
@@ -493,6 +494,8 @@ class Model(Entity):
         Logger('Model._GenerateEquations()', priority=1)
         for cntry in self.CountryList:
             for sector in cntry.SectorList:
+                Logger('Calling _GenerateEquations on {0}  ({1})', priority=3,
+                       data_to_format=(sector.FullCode, type(sector)))
                 sector._GenerateEquations()
 
     def DumpEquations(self):
@@ -604,6 +607,21 @@ class Country(Entity):
                     return s
         raise KeyError('Sector does not exist - ' + code)
 
+    def GetSectors(self):
+        """
+        What Sectors are in the Country?
+        :return: list
+        """
+        return self.SectorList
+
+
+class Region(Country):
+    """
+    Region object. Same thing as a Country, but it may make some pedantic people happier.
+    """
+    pass
+
+
 class CurrencyZone(Entity):
     """
     CurrencyZone: A set of Country {region} objects that share a currency.
@@ -615,5 +633,15 @@ class CurrencyZone(Entity):
         self.Currency = currency
         self.LongName = 'Currency Zone For ' + currency
         self.CountryList = []
+
+    def GetSectors(self):
+        """
+        What Sector objects are in the CurrenzyZone?
+        :return: list
+        """
+        out = []
+        for c in self.CountryList:
+            out.extend(c.GetSectors())
+        return out
 
 

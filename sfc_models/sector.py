@@ -155,6 +155,14 @@ class Sector(Entity):
                 raise ValueError('The use of "__" in variable local names is invalid: ' + varname)
             return self.FullCode + '__' + varname
 
+    def IsSharedCurrencyZone(self, other):
+        """
+        Is a sector in the same CurrencyZone as the other?
+        :param other: Sector
+        :return: bool
+        """
+        return self.CurrencyZone.ID == other.CurrencyZone.ID
+
     def _ReplaceAliases(self, lookup):
         """
         Use the lookup dictionary to replace aliases.
@@ -298,8 +306,9 @@ class Market(Sector):
         self.AddVariable('SUP_' + code, 'Supply for market ' + code, '')
         self.AddVariable('DEM_' + code, 'Demand for market ' + code, '')
         self.SupplyAllocation = []
+        self.SearchListSource = country
 
-    def SearchSupplier(self):
+    def _SearchSupplier(self):
         """
         Find the sector that is a single supplier in a country.
         Throws a LogicError if more than one, or none.
@@ -309,9 +318,10 @@ class Market(Sector):
 
         :return: Sector
         """
+        Logger('Market {0} Searching {1} ({2}) for a supplier', priority=3,
+               data_to_format=(self.Code, self.SearchListSource.Code, type(self.SearchListSource)))
         ret_value = None
-        country = self.Parent
-        for sector in country.SectorList:
+        for sector in self.SearchListSource.GetSectors():
             if sector.ID == self.ID:
                 continue
             if 'SUP_' + self.Code in sector.EquationBlock.Equations:
@@ -329,7 +339,7 @@ class Market(Sector):
         :return:
         """
         if len(self.SupplyAllocation) == 0:
-            supplier = self.SearchSupplier()
+            supplier = self._SearchSupplier()
             self.SupplyAllocation = [[], supplier]
         if len(self.SupplyAllocation) > 0:
             self.NumSupply = len(self.SupplyAllocation[0])
@@ -365,7 +375,7 @@ class Market(Sector):
         var_name = prefix + '_' + self.Code
         self.AddVariable(var_name, long_desc + ' for Market ' + self.Code, '')
         term_list = []
-        for s in country.SectorList:
+        for s in self.SearchListSource.GetSectors():
             if s.ID == self.ID:
                 continue
             try:
@@ -398,7 +408,7 @@ class Market(Sector):
         dem_name = 'DEM_' + self.Code
         # Set aggregate supply equal to demand
         self.SetEquationRightHandSide(sup_name, rhs=dem_name)
-        for s in country.SectorList:
+        for s in self.SearchListSource.GetSectors():
             if s.ID == self.ID:
                 continue
             if sup_name in s.Equations:
@@ -461,3 +471,4 @@ class FinancialAssetMarket(Market):
     def __init__(self, country, long_name, code, issuer_short_code):
         Market.__init__(self, country, long_name, code)
         self.IssuerShortCode = issuer_short_code
+        self.SearchListSource = self.CurrencyZone
