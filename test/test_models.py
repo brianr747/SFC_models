@@ -474,6 +474,22 @@ class TestSector(TestCase):
         with self.assertRaises(KeyError):
             s.SetEquationRightHandSide('LittleBunnyFooFoo', 'z')
 
+    def test_AddTerm(self):
+        mod = Model()
+        us = Country(mod, 'USA! USA!', 'US')
+        s = Sector(us, 'Desc', 'SEC')
+        s.AddVariable('SUP_GOOD', 'Supply of goods', '')
+        s.AddTermToEquation('SUP_GOOD', 'Kaboom')
+        self.assertEqual('Kaboom', s.EquationBlock['SUP_GOOD'].RHS())
+
+    def test_AddTerm_KeyError(self):
+        mod = Model()
+        us = Country(mod, 'USA! USA!', 'US')
+        s = Sector(us, 'Desc', 'SEC')
+        with self.assertRaises(KeyError):
+            s.AddTermToEquation('SUP', 'x')
+
+
 class TestCountry(TestCase):
     def test_AddSector(self):
         mod = Model()
@@ -670,3 +686,22 @@ class TestRegisterCashFlows(TestCase):
         mod._GenerateRegisteredCashFlows()
         self.assertEqual('LAG_F+SEC1__DIV', kill_spaces(sec2.EquationBlock['F'].RHS()))
         self.assertEqual('LAG_F-SEC1__DIV', kill_spaces(sec1.EquationBlock['F'].RHS()))
+
+
+class TestCurrencyZone(TestCase):
+    def test_create1(self):
+        mod = Model()
+        self.assertEqual(0, len(mod.CurrencyZoneList))
+        ca = Country(mod, 'Name', 'CA')
+        self.assertEqual(1, len(mod.CurrencyZoneList))
+        us = Country(mod, 'Name', 'US')
+        self.assertEqual(2, len(mod.CurrencyZoneList))
+
+    def test_create2(self):
+        mod = Model()
+        self.assertEqual(0, len(mod.CurrencyZoneList))
+        ca = Country(mod, 'Name', 'CA', currency='RMB')
+        self.assertEqual(1, len(mod.CurrencyZoneList))
+        us = Country(mod, 'Name', 'US', currency='RMB')
+        self.assertEqual(1, len(mod.CurrencyZoneList))
+        self.assertEqual('RMB', mod.CurrencyZoneList[0].Currency)

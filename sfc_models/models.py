@@ -39,11 +39,11 @@ class Entity(object):
     """
     ID = 0
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, code=''):
         self.ID = Entity.ID
         Entity.ID += 1
         self.Parent = parent
-        self.Code = ''
+        self.Code = code
         self.LongName = ''
         Logger('Entity Created: {0} ID = {1}', priority=1, data_to_format=(type(self),self.ID))
 
@@ -95,6 +95,7 @@ class Model(Entity):
         self.EquationSolver = sfc_models.equation_solver.EquationSolver()
         self.GlobalVariables = []
         self.IncomeExclusions = []
+        self.CurrencyZoneList = []
 
     def main(self, base_file_name=None):  # pragma: no cover
         """
@@ -342,6 +343,27 @@ class Model(Entity):
         """
         Logger('Adding Country: {0} ID={1}', data_to_format=(country.Code, country.ID))
         self.CountryList.append(country)
+        czone = self._FitIntoCurrencyZone(country)
+        country.CurrencyZone = czone
+
+    def _FitIntoCurrencyZone(self, country):
+        """
+        Find whether Country fits into an existing CurrencyZone; if not,
+        create a new one.
+        :param country: Country
+        :return: CurrencyZone
+        """
+        for czone in self.CurrencyZoneList:
+            if country.Currency == czone.Currency:
+                czone.CountryList.append(country)
+                Logger('Fitting {0} into CurrencyZone {1}',
+                       data_to_format=(country.LongName, czone.Currency))
+                return czone
+        Logger('Creating new currency zone {0}, adding {1} to it',
+               data_to_format=(country.Currency, country.LongName))
+        czone = CurrencyZone(self, country.Currency)
+        self.CurrencyZoneList.append(czone)
+        return czone
 
     def _GenerateFullSectorCodes(self):
         """
@@ -374,7 +396,8 @@ class Model(Entity):
         """
         return '{0}_{1}'.format(sector.Parent.Code, sector.Code)
 
-    def RegisterCashFlow(self, source_sector, target_sector, amount_variable):
+    def RegisterCashFlow(self, source_sector, target_sector, amount_variable, is_income_source=True,
+                         is_income_dest=True):
         """
         Register a cash flow between two sectors.
 
@@ -393,7 +416,8 @@ class Model(Entity):
         Logger('Cash flow registered {0}: {1} -> {2}  [ID: {3} -> {4}]', priority=3,
                data_to_format=(amount_variable, source_sector.Code, target_sector.Code,
                                source_sector.ID, target_sector.ID))
-        self.RegisteredCashFlows.append((source_sector, target_sector, amount_variable))
+        self.RegisteredCashFlows.append((source_sector, target_sector, amount_variable,
+                                         is_income_source, is_income_dest))
 
     def _GenerateRegisteredCashFlows(self):
         """
@@ -404,10 +428,13 @@ class Model(Entity):
         Logger('Model._GenerateRegisteredCashFlows()')
         Logger('Adding {0} cash flows to sectors', priority=3,
                data_to_format=(len(self.RegisteredCashFlows),))
-        for source_sector, target_sector, amount_variable in self.RegisteredCashFlows:
+        for source_sector, target_sector, amount_variable, \
+            is_income_source, is_income_dest in self.RegisteredCashFlows:
             full_variable_name = source_sector.GetVariableName(amount_variable)
-            source_sector.AddCashFlow('-' + full_variable_name, eqn=None)
-            target_sector.AddCashFlow('+' + full_variable_name, eqn=None)
+            source_sector.AddCashFlow('-' + full_variable_name, eqn=None,
+                                      is_income=is_income_source)
+            target_sector.AddCashFlow('+' + full_variable_name, eqn=None,
+                                      is_income=is_income_dest)
 
     def LookupSector(self, fullcode):
         """
@@ -536,12 +563,18 @@ class Country(Entity):
     Country class. Somewhat redundant in a closed economy model, but we need for multi-region models.
     """
 
-    def __init__(self, model, long_name, code):
+    def __init__(self, model, long_name, code, currency=None):
         Entity.__init__(self, model)
         self.Code = code
         self.LongName = long_name
-        model.AddCountry(self)
         self.SectorList = []
+        self.CurrencyZone = None
+        if currency is None:
+            self.Currency = code
+        else:
+            self.Currency = currency
+        model.AddCountry(self)
+
 
     def AddSector(self, sector):
         """
@@ -570,5 +603,17 @@ class Country(Entity):
                 if s.Code == code:
                     return s
         raise KeyError('Sector does not exist - ' + code)
+
+class CurrencyZone(Entity):
+    """
+    CurrencyZone: A set of Country {region} objects that share a currency.
+
+    Created automatically by the Model as Country objects are added.
+    """
+    def __init__(self, model, currency):
+        Entity.__init__(self, model, code=currency)
+        self.Currency = currency
+        self.LongName = 'Currency Zone For ' + currency
+        self.CountryList = []
 
 

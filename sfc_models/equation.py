@@ -27,7 +27,7 @@ import sys
 import tokenize
 from io import BytesIO
 import copy
-from tokenize import untokenize, NAME, ENDMARKER, ENCODING
+from tokenize import untokenize, NAME, ENDMARKER, ENCODING, OP
 
 from sfc_models.utils import LogicError, replace_token_from_lookup
 
@@ -250,17 +250,23 @@ class Term(object):
             g = tokenize.generate_tokens(BytesIO(term_s.encode('utf-8')).readline)  # tokenize the string
         self.IsSimple = True
         g = tuple(g)
+        if not g[0][0] == ENCODING:  # pragma: no cover
+            raise LogicError('Internal error: tokenize behaviour changed')
+        if not g[-1][0] == ENDMARKER:  # pragma: no cover
+            raise LogicError('Internal error: tokenize behaviour changed')
         if len(g) > 3:
+            if len(g) == 5:
+                # Allow variable*variable as a "simple" Variable.
+                if g[1][0] == NAME and g[3][0] == NAME and g[2][0] == OP:
+                    if g[2][1] == '*':
+                        self.Term = term_s
+                        return
             raise NotImplementedError('Non-simple parsing not done')
             # self.IsSimple = False
         else:
-            if not g[0][0] == ENCODING: # pragma: no cover
-                raise LogicError('Internal error: tokenize behaviour changed')
             if not g[1][0] == NAME:
                 raise NotImplementedError('Non-simple parsing not done')
                 # self.IsSimple = False
-            if not g[2][0] == ENDMARKER: # pragma: no cover
-                raise LogicError('Internal error: tokenize behaviour changed')
         self.Term = term_s
 
     def __str__(self):

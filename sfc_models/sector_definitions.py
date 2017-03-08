@@ -193,7 +193,7 @@ class TaxFlow(Sector):
     def __init__(self, country, long_name, code, taxrate, taxes_paid_to='GOV'):
         Sector.__init__(self, country, long_name, code, has_F=False)
         self.AddVariable('TaxRate', 'Tax rate', '%0.4f' % (taxrate,))
-        self.AddVariable('T', 'Taxes Paid', '<To be determined>')
+        self.AddVariable('T', 'Taxes Paid', '')
         self.TaxingSector = taxes_paid_to
 
     def _GenerateEquations(self):
@@ -213,7 +213,8 @@ class TaxFlow(Sector):
                 term = '%s * %s' % (tax_name_used, s.GetVariableName('INC'))
                 # The INC variable is pretax.
                 s.AddCashFlow('-T', term, 'Taxes paid.', is_income=False)
-                terms.append('+' + term)
+                terms.append(term)
+                #self.AddTermToEquation('T', term)
         self.SetEquationRightHandSide('T', utils.create_equation_from_terms(terms))
         # work on other sectors
         tax_fullname = self.GetVariableName('T')

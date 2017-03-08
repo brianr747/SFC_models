@@ -9,8 +9,9 @@ class Sector(Entity):
     """
 
     def __init__(self, country, long_name, code, has_F=True):
-        Entity.__init__(self, country)
         self.Code = code
+        Entity.__init__(self, country, code=code)
+        self.CurrencyZone = country.CurrencyZone
         country.AddSector(self)
         # This is calculated by the Model
         self.FullCode = ''
@@ -83,6 +84,25 @@ class Sector(Entity):
         Logger('[ID={0}] Equation set: {1} = {2} ', priority=2,
                data_to_format=(self.ID, varname, rhs))
         # self.Equations[varname] = rhs
+
+    def AddTermToEquation(self, varname, term):
+        """
+        Add a new term to an existing equation.
+
+        The term variable may be either a string or (non-Blob) Term object.
+
+        :param varname: str
+        :param term: Term
+        :return: None
+        """
+        term = Term(term)
+        Logger('Adding term {0} to Equation {1} in Sector {2} [ID={3}]', priority=2,
+               data_to_format=(term, varname, self.Code, self.ID))
+        try:
+            self.EquationBlock[varname].AddTerm(term)
+        except KeyError:
+            raise KeyError('Variable {0} not in Sector {1}'.format(varname, self.Code))
+
 
     def SetExogenous(self, varname, val):
         """
@@ -412,7 +432,8 @@ class Market(Sector):
                 supply_name = 'SUP_' + self.Code
             else:
                 supply_name = 'SUP_' + self.FullCode
-            sector.SetEquationRightHandSide(supply_name, self.GetVariableName(local_name))
+            sector.AddTermToEquation(supply_name, self.GetVariableName(local_name))
+            # sector.SetEquationRightHandSide(supply_name, self.GetVariableName(local_name))
             sector.AddCashFlow('+' + supply_name)
         # Residual sector supplies rest
         # noinspection PyUnusedLocal

@@ -160,8 +160,10 @@ class REG2(GL_book_model): # pragma: no cover
     """
     Implements Model REG from Chapter 6 of G&L. REG = "Regional."
 
-    This version of REG splits the model into two "countries." The government sector
-    is split.
+    This version of REG splits the model into three "countries."
+    - Central government sector
+    - Region (Province) #1 - The North
+    - Region (Province) #2 - The South
 
     Ignores any existing model that is passed in; the entire Model object is built
     from scratch.
@@ -177,8 +179,6 @@ class REG2(GL_book_model): # pragma: no cover
         country_name = paramz['Country Name']
         country = Country(model, paramz['Country'], country_name)
         self.Country = country
-        tre = Treasury(country, 'Treasury', 'TRE')
-        cb = CentralBank(country, 'Central Bank', 'CB', treasury=tre)
         hh = Household(country, 'Household ' + country_name, 'HH',
                        alpha_income=paramz['alpha_income'], alpha_fin=paramz['alpha_fin'])
         goods = Market(country, 'Goods market ' + country_name, 'GOODS')
@@ -231,7 +231,10 @@ class REG2(GL_book_model): # pragma: no cover
         :return: Model
         """
         model = Model()
-        self.Model = model
+        central_gov = Country(model, code='GOV', long_name='Central Government Sector')
+        tre = Treasury(central_gov, 'Treasury', 'TRE')
+        cb = CentralBank(central_gov, 'Central Bank', 'CB', tre)
+
         paramz = {
             'Country': 'N',
             'Country Name': 'North',
@@ -319,6 +322,7 @@ class REG2(GL_book_model): # pragma: no cover
         tre.AddVariable('DEM_GOOD_N', 'Demand for goods in the North', '')
         tre.AddVariable('DEM_GOOD_S', 'Demand for goods in the South', '')
 
+        self.Model = model
         if self.UseBookExogenous:
             # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
             tre.SetExogenous('DEM_GOOD_N', '[20.,] * 105')

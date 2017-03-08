@@ -86,6 +86,10 @@ class TestTerm(TestCase):
             t = Term('f(x)')
         # self.assertFalse(t.IsSimple)
 
+    def test_multiply(self):
+        t = Term('a*b')
+        self.assertEqual('+a*b', str(t))
+
     def test_str_not_simple(self):
         with self.assertRaises(NotImplementedError):
             t = Term('f(x)')
@@ -126,6 +130,13 @@ class TestEquation(TestCase):
         self.assertEqual('y', eq.GetRightHandSide())
         eq.AddTerm('-y')
         self.assertEqual('0.0', eq.GetRightHandSide())
+
+    def test_Addterm_3(self):
+        eq = Equation('x', 'define x')
+        eq.AddTerm('y')
+        self.assertEqual('y', eq.GetRightHandSide())
+        eq.AddTerm('w*z')
+        self.assertEqual('y+w*z', eq.GetRightHandSide())
 
     def test_AddTermFail(self):
         eq = Equation('x', 'desc', 'y')
