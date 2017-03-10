@@ -114,7 +114,7 @@ def replace_token(s, target, replacement):
                 result.append((NAME, replacement))
             else:
                 result.append((toknum, tokval))
-        return untokenize(result).decode('utf-8')
+        return str(untokenize(result).decode('utf-8'))
 
 
 def replace_token_from_lookup(s, lookup):
@@ -144,7 +144,7 @@ def replace_token_from_lookup(s, lookup):
                 result.append((NAME, lookup[tokval]))
             else:
                 result.append((toknum, tokval))
-        return untokenize(result).decode('utf-8')
+        return str(untokenize(result).decode('utf-8'))
 
 
 def create_equation_from_terms(terms):

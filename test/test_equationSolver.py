@@ -1,10 +1,12 @@
 from unittest import TestCase
 import warnings
 import math
+import sys
 
 from sfc_models.equation_solver import EquationSolver, ConvergenceError, NoEquilibriumError
 from sfc_models import Parameters as Parameters
 
+is_python_3 = sys.version_info[0] >= 3
 
 class TestEquationSolver(TestCase):
     def test_init(self):
@@ -22,8 +24,9 @@ class TestEquationSolver(TestCase):
 
     def test_ParseString_2(self):
         obj = EquationSolver()
-        with self.assertWarns(expected_warning=SyntaxWarning):
-            obj.ParseString('x= y = 1')
+        if is_python_3:
+            with self.assertWarns(expected_warning=SyntaxWarning):
+                obj.ParseString('x= y = 1')
 
     def test_ExtractVariableList_1(self):
         obj = EquationSolver()

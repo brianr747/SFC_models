@@ -4,10 +4,26 @@ sfc_models.gl_book package
 Submodules
 ----------
 
-sfc_models.gl_book.GL_machine_generated module
-----------------------------------------------
+sfc_models.gl_book.chapter3 module
+----------------------------------
 
-.. automodule:: sfc_models.gl_book.GL_machine_generated
+.. automodule:: sfc_models.gl_book.chapter3
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+sfc_models.gl_book.chapter4 module
+----------------------------------
+
+.. automodule:: sfc_models.gl_book.chapter4
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+sfc_models.gl_book.chapter6 module
+----------------------------------
+
+.. automodule:: sfc_models.gl_book.chapter6
     :members:
     :undoc-members:
     :show-inheritance:

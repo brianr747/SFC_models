@@ -99,7 +99,7 @@ class Model(Entity):
         self.CurrencyZoneList = []
         self.FinalEquationBlock = EquationBlock()
 
-    def main(self, base_file_name=None):
+    def main(self, base_file_name=None):  # pragma: no cover
         """
         Routine that does most of the work of model building. The model is build based upon
         the Sector objects that have been registered as children of this Model.

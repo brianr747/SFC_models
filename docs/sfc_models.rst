@@ -20,10 +20,26 @@ sfc_models.base_solver module
     :undoc-members:
     :show-inheritance:
 
-sfc_models.iterative_machine_generator module
----------------------------------------------
+sfc_models.equation module
+--------------------------
 
-.. automodule:: sfc_models.iterative_machine_generator
+.. automodule:: sfc_models.equation
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+sfc_models.equation_parser module
+---------------------------------
+
+.. automodule:: sfc_models.equation_parser
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+sfc_models.equation_solver module
+---------------------------------
+
+.. automodule:: sfc_models.equation_solver
     :members:
     :undoc-members:
     :show-inheritance:
@@ -36,10 +52,26 @@ sfc_models.models module
     :undoc-members:
     :show-inheritance:
 
-sfc_models.sectors module
+sfc_models.objects module
 -------------------------
 
-.. automodule:: sfc_models.sectors
+.. automodule:: sfc_models.objects
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+sfc_models.sector module
+------------------------
+
+.. automodule:: sfc_models.sector
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+sfc_models.sector_definitions module
+------------------------------------
+
+.. automodule:: sfc_models.sector_definitions
     :members:
     :undoc-members:
     :show-inheritance:

@@ -36,7 +36,7 @@ limitations under the License.
 
 
 
-
+from sfc_models.examples.install_examples import install_examples
 from sfc_models.utils import register_standard_logs
 from sfc_models.models import Model, Country, Region
 from sfc_models.sector import Market

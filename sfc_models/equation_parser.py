@@ -271,7 +271,7 @@ class EquationParser(object):
                 if var == self.CleanupRightHandSide(self.AllEquations[rhs]):
                     raise ValueError('Equality loop between ' + rhs + ' and ' + var)
                 for other in self.AllEquations:
-                    self.AllEquations[other] = replace_token(self.AllEquations[other], var, rhs).replace(' ', '')
+                    self.AllEquations[other] = str(replace_token(self.AllEquations[other], var, rhs).replace(' ', ''))
                     self.Tokens[other] = list_tokens(self.AllEquations[other])
         self.RebuildEquations()
 

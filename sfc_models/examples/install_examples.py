@@ -28,11 +28,11 @@ limitations under the License.
 from __future__ import print_function
 
 import sys
-if sys.version_info[0] < 3:
-    import Tkinter as tk
-    from Tkinter import *
-    import Tkinter.messagebox as mbox
-    import Tkinter.filedialog as fdog
+if sys.version_info[0] < 3: # pragma: no cover  (Do coverage test in 3.x)
+    # import Tkinter as tk
+    # from Tkinter import *
+    import tkMessageBox as mbox
+    import tkFileDialog as fdog
 else:
     import tkinter as tk
     from tkinter import *
@@ -65,5 +65,5 @@ def install_examples(): # pragma: no cover
     install_example_scripts.install(target)
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     install_examples()
