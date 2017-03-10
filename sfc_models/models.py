@@ -26,6 +26,7 @@ import traceback
 import sfc_models.equation_solver
 from sfc_models.equation_parser import EquationParser
 from sfc_models.utils import Logger
+from sfc_models.equation import EquationBlock, Equation
 
 
 class Entity(object):
@@ -86,7 +87,7 @@ class Model(Entity):
         self.CountryList = []
         self.Exogenous = []
         self.InitialConditions = []
-        self.FinalEquations = '<To be generated>'
+        self.FinalEquations = ''
         self.MaxTime = 100
         self.RegisteredCashFlows = []
         self.Aliases = {}
@@ -96,8 +97,9 @@ class Model(Entity):
         self.GlobalVariables = []
         self.IncomeExclusions = []
         self.CurrencyZoneList = []
+        self.FinalEquationBlock = EquationBlock()
 
-    def main(self, base_file_name=None):  # pragma: no cover
+    def main(self, base_file_name=None):
         """
         Routine that does most of the work of model building. The model is build based upon
         the Sector objects that have been registered as children of this Model.
@@ -127,8 +129,6 @@ class Model(Entity):
         :param base_file_name: str
         :return: None
         """
-        # Skip testing, this, rather test underlying steps.
-        # Once we have a solid end-to-end test (which is easier now), can test this.
         try:
             if base_file_name is not None:
                 Logger.register_standard_logs(base_file_name)
@@ -531,6 +531,14 @@ class Model(Entity):
         out.extend(self.GlobalVariables)
         if len(out) == 0:
             raise Warning('There are no equations in the system.')
+        # Build the FinalEquationBlock
+        self.FinalEquationBlock = EquationBlock()
+        for row in out:
+            if 'EXOGENOUS' in row[1]:
+                eq = Equation(row[0], desc=row[2], rhs=row[1].replace('EXOGENOUS', ''))
+            else:
+                eq = Equation(row[0], desc=row[2], rhs=row[1])
+            self.FinalEquationBlock.AddEquation(eq)
         return self._FinalEquationFormatting(out)
 
     def _FinalEquationFormatting(self, out):

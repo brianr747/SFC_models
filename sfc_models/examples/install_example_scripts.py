@@ -23,6 +23,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+from __future__ import print_function
 import os
 from pkg_resources import resource_string
 
@@ -44,6 +45,7 @@ def install(target_dir):   # pragma: no cover
         os.mkdir(os.path.join(target_dir, 'output'))
     print('Fetching script list.')
     file_list = resource_string('sfc_models.examples', 'scripts/script_list.txt')
+    file_list = file_list.decode('utf-8')
     print('Writing files')
     for fname in file_list.split('\n'):
         fname = fname.strip()
@@ -54,6 +56,7 @@ def install(target_dir):   # pragma: no cover
         if os.path.isfile(full_name):
             raise ValueError('File already exists; must remove before running: ' + full_name)
         contents = resource_string('sfc_models.examples', 'scripts/' + fname)
+        contents = contents.decode('utf-8')
         with open(full_name, 'w') as f:
             f.write(contents)
 
