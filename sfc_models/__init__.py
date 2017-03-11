@@ -68,6 +68,7 @@ limitations under the License.
 import sys
 
 from sfc_models.utils import register_standard_logs
+from sfc_models.examples.install_examples import install_examples
 
 __all__ = ['models', 'sector', 'sector_definitions', 'utils']
 

@@ -80,7 +80,8 @@ class DoNothingGovernment(Sector):
     def __init__(self, country, long_name, code):
         Sector.__init__(self, country, long_name, code)
         self.AddVariable('DEM_GOOD', 'Government Consumption of Goods', '0.0')
-        self.AddVariable('FISC_BAL', 'Government Primary Fiscal Balance (Need to fix)', 'T - DEM_GOOD')
+        self.AddVariable('PRIM_BAL', 'Government Primary Fiscal Balance', 'T - DEM_GOOD')
+        self.AddVariable('FISC_BAL', 'Government Fiscal Balance', 'INC')
 
 
 class Treasury(Sector):
