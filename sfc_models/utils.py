@@ -62,6 +62,18 @@ class TimeSeriesHolder(dict):
                 serlist.remove(x)
         return included + serlist
 
+    def AppendValue(self, series_name, val):
+        """
+        Append a value to an existing series; if it does not exist, create empty list and add.
+        :param series_name: str
+        :param val: float
+        :return:
+        """
+        try:
+            self[series_name].append(val)
+        except KeyError:
+            self[series_name] = [val,]
+
     def GenerateCSVtext(self, format_str='%.5g'):
         """
         Generate the text for a tab-delimited file.

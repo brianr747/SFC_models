@@ -332,7 +332,7 @@ class TestEquationSolver(TestCase):
          exogenous
          t=[10.]*20
          MaxTime=3""")
-        obj2.SolveInitialSteadyState = True
+        obj2.ParameterSolveInitialSteadyState = True
         obj2.SolveEquation()
         # Must be reset
         self.assertFalse(Parameters.SolveInitialEquilibrium)
@@ -444,7 +444,7 @@ class TestEquationSolver(TestCase):
              MaxTime=3""")
         obj.ExtractVariableList()
         obj.SetInitialConditions()
-        Parameters.InitialEquilbriumMaxTime = 3
+        obj.ParameterInitialSteadyStateMaxTime = 3
         copied_solver = obj.CalculateInitialSteadyState()
         self.assertEqual([10., ], obj.TimeSeries['x'])
         self.assertEqual([11., ], obj.TimeSeries['z'])

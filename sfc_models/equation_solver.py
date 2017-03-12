@@ -53,7 +53,12 @@ class EquationSolver(object):
         self.TimeSeriesStepTrace = TimeSeriesHolder('iteration')
         self.MaxIterations = 400
         self.Functions = {}
-        self.SolveInitialSteadyState = False
+        self.ParameterSolveInitialSteadyState = False
+        self.ParameterInitialSteadyStateMaxTime = 200
+        self.ParameterInitialSteadyStateErrorToler = 1e-4
+        self.ParameterInitialSteadyStateExcludedVariables = ['t']
+        self.ParameterInitialSteadyStateStepError = 1e-6
+
         if len(equation_string) > 0:
             self.ParseString(equation_string)
 
@@ -205,10 +210,14 @@ class EquationSolver(object):
         # so that changes to the copy do not affect this object!
         Logger('Starting to calculate initial steady state')
         new_solver = self._GetCopy()
-        T = Parameters.InitialEquilbriumMaxTime
+        # DO not allow step tracing in in the initial steady state;
+        # as we will end up with two traces in the same file.
+        # The user can run the system normally to examine convergence errors.
+        new_solver.TraceStep = None
+        T = self.ParameterInitialSteadyStateMaxTime
         new_solver.Parser.MaxTime = T
         new_solver.MaxIterations = 1000
-        new_solver.Parser.Err_Tolerance = Parameters.InitialEquilibriumStepError
+        new_solver.Parser.Err_Tolerance = self.ParameterInitialSteadyStateErrorToler
         # Fix exogenous to be constants
         for var, dummy in new_solver.Parser.Exogenous:
             val = [new_solver.TimeSeries[var][0], ] * (T + 1)
@@ -230,7 +239,7 @@ class EquationSolver(object):
             Logger(new_solver.GenerateCSVtext(), 'steadystate_0')
         # Now: look at which variables are not constant.
         bad_variables = []
-        excluded = ['k', ] + Parameters.InitialEquilibriumExcludedVariables
+        excluded = ['k', ] + self.ParameterInitialSteadyStateExcludedVariables
         for var in self.TimeSeries.keys():
             if var in excluded:
                 continue
@@ -243,7 +252,7 @@ class EquationSolver(object):
                     bad = True
             else:
                 err = abs(lastval - prev) / lastval
-                if err > Parameters.InitialEquilibriumErrorTolerance:
+                if err > self.ParameterInitialSteadyStateErrorToler:
                     bad = True
             if bad:
                 bad_variables.append(var)
@@ -265,16 +274,34 @@ class EquationSolver(object):
         return copy.deepcopy(self)
 
     def SolveStep(self, step):
-        # Set up starting condition (for step)
+        """
+        Solve a step. (Assumed to be called in order.)
+        :param step: int
+        :return:
+        """
         is_trace_step = step == self.TraceStep
+        if is_trace_step:
+            Logger('Starting convergence tracing.', log='step')
+            Logger('Step {0}'.format(step), log='step')
+            self.TimeSeriesStepTrace = TimeSeriesHolder('iteration')
+            self.TimeSeriesStepTrace['iteration'] = []
+            self.TimeSeriesStepTrace['iteration_error'] = []
+            Logger("""
+        Values at beginning of step. (Only includes variables that are solved within
+        iteration. Decorative variables calculated later).""", log='step')
+        try:
+            self._SolveStep(step, is_trace_step)
+        finally:
+            if is_trace_step:
+                Logger(self.TimeSeriesStepTrace.GenerateCSVtext(), log='step')
+
+    def _SolveStep(self, step, is_trace_step):
+        # Set up starting condition (for step)
         initial = {}
         # Probably could just do a shallow copy...
         for key, value in self.Functions.items():
             initial[key] = value
         Logger('Step: {0}'.format(step))
-        if is_trace_step:
-            Logger('Starting convergence tracing.', log='step')
-            Logger('Step {0}'.format(step))
         # The exogenous and lagged variables are always fixed for a time period
         for var, dummy in self.Parser.Exogenous:
             initial[var] = self.TimeSeries[var][step]
@@ -290,30 +317,21 @@ class EquationSolver(object):
         num_tries = 0
         trace_keys = list(initial.keys())
         trace_keys.sort()
-        if is_trace_step:
-            self.TimeSeriesStepTrace = TimeSeriesHolder('iteration')
-            self.TimeSeriesStepTrace['iteration'] = []
-            self.TimeSeriesStepTrace['iteration_error'] = []
-            for k in trace_keys:
-                self.TimeSeriesStepTrace[k] = []
-            Logger("""
-Values at beginning of step. (Only includes variables that are solved within
-iteration. Decorative variables calculated later).""", log='step')
-            # Logger('\t'.join(['Iteration', 'PreviousError'] + trace_keys), log='step')
+        # Logger('\t'.join(['Iteration', 'PreviousError'] + trace_keys), log='step')
         # The following two assignments not really necessary, but the code inspection
         # was unhappy if they were not set.
         had_evaluation_errors = False
         last_error = False
         while relative_error > err_toler:
-            # Need to create a copy of the dictionary; saying new_value = initial means that they are
-            # the same object.
             if is_trace_step:
                 #Logger('\t'.join([str(num_tries), str(relative_error)] + [str(initial[x]) for x in trace_keys]),
                 #       log='step')
                 self.TimeSeriesStepTrace['iteration'].append(float(num_tries))
                 self.TimeSeriesStepTrace['iteration_error'].append(relative_error)
                 for k in trace_keys:
-                    self.TimeSeriesStepTrace[k].append(initial[k])
+                    self.TimeSeriesStepTrace.AppendValue(k, initial[k])
+            # Need to create a copy of the dictionary; saying new_value = initial means that they are
+            # the same object.
             new_value = dict()
             for key, val in initial.items():
                 new_value[key] = val
@@ -358,13 +376,9 @@ iteration. Decorative variables calculated later).""", log='step')
             initial = new_value
             num_tries += 1
             if num_tries > self.MaxIterations:
-                if is_trace_step:
-                    Logger(self.TimeSeriesStepTrace.GenerateCSVtext(), log='step')
                 if had_evaluation_errors:
                     raise ValueError(last_error)
                 raise ConvergenceError('Equations do not converge - step {0}'.format(step))
-        if is_trace_step:
-            Logger(self.TimeSeriesStepTrace.GenerateCSVtext(), log='step')
         if had_evaluation_errors:
             Logger('Had evaluation errors')
             raise ValueError(last_error)
@@ -401,7 +415,7 @@ iteration. Decorative variables calculated later).""", log='step')
         if len(self.VariableList) == 0:
             self.ExtractVariableList()
         self.SetInitialConditions()
-        if self.SolveInitialSteadyState:
+        if self.ParameterSolveInitialSteadyState:
             self.CalculateInitialSteadyState()
             # Reset the parameter; it needs to be set before every call to SolveEquation()
             Parameters.SolveInitialEquilibrium = False

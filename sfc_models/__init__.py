@@ -81,17 +81,9 @@ class Parameters(object):
     They were created in order to clean up some parameter passing, but it is likely that they
     can be eliminated as part of code cleanup.
     """
-    # Do we solve for initial equilibrium?
-    # SolveInitialEquilibrium = False
-    # Number of time steps for Equilibrium search
-    InitialEquilbriumMaxTime = 200
-    # What is the maximum relative movement allowed (.01 = 1%).
-    InitialEquilibriumErrorTolerance = .0001
-    # Which variables should be excluded from equilibrium considerations?
-    # 'k' is excluded automatically.
-    # Since 't' is presumably related to 'k', it is normally excluded.
-    InitialEquilibriumExcludedVariables = ['t']
-    InitialEquilibriumStepError = 1e-6
+    # Yay: refactored out of existence!
+    pass
+
 
 
 
