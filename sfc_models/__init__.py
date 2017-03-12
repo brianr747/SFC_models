@@ -81,11 +81,8 @@ class Parameters(object):
     They were created in order to clean up some parameter passing, but it is likely that they
     can be eliminated as part of code cleanup.
     """
-    # If we are having convergence issues, set TraceStep equal to the step
-    # that you want to be logged to.
-    TraceStep = None
     # Do we solve for initial equilibrium?
-    SolveInitialEquilibrium = False
+    # SolveInitialEquilibrium = False
     # Number of time steps for Equilibrium search
     InitialEquilbriumMaxTime = 200
     # What is the maximum relative movement allowed (.01 = 1%).

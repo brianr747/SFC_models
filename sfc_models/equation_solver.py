@@ -24,7 +24,7 @@ import warnings
 import copy
 
 import sfc_models.equation_parser
-from sfc_models.utils import Logger as Logger
+from sfc_models.utils import Logger, TimeSeriesHolder
 from sfc_models import Parameters as Parameters
 
 
@@ -43,13 +43,17 @@ class EquationSolver(object):
     """
 
     def __init__(self, equation_string='', run_equation_reduction=True):
+        self.TraceStep = None
         self.EquationString = equation_string
         self.RunEquationReduction = run_equation_reduction
         self.Parser = sfc_models.equation_parser.EquationParser()
         self.VariableList = []
-        self.TimeSeries = {}
+        self.TimeSeries = TimeSeriesHolder('k')
+        self.TimeSeriesInitialSteadyState = TimeSeriesHolder('k')
+        self.TimeSeriesStepTrace = TimeSeriesHolder('iteration')
         self.MaxIterations = 400
         self.Functions = {}
+        self.SolveInitialSteadyState = False
         if len(equation_string) > 0:
             self.ParseString(equation_string)
 
@@ -96,7 +100,7 @@ class EquationSolver(object):
 
     def SetInitialConditions(self):
         Logger('Set Initial Conditions')
-        variables = dict()
+        variables = TimeSeriesHolder('k')
         # variables['k'] = list(range(0, self.Parser.MaxTime+1))
         # First pass: include exogenous
         for var in self.VariableList:
@@ -171,7 +175,7 @@ class EquationSolver(object):
                 variables[var] = [val, ]
         self.TimeSeries = variables
 
-    def CalculateInitialEquilibrium(self):
+    def CalculateInitialSteadyState(self):
         """
         Attempt to calculate initial conditions. Very little guarantee
         the system will converge.
@@ -199,7 +203,7 @@ class EquationSolver(object):
         # Create a deep copy of the solver object.
         # A "deep copy" means that all data members are copied,
         # so that changes to the copy do not affect this object!
-        Logger('Starting to calculate initial equilibrium')
+        Logger('Starting to calculate initial steady state')
         new_solver = self._GetCopy()
         T = Parameters.InitialEquilbriumMaxTime
         new_solver.Parser.MaxTime = T
@@ -222,7 +226,8 @@ class EquationSolver(object):
         except:
             raise
         finally:
-            Logger(new_solver.GenerateCSVtext(), 'equilibrium_0')
+            self.TimeSeriesInitialSteadyState = new_solver.TimeSeries
+            Logger(new_solver.GenerateCSVtext(), 'steadystate_0')
         # Now: look at which variables are not constant.
         bad_variables = []
         excluded = ['k', ] + Parameters.InitialEquilibriumExcludedVariables
@@ -261,12 +266,13 @@ class EquationSolver(object):
 
     def SolveStep(self, step):
         # Set up starting condition (for step)
+        is_trace_step = step == self.TraceStep
         initial = {}
         # Probably could just do a shallow copy...
         for key, value in self.Functions.items():
             initial[key] = value
         Logger('Step: {0}'.format(step))
-        if step == Parameters.TraceStep:
+        if is_trace_step:
             Logger('Starting convergence tracing.', log='step')
             Logger('Step {0}'.format(step))
         # The exogenous and lagged variables are always fixed for a time period
@@ -278,17 +284,22 @@ class EquationSolver(object):
         for var, dummy in self.Parser.Endogenous:
             initial[var] = self.TimeSeries[var][step - 1]
         # NOTE:
-        # We are missing the decorative variables, but they have no effect on the solution
+        # We are missing the decorative variables, but they have no effect on the convergence
         relative_error = 1.
         err_toler = float(self.Parser.Err_Tolerance)
         num_tries = 0
         trace_keys = list(initial.keys())
         trace_keys.sort()
-        if Parameters.TraceStep == step:
+        if is_trace_step:
+            self.TimeSeriesStepTrace = TimeSeriesHolder('iteration')
+            self.TimeSeriesStepTrace['iteration'] = []
+            self.TimeSeriesStepTrace['iteration_error'] = []
+            for k in trace_keys:
+                self.TimeSeriesStepTrace[k] = []
             Logger("""
-Values at beginning of step. (Only incldues variables that are solved within
+Values at beginning of step. (Only includes variables that are solved within
 iteration. Decorative variables calculated later).""", log='step')
-            Logger('\t'.join(['Iteration', 'PreviousError'] + trace_keys), log='step')
+            # Logger('\t'.join(['Iteration', 'PreviousError'] + trace_keys), log='step')
         # The following two assignments not really necessary, but the code inspection
         # was unhappy if they were not set.
         had_evaluation_errors = False
@@ -296,9 +307,13 @@ iteration. Decorative variables calculated later).""", log='step')
         while relative_error > err_toler:
             # Need to create a copy of the dictionary; saying new_value = initial means that they are
             # the same object.
-            if Parameters.TraceStep == step:
-                Logger('\t'.join([str(num_tries), str(relative_error)] + [str(initial[x]) for x in trace_keys]),
-                       log='step')
+            if is_trace_step:
+                #Logger('\t'.join([str(num_tries), str(relative_error)] + [str(initial[x]) for x in trace_keys]),
+                #       log='step')
+                self.TimeSeriesStepTrace['iteration'].append(float(num_tries))
+                self.TimeSeriesStepTrace['iteration_error'].append(relative_error)
+                for k in trace_keys:
+                    self.TimeSeriesStepTrace[k].append(initial[k])
             new_value = dict()
             for key, val in initial.items():
                 new_value[key] = val
@@ -343,9 +358,13 @@ iteration. Decorative variables calculated later).""", log='step')
             initial = new_value
             num_tries += 1
             if num_tries > self.MaxIterations:
+                if is_trace_step:
+                    Logger(self.TimeSeriesStepTrace.GenerateCSVtext(), log='step')
                 if had_evaluation_errors:
                     raise ValueError(last_error)
                 raise ConvergenceError('Equations do not converge - step {0}'.format(step))
+        if is_trace_step:
+            Logger(self.TimeSeriesStepTrace.GenerateCSVtext(), log='step')
         if had_evaluation_errors:
             Logger('Had evaluation errors')
             raise ValueError(last_error)
@@ -382,8 +401,8 @@ iteration. Decorative variables calculated later).""", log='step')
         if len(self.VariableList) == 0:
             self.ExtractVariableList()
         self.SetInitialConditions()
-        if Parameters.SolveInitialEquilibrium:
-            self.CalculateInitialEquilibrium()
+        if self.SolveInitialSteadyState:
+            self.CalculateInitialSteadyState()
             # Reset the parameter; it needs to be set before every call to SolveEquation()
             Parameters.SolveInitialEquilibrium = False
         for step in range(1, self.Parser.MaxTime + 1):
@@ -392,6 +411,7 @@ iteration. Decorative variables calculated later).""", log='step')
     def WriteCSV(self, fname):  # pragma: no cover   We should not be writing files as part of unit tests...
         """
         Write time series to a tab-delimited text file.
+
         :param fname: str
         :return:
         """
@@ -402,25 +422,8 @@ iteration. Decorative variables calculated later).""", log='step')
         """
         :format_str: str
         Generates the text that goes into the csv.
+
+        Implementation has migrated to the TimeSeriesHolder class.
         :return: str
         """
-        varz = list(self.TimeSeries.keys())
-        if len(varz) == 0:
-            return ''
-        varz.sort()
-        if 't' in varz:
-            varz.remove('t')
-            varz.insert(0, 't')
-        if 'k' in varz:
-            varz.remove('k')
-            varz.insert(0, 'k')
-        out = '\t'.join(varz) + '\n'
-        lengths = [len(x) for x in self.TimeSeries.values()]
-        N = min(lengths)
-        for i in range(0, N):
-            row = []
-            for v in varz:
-                row.append(self.TimeSeries[v][i], )
-            row = [format_str % (x,) for x in row]
-            out += '\t'.join(row) + '\n'
-        return out
+        return self.TimeSeries.GenerateCSVtext(format_str)

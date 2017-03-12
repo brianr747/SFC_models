@@ -31,6 +31,7 @@ def main():
     register_standard_logs('output', __file__)
     # Create model, which holds all entities
     mod = Model()
+    mod.EquationSolver.TraceStep = 10
     # Create first country - Canada. (This model only has one country.)
     can = Country(mod, 'Canada', 'CA')
     # Create sectors

@@ -255,7 +255,7 @@ class Model(Entity):
                 out.append(sector)
         return out
 
-    def GetTimeSeries(self, series, cutoff=None):
+    def GetTimeSeries(self, series, cutoff=None, group_of_series='main'):
         """
         Convenience function to retrieve time series from the EquationSolver.
 
@@ -271,10 +271,15 @@ class Model(Entity):
         if cutoff is None:
             cutoff = self.TimeSeriesCutoff
         try:
+            series_holder = self.EquationSolver.TimeSeries
+            if group_of_series == 'step':
+                series_holder = self.EquationSolver.TimeSeriesStepTrace
+            elif group_of_series == 'initial':
+                series_holder = self.EquationSolver.TimeSeriesInitialSteadyState
             if cutoff is None:
-                val = self.EquationSolver.TimeSeries[series]
+                val = series_holder[series]
             else:
-                val = self.EquationSolver.TimeSeries[series][0:(cutoff + 1)]
+                val = series_holder[series][0:(cutoff + 1)]
         except KeyError:
             raise KeyError('Time series "{0}" does not exist'.format(series))
         if self.TimeSeriesSupressTimeZero:

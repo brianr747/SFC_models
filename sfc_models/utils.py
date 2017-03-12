@@ -42,6 +42,46 @@ class LogicError(ValueError):
     """
     pass
 
+class TimeSeriesHolder(dict):
+    """
+    As the name implies, holds time series.
+    Currently using lists for time series.
+    """
+    def __init__(self, time_series):
+        dict.__init__(self)
+        self.TimeSeriesName = time_series
+        self.SortPriority = ('iteration', 'iteration_error', 'k', 't')
+
+    def GetSeriesList(self):
+        serlist = list(self.keys())
+        serlist.sort()
+        included = []
+        for x in self.SortPriority:
+            if x in serlist:
+                included.append(x)
+                serlist.remove(x)
+        return included + serlist
+
+    def GenerateCSVtext(self, format_str='%.5g'):
+        """
+        Generate the text for a tab-delimited file.
+        :param format_str: str
+        :return: str
+        """
+        varz = self.GetSeriesList()
+        if len(varz) == 0:
+            return ''
+        out = '\t'.join(varz) + '\n'
+        lengths = [len(x) for x in self.values()]
+        N = min(lengths)
+        for i in range(0, N):
+            row = []
+            for v in varz:
+                row.append(self[v][i], )
+            row = [format_str % (x,) for x in row]
+            out += '\t'.join(row) + '\n'
+        return out
+
 
 def list_tokens(s):
     """
@@ -49,7 +89,6 @@ def list_tokens(s):
 
     >>> list_tokens('x = foo + cat()')
     ['x', 'foo', 'cat']
-
     >>> list_tokens('2 + 3')
     []
 
@@ -310,7 +349,7 @@ class Logger(object):
             'timeseries': base_file_name + '_out.txt',
             'eqn': base_file_name + '_eqn.txt',
             'step': base_file_name + '_iteration.txt',
-            'equilibrium_0': base_file_name + '_equilib.txt',
+            'steadystate_0': base_file_name + '_steadystate.txt',
         }
         for logname in loginfo:
             try:

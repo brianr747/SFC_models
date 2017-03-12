@@ -128,8 +128,8 @@ class TestEquationSolverLogging(TestCase):
         Logger.cleanup()
         mock = MockFile()
         Logger.log_file_handles = {'step': mock}
-        Parameters.TraceStep = 2
         obj = EquationSolver()
+        obj.TraceStep = 2
         obj.RunEquationReduction = False
         # By forcing 't' into the variable list, no automatic creation of time variables
         obj.ParseString("""
@@ -152,3 +152,30 @@ class TestEquationSolverLogging(TestCase):
         mock.buffer = []
         obj.SolveStep(3)
         self.assertEqual([], mock.buffer)
+
+class TestTimeSeriesHolder(TestCase):
+    def test_create(self):
+        obj = utils.TimeSeriesHolder('k')
+        self.assertEqual([], list(obj.keys()))
+        self.assertEqual('k', obj.TimeSeriesName)
+
+    def test_sort_1(self):
+        obj = utils.TimeSeriesHolder('k')
+        obj['a'] = [1,]
+        obj['c'] = [3,]
+        obj['b'] = [2,]
+        self.assertEqual(['a','b', 'c'], obj.GetSeriesList())
+
+    def test_sort_2(self):
+        obj = utils.TimeSeriesHolder('k')
+        obj['a'] = [1, ]
+        obj['t'] = [3, ]
+        obj['b'] = [2, ]
+        self.assertEqual(['t', 'a', 'b'], obj.GetSeriesList())
+
+    def test_sort_3(self):
+        obj = utils.TimeSeriesHolder('k')
+        obj['a'] = [1, ]
+        obj['t'] = [3, ]
+        obj['k'] = [2, ]
+        self.assertEqual(['k', 't', 'a'], obj.GetSeriesList())

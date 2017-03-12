@@ -5,6 +5,7 @@ import sys
 
 from sfc_models.equation_solver import EquationSolver, ConvergenceError, NoEquilibriumError
 from sfc_models import Parameters as Parameters
+import sfc_models.utils
 
 is_python_3 = sys.version_info[0] >= 3
 
@@ -331,7 +332,7 @@ class TestEquationSolver(TestCase):
          exogenous
          t=[10.]*20
          MaxTime=3""")
-        Parameters.SolveInitialEquilibrium = True
+        obj2.SolveInitialSteadyState = True
         obj2.SolveEquation()
         # Must be reset
         self.assertFalse(Parameters.SolveInitialEquilibrium)
@@ -393,11 +394,13 @@ class TestEquationSolver(TestCase):
     def test_csv_text(self):
         obj = EquationSolver()
         # Make the time series int so we do not test how floats are formatted...
-        obj.TimeSeries = {
+        tmp = {
             'k': [0, 1],
             'foo': [10, 11],
             'cat': [0, 3],
         }
+        for key, value in tmp.items():
+            obj.TimeSeries[key] = value
         targ = """k\tcat\tfoo
 0\t0\t10
 1\t3\t11
@@ -407,18 +410,20 @@ class TestEquationSolver(TestCase):
     def test_csv_text_empty(self):
         obj = EquationSolver()
         # Make the time series int so we do not test how floats are formatted...
-        obj.TimeSeries = {}
+        obj.TimeSeries = sfc_models.utils.TimeSeriesHolder('k')
         targ = ''
         self.assertEqual(targ, obj.GenerateCSVtext())
 
     def test_csv_text2(self):
         obj = EquationSolver()
         # Make the time series int so we do not test how floats are formatted...
-        obj.TimeSeries = {
+        tmp = {
             'k': [0, 1],
             'foo': [10, 11],
             't': [0, 3],
         }
+        for k,v in tmp.items():
+            obj.TimeSeries[k] = v
         targ = """k\tt\tfoo
 0\t0\t10
 1\t3\t11
@@ -440,7 +445,7 @@ class TestEquationSolver(TestCase):
         obj.ExtractVariableList()
         obj.SetInitialConditions()
         Parameters.InitialEquilbriumMaxTime = 3
-        copied_solver = obj.CalculateInitialEquilibrium()
+        copied_solver = obj.CalculateInitialSteadyState()
         self.assertEqual([10., ], obj.TimeSeries['x'])
         self.assertEqual([11., ], obj.TimeSeries['z'])
         self.assertEqual([11., ], obj.TimeSeries['w'])
@@ -463,7 +468,7 @@ class TestEquationSolver(TestCase):
         Parameters.InitialEquilbriumMaxTime = 3
         obj.MaxIterations = 2
         with self.assertRaises(ValueError):
-            obj.CalculateInitialEquilibrium()
+            obj.CalculateInitialSteadyState()
 
     def test_InitialEquilibrium_fail_bad_eqn(self):
         obj = EquationSolver()
@@ -479,7 +484,7 @@ class TestEquationSolver(TestCase):
         Parameters.InitialEquilbriumMaxTime = 3
         obj.MaxIterations = 2
         with self.assertRaises(NameError):
-            obj.CalculateInitialEquilibrium()
+            obj.CalculateInitialSteadyState()
 
     def test_InitialEquilibrium_no_convergence(self):
         obj = EquationSolver()
@@ -497,7 +502,7 @@ class TestEquationSolver(TestCase):
         Parameters.InitialEquilbriumMaxTime = 3
         Parameters.InitialEquilibriumExcludedVariables = ['x']
         with self.assertRaises(NoEquilibriumError):
-            obj.CalculateInitialEquilibrium()
+            obj.CalculateInitialSteadyState()
 
     def test_InitialEquilibrium_zero(self):
         obj = EquationSolver()
@@ -516,7 +521,7 @@ class TestEquationSolver(TestCase):
         Parameters.InitialEquilbriumMaxTime = 2
         Parameters.InitialEquilibriumExcludedVariables = []
         with self.assertRaises(NoEquilibriumError):
-            obj.CalculateInitialEquilibrium()
+            obj.CalculateInitialSteadyState()
 
     def test_SolveWithFunction(self):
         obj = EquationSolver()
