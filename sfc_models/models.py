@@ -97,6 +97,8 @@ class Model(Entity):
         self.GlobalVariables = []
         self.IncomeExclusions = []
         self.CurrencyZoneList = []
+        self.State = 'Construction'
+        self.RunSteps = None
         self.FinalEquationBlock = EquationBlock()
 
     def main(self, base_file_name=None):  # pragma: no cover
@@ -129,6 +131,7 @@ class Model(Entity):
         :param base_file_name: str
         :return: None
         """
+        self.State = 'Running'
         try:
             if base_file_name is not None:
                 Logger.register_standard_logs(base_file_name)
@@ -150,9 +153,73 @@ class Model(Entity):
             self.LogInfo(ex=e)
             raise
         finally:
+            self.State = 'Finished Running'
             Logger(self.EquationSolver.GenerateCSVtext(), 'timeseries')
             Logger.cleanup()
         return self.FinalEquations
+
+    def _GetSteps(self): # pragma: no cover
+        """
+        This is experimental, for GUI use. Will integrate with main() later...
+        :return:
+        """
+        if self.RunSteps is None:
+            # Need to generate RunSteps
+            self.RunSteps = []
+            self.RunSteps.append({'Generate Sector Codes': self._GenerateFullSectorCodes})
+            self.RunSteps.append({'Fix Aliases': self._FixAliases})
+            self.RunSteps.append({'Generate Equations': self._GenerateEquationSteps})
+            self.RunSteps.append({'Process Cash Flows': self._GenerateRegisteredCashFlows})
+            self.RunSteps.append({'Process Exogenous': self._ProcessExogenous})
+            self.RunSteps.append({'Final Equations': self._CreateFinalEquations})
+            self.RunSteps.append({'Solve': self._FinalSteps})
+            # self.EquationSolver.ParseString(self.FinalEquations)
+            # self.EquationSolver.SolveEquation()
+            # self.LogInfo()
+            # self.State = 'Finished Running'
+            # Logger(self.EquationSolver.GenerateCSVtext(), 'timeseries')
+            # Logger.cleanup()
+        out = [list(x.keys()) for x in self.RunSteps]
+        return out
+
+    def _GenerateEquationSteps(self): # pragma: no cover
+        sector_list = self.GetSectors()
+        for sec in sector_list:
+            self.RunSteps[0][sec.FullCode] = sec._GenerateEquations
+
+    def _FinalSteps(self): # pragma: no cover
+        self.EquationSolver.ParseString(self.FinalEquations)
+        self.EquationSolver.SolveEquation()
+        self.LogInfo()
+        self.State = 'Finished Running'
+        Logger(self.EquationSolver.GenerateCSVtext(), 'timeseries')
+        Logger.cleanup()
+
+    def _RunStep(self, command): # pragma: no cover
+        if len(self.RunSteps) == 0:
+            self.State = 'Finished Running'
+            return
+        self.State = 'Running'
+        # Will throw KeyError if not in command list
+        func = self.RunSteps[0].pop(command)
+        try:
+            func()
+        except:
+            self.RunSteps = []
+            self.State = 'Finished Running'
+            raise
+        if len(self.RunSteps[0]) == 0:
+            self.RunSteps.pop(0)
+        if len(self.RunSteps) == 0:
+            self.State = 'Finished Running'
+
+    def _RunAllSteps(self):  # pragma: no cover
+        while len(self.RunSteps) > 0:
+            all_cmds = list(self.RunSteps[0].keys())
+            self._RunStep(all_cmds[0])
+
+
+
 
     def AddExogenous(self, sector_fullcode, varname, value):
         """
@@ -535,6 +602,7 @@ class Model(Entity):
         out.extend(self._GenerateInitialConditions())
         out.extend(self.GlobalVariables)
         if len(out) == 0:
+            self.FinalEquations = ''
             raise Warning('There are no equations in the system.')
         # Build the FinalEquationBlock
         self.FinalEquationBlock = EquationBlock()
@@ -544,7 +612,9 @@ class Model(Entity):
             else:
                 eq = Equation(row[0], desc=row[2], rhs=row[1])
             self.FinalEquationBlock.AddEquation(eq)
-        return self._FinalEquationFormatting(out)
+        out = self._FinalEquationFormatting(out)
+        self.FinalEquations = out
+        return out
 
     def _FinalEquationFormatting(self, out):
         """

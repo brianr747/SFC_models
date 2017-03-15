@@ -226,6 +226,12 @@ class TestModel(TestCase):
         with self.assertRaises(Warning):
             mod._CreateFinalEquations()
 
+    def test_Main_empty_state(self):
+        mod = Model()
+        self.assertEqual('Construction', mod.State)
+        mod.main()
+        self.assertEqual('Finished Running', mod.State)
+
     def test_FinalEquationFormating(self):
         eq = [('x', 'y + 1', 'comment_x'),
               ('y', 'EXOGENOUS 20', 'comment_y'),
