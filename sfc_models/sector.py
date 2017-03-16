@@ -220,6 +220,11 @@ class Sector(Entity):
         else:
             self.AddVariable(term, desc, eqn)
 
+    def _GenerateEquationsFrontEnd(self):
+        Logger('Running _GenerateEquations on {0} [{1}]', priority=3,
+               data_to_format=(self.Code, self.ID))
+        self._GenerateEquations()
+
     def _GenerateEquations(self):
         """
         Work is done in derived classes.
@@ -305,8 +310,10 @@ class Market(Sector):
         self.NumSupply = 0
         self.AddVariable('SUP_' + code, 'Supply for market ' + code, '')
         self.AddVariable('DEM_' + code, 'Demand for market ' + code, '')
+        # Deprecated
         self.SupplyAllocation = []
-        self.SearchListSource = country
+        self.ResidualSupply = None
+        self.OtherSuppliers = []
 
     def _SearchSupplier(self):
         """
@@ -318,10 +325,10 @@ class Market(Sector):
 
         :return: Sector
         """
-        Logger('Market {0} Searching {1} ({2}) for a supplier', priority=3,
-               data_to_format=(self.Code, self.SearchListSource.Code, type(self.SearchListSource)))
+        Logger('Market {0} searching Country {1} for a supplier', priority=3,
+               data_to_format=(self.Code, self.Parent.Code))
         ret_value = None
-        for sector in self.SearchListSource.GetSectors():
+        for sector in self.Parent.GetSectors():
             if sector.ID == self.ID:
                 continue
             if 'SUP_' + self.Code in sector.EquationBlock.Equations:
@@ -331,6 +338,7 @@ class Market(Sector):
                     raise LogicError('More than one supplier, must set SupplyAllocation: ' + self.Code)
         if ret_value is None:
             raise LogicError('No supplier: ' + self.Code)
+        self.ResidualSupply = ret_value
         return ret_value
 
     def _GenerateEquations(self):
@@ -338,25 +346,13 @@ class Market(Sector):
         Generate the equations associated with this market.
         :return:
         """
-        if len(self.SupplyAllocation) == 0:
+        if self.ResidualSupply is None:
             supplier = self._SearchSupplier()
-            self.SupplyAllocation = [[], supplier]
+            # self.SupplyAllocation = [[], supplier]
         if len(self.SupplyAllocation) > 0:
-            self.NumSupply = len(self.SupplyAllocation[0])
-            self._GenerateTermsLowLevel('DEM', 'Demand')
-            self._GenerateMultiSupply()
-        else:  # pragma: no cover
-            # Keep this legacy code here for now, in case I need to revert.
-            raise LogicError('Should never reach this code!')
-            self.NumSupply = 0
-            self._GenerateTermsLowLevel('SUP', 'Supply')
-            if self.NumSupply == 0:
-                raise ValueError('No supply for market: ' + self.FullCode)
-            self._GenerateTermsLowLevel('DEM', 'Demand')
-            if self.NumSupply > 1:
-                raise LogicError('More than one supply at market, must set SupplyAllocation: ' + self.Code)
-            else:
-                self.FixSingleSupply()
+            self.NumSupply = len(self.SupplyAllocation) + 1
+        self._GenerateTermsLowLevel('DEM', 'Demand')
+        self._GenerateMultiSupply()
 
     def _GenerateTermsLowLevel(self, prefix, long_desc):
         """
@@ -369,18 +365,26 @@ class Market(Sector):
         :param long_desc: str
         :return: None
         """
+        Logger('Searching for demand for market {0}', priority=3, data_to_format=(self.FullCode,))
         if prefix not in ('SUP', 'DEM'):
             raise LogicError('Input to function must be "SUP" or "DEM"')
-        country = self.Parent
-        var_name = prefix + '_' + self.Code
-        self.AddVariable(var_name, long_desc + ' for Market ' + self.Code, '')
+        # country = self.Parent
+        short_name = prefix + '_' + self.Code
+        long_name = prefix + '_' + self.FullCode
+        self.AddVariable(short_name, long_desc + ' for Market ' + self.Code, '')
         term_list = []
-        for s in self.SearchListSource.GetSectors():
+        for s in self.CurrencyZone.GetSectors():
             if s.ID == self.ID:
                 continue
+            if self.ShareParent(s):
+                var_name = short_name
+            else:
+                var_name = long_name
             try:
                 term = s.GetVariableName(var_name)
             except KeyError:
+                Logger('Variable {0} does not exist in {1}', priority=10,
+                       data_to_format=(var_name, s.FullCode))
                 continue
             term_list.append('+ ' + term)
             if prefix == 'SUP': # pragma: no cover
@@ -390,9 +394,21 @@ class Market(Sector):
                 self.NumSupply += 1
             else:
                 # Must fill in demand equation in sectors.
-                s.AddCashFlow('-' + var_name, 'Error: must fill in demand equation', long_desc)
+                s.AddCashFlow('-' + var_name, '', long_desc)
         eqn = create_equation_from_terms(term_list)
-        self.SetEquationRightHandSide(var_name, eqn)
+        self.SetEquationRightHandSide(short_name, eqn)
+
+    def AddSupplier(self, supplier, supply_eqn=''):
+        """
+        Add a supply. If the supply_eqn is empty (or None), becomes the ResidualSupplier
+        :param supplier: Sector
+        :param supply_eqn: str
+        :return:
+        """
+        if supply_eqn is None or supply_eqn=='':
+            self.ResidualSupply = supplier
+            return
+        self.OtherSuppliers.append((supplier, supply_eqn))
 
     def FixSingleSupply(self): # pragma: no cover
         """
@@ -408,7 +424,7 @@ class Market(Sector):
         dem_name = 'DEM_' + self.Code
         # Set aggregate supply equal to demand
         self.SetEquationRightHandSide(sup_name, rhs=dem_name)
-        for s in self.SearchListSource.GetSectors():
+        for s in self.Parent.GetSectors():
             if s.ID == self.ID:
                 continue
             if sup_name in s.Equations:
@@ -429,8 +445,8 @@ class Market(Sector):
         # terms: need to create a list of non-residual supply terms so that
         # we can set the residual supply
         terms = [sup_name, ]
-        # Unpack the SupplyAllocation member. [Create a class?]
-        sector_list, residual_sector = self.SupplyAllocation
+        sector_list = self.OtherSuppliers
+        residual_sector = self.ResidualSupply
         for sector, eqn in sector_list:
             local_name = 'SUP_' + sector.FullCode
             terms.append(local_name)
@@ -442,6 +458,8 @@ class Market(Sector):
                 supply_name = 'SUP_' + self.Code
             else:
                 supply_name = 'SUP_' + self.FullCode
+            if supply_name not in sector.EquationBlock:
+                sector.AddVariable(supply_name, 'Supply to {0}'.format(self.FullCode), '')
             sector.AddTermToEquation(supply_name, self.GetVariableName(local_name))
             # sector.SetEquationRightHandSide(supply_name, self.GetVariableName(local_name))
             sector.AddCashFlow('+' + supply_name)
@@ -458,6 +476,8 @@ class Market(Sector):
             supply_name = 'SUP_' + self.Code
         else:
             supply_name = 'SUP_' + self.FullCode
+        if supply_name not in residual_sector.EquationBlock:
+            residual_sector.AddVariable(supply_name, 'Supply to {0}'.format(self.FullCode), '')
         residual_sector.SetEquationRightHandSide(supply_name, self.GetVariableName(local_name))
         residual_sector.AddCashFlow('+' + supply_name)
 

@@ -24,11 +24,12 @@ class TestHouseHold(TestCase):
         self.assertEqual(hh.EquationBlock['AlphaIncome'].RHS(), '0.9000')
 
 class TestMultiSupply(TestCase):
-    def test_constructor_nosupply(self):
-        mod = Model()
-        can = Country(mod, 'Canada', 'Eh')
-        with self.assertRaises(utils.LogicError):
-            bus= FixedMarginBusinessMultiOutput(can, 'Business', 'BUS', market_list=[])
+    # Changed behaviour
+    # def test_constructor_nosupply(self):
+    #     mod = Model()
+    #     can = Country(mod, 'Canada', 'Eh')
+    #     with self.assertRaises(utils.LogicError):
+    #         bus= FixedMarginBusinessMultiOutput(can, 'Business', 'BUS', market_list=[])
 
 
     def test_ctor_default(self):
@@ -43,7 +44,9 @@ class TestMultiSupply(TestCase):
                                               market_list=[marca, marus], profit_margin=.1)
         self.assertIn('SUP_GOOD', bus.EquationBlock.Equations)
         self.assertIn('SUP_US_GOOD', bus.EquationBlock.Equations)
-        marus.SupplyAllocation = [[[bus2, 'allocation_equation'],], bus]
+        marus.AddSupplier(bus2, 'allocation_equation')
+        marus.AddSupplier(bus)
+        #marus.SupplyAllocation = [[[bus2, 'allocation_equation'],], bus]
         mod._GenerateFullSectorCodes()
         marus._GenerateEquations()
         self.assertFalse(marus.ShareParent(bus))

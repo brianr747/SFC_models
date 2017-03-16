@@ -25,7 +25,7 @@ import traceback
 
 import sfc_models.equation_solver
 from sfc_models.equation_parser import EquationParser
-from sfc_models.utils import Logger
+from sfc_models.utils import Logger, LogicError
 from sfc_models.equation import EquationBlock, Equation
 
 
@@ -98,6 +98,7 @@ class Model(Entity):
         self.IncomeExclusions = []
         self.CurrencyZoneList = []
         self.State = 'Construction'
+        self.DefaultCurrency = 'LOCAL'
         self.RunSteps = None
         self.FinalEquationBlock = EquationBlock()
 
@@ -171,6 +172,7 @@ class Model(Entity):
             self.RunSteps.append({'Generate Equations': self._GenerateEquationSteps})
             self.RunSteps.append({'Process Cash Flows': self._GenerateRegisteredCashFlows})
             self.RunSteps.append({'Process Exogenous': self._ProcessExogenous})
+            self.RunSteps.append({'Fix Aliases (Pass #2)': self._FixAliases})
             self.RunSteps.append({'Final Equations': self._CreateFinalEquations})
             self.RunSteps.append({'Solve': self._FinalSteps})
             # self.EquationSolver.ParseString(self.FinalEquations)
@@ -180,12 +182,14 @@ class Model(Entity):
             # Logger(self.EquationSolver.GenerateCSVtext(), 'timeseries')
             # Logger.cleanup()
         out = [list(x.keys()) for x in self.RunSteps]
+        for x in out:
+            x.sort()
         return out
 
     def _GenerateEquationSteps(self): # pragma: no cover
         sector_list = self.GetSectors()
         for sec in sector_list:
-            self.RunSteps[0][sec.FullCode] = sec._GenerateEquations
+            self.RunSteps[0][sec.FullCode] = sec._GenerateEquationsFrontEnd
 
     def _FinalSteps(self): # pragma: no cover
         self.EquationSolver.ParseString(self.FinalEquations)
@@ -217,9 +221,6 @@ class Model(Entity):
         while len(self.RunSteps) > 0:
             all_cmds = list(self.RunSteps[0].keys())
             self._RunStep(all_cmds[0])
-
-
-
 
     def AddExogenous(self, sector_fullcode, varname, value):
         """
@@ -414,7 +415,10 @@ class Model(Entity):
         :return: None
         """
         Logger('Adding Country: {0} ID={1}', data_to_format=(country.Code, country.ID))
+        if country.Code in self:
+            raise LogicError('Country with Code {0} already in Model'.format(country.Code))
         self.CountryList.append(country)
+        self.DefaultCurrency = country.Currency
         czone = self._FitIntoCurrencyZone(country)
         country.CurrencyZone = czone
 
@@ -643,6 +647,31 @@ class Model(Entity):
         s += '\n\nMaxTime = {0}\nErr_Tolerance=0.001'.format(self.MaxTime)
         return s
 
+    def __getitem__(self, item):
+        """
+        Get a country using model[country_code] notation
+        :param item: str
+        :return: Country
+        """
+        for obj in self.CountryList:
+            if item == obj.Code:
+                return obj
+        raise KeyError('Country {0} not in Model'.format(item))
+
+    def __contains__(self, item):
+        """
+        Is a Country object (or string code) in a Model?
+        :param item: str
+        :return:
+        """
+        if type(item) is str:
+            try:
+                a = self[item]
+                return True
+            except KeyError:
+                return False
+        return item in self.CountryList
+
 
 class Country(Entity):
     """
@@ -671,6 +700,9 @@ class Country(Entity):
         """
         Logger('Adding Sector {0} To Country {1}', priority=1,
                data_to_format=(sector.Code, self.Code))
+        if sector.Code in self:
+            raise LogicError('Sector with Code {0} already in Country {1}'.format(
+                sector.Code, self.Code))
         self.SectorList.append(sector)
 
     def LookupSector(self, code, is_full_code=False):
@@ -697,12 +729,42 @@ class Country(Entity):
         """
         return self.SectorList
 
+    def __getitem__(self, item):
+        """
+        Get a Sector object using country[sector_code] notation.
+        :param item: str
+        :return:
+        """
+        for obj in self.SectorList:
+            if obj.Code == item:
+                return obj
+        raise KeyError('Sector {0} does not exist in Country {1}'.format(item, self.Code))
+
+    def __contains__(self, item):
+        """
+        Is a sector code (or Sector object) in this Country?
+        :param item: str
+        :return:
+        """
+        if type(item) == str:
+            try:
+                dummy = self[item]
+                return True
+            except KeyError:
+                return False
+        return item in self.SectorList
+
 
 class Region(Country):
     """
-    Region object. Same thing as a Country, but it may make some pedantic people happier.
+    Region object. Almost same thing as a Country, but it may make some pedantic people happier.
+
+    If currency is not specified, uses the default currency.
     """
-    pass
+    def __init__(self, model, long_name, code, currency=None):
+        if currency is None:
+            currency = model.DefaultCurrency
+        Country.__init__(self, model, long_name, code, currency)
 
 
 class CurrencyZone(Entity):
@@ -725,6 +787,20 @@ class CurrencyZone(Entity):
         out = []
         for c in self.CountryList:
             out.extend(c.GetSectors())
+        return out
+
+    def LookupSector(self, short_code):
+        out = None
+        for s in self.GetSectors():
+            if s.Code == short_code:
+                if out is not None:
+                    raise LogicError("""Multiple sectors with same short code ({0})
+    in CurrencyZone {1}""".format(short_code, self.Code))
+                else:
+                    out = s
+        if out is None:
+            raise LogicError('Sector {0} does not exist in CurrencyZone {1}'.format(
+                short_code, self.Code))
         return out
 
 

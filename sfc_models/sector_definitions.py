@@ -151,21 +151,26 @@ class FixedMarginBusinessMultiOutput(Sector):
         self.ProfitMargin = profit_margin
         self.LabourInputName = labour_input_name
         self.MarketList = market_list
-        if len(market_list) == 0:
-            raise utils.LogicError('Must have at least one market to supply ' + code)
-        sup_terms = []
+        self.AddVariable('SUP', 'Total supply', '')
         for market in market_list:
-            if self.ShareParent(market):
-                term = 'SUP_' + market.Code
-            else:
-                # We do not have the FullCodes yet, but we know we are in a multi-
-                # country model. So we can call Model.GetSectorCodeWithCountry()
-                term = 'SUP_' + self.GetModel().GetSectorCodeWithCountry(market)
-            self.AddVariable(term, 'Supply of ' + market.Code, '')
-            sup_terms.append(term)
-        self.AddVariable('SUP', 'Total supply', '+'.join(sup_terms))
+            self.AddMarket(market)
         self.AddVariable('PROF', 'Profits', 'SUP - DEM_{0}'.format(labour_input_name))
         self.AddVariable('DEM_' + labour_input_name, 'Demand for labour.', '')
+
+    def AddMarket(self, market):
+        """
+        Add a market to the list of suppliers
+        :param market: Market
+        :return:
+        """
+        if self.ShareParent(market):
+            term = 'SUP_' + market.Code
+        else:
+            # We do not have the FullCodes yet, but we now know we are in a multi-
+            # country model. So we can call Model.GetSectorCodeWithCountry()
+            term = 'SUP_' + self.GetModel().GetSectorCodeWithCountry(market)
+        self.AddVariable(term, 'Supply of ' + market.Code, '')
+        self.AddTermToEquation('SUP', term)
 
     def _GenerateEquations(self):
         wage_share = 1.0 - self.ProfitMargin
@@ -201,7 +206,7 @@ class TaxFlow(Sector):
         terms = []
         # Find all sector that are taxable
         taxrate_name = self.GetVariableName('TaxRate')
-        for s in self.Parent.SectorList:
+        for s in self.CurrencyZone.GetSectors():
             if s.ID == self.ID:
                 continue
             if s.IsTaxable:
@@ -219,7 +224,7 @@ class TaxFlow(Sector):
         self.SetEquationRightHandSide('T', utils.create_equation_from_terms(terms))
         # work on other sectors
         tax_fullname = self.GetVariableName('T')
-        gov = self.Parent.LookupSector(self.TaxingSector)
+        gov = self.CurrencyZone.LookupSector(self.TaxingSector)
         gov.AddCashFlow('T', tax_fullname, 'Tax revenue received.')
 
 

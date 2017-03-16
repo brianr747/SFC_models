@@ -1,12 +1,26 @@
 """
 End-to-end tests of the framework, using the models from Godley & Lavoie.
+
+Since some of these models take awhile to build, we can set the environment variable
+DontRunEndToEnd to skip them.
+
+Within PyCharm, I just create two unittest configurations; one for quick unit tests (runs
+in about a second), and then the slower end-to-end configuration that includes both.
+
+Unfortunately, the end-to-end tests pick up most of the economic logic errors, so they
+still need to be run frequently.
 """
 
+import os
+import unittest
 from unittest import TestCase
 import cProfile
 import sfc_models.gl_book.chapter3
 import sfc_models.gl_book.chapter4
 import sfc_models.gl_book.chapter6
+
+# Set this environment variable to 'T' in order to skip the slower end-to-end tests.
+skip_end_to_end = os.getenv('DontRunEndToEnd')
 
 
 def float_converter(x):
@@ -42,7 +56,6 @@ class EndToEndTester(TestCase):
         model.main()
         if do_profile:
             pr.disable()
-            # after your program ends
             pr.print_stats(sort="time")
         for varname, targ in expected:
             if type(targ) is str:
@@ -80,6 +93,7 @@ class TestPC(EndToEndTester):
 class TestREG(EndToEndTester):
     """
     Tests model REG.
+    Big model; skipped if environment variable DontRunEndToEnd = 'T'
     """
 
     def get_precision(self):
@@ -87,3 +101,25 @@ class TestREG(EndToEndTester):
 
     def get_builder(self):
         return sfc_models.gl_book.chapter6.REG('C', use_book_exogenous=True)
+
+    @unittest.skipIf(skip_end_to_end.upper()=='T', 'Slow test excluded')
+    def test_model(self):
+        EndToEndTester.test_model(self)
+
+class TestREG2(EndToEndTester):
+    """
+    Tests model REG2.
+
+    Big model; skipped if environment variable DontRunEndToEnd = 'T'
+    """
+    @unittest.skipIf(skip_end_to_end.upper()=='T', 'Slow test excluded')
+    def test_model(self):
+        EndToEndTester.test_model(self)
+
+
+    def get_precision(self):
+        # We have some variables with errors about 0.5; bad initial conditions?
+        return 0
+
+    def get_builder(self):
+        return sfc_models.gl_book.chapter6.REG2('C', use_book_exogenous=True)

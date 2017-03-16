@@ -290,7 +290,9 @@ class TestMarket(TestCase):
         hh.AddVariable('SUP_LAB', 'desc 2', '')
         hh2.AddVariable('SUP_LAB', 'desc 2', '')
         mod._GenerateFullSectorCodes()
-        mar.SupplyAllocation = [[(hh, 'SUP_LAB/2')], hh2]
+        mar.AddSupplier(hh2)
+        mar.AddSupplier(hh, 'SUP_LAB/2')
+        # mar.SupplyAllocation = [[(hh, 'SUP_LAB/2')], hh2]
         mar._GenerateEquations()
         self.assertEqual('SUP_LAB/2', mar.EquationBlock['SUP_HH'].RHS())
         self.assertEqual('SUP_LAB-SUP_HH', kill_spaces(mar.EquationBlock['SUP_HH2'].RHS()))
@@ -310,7 +312,9 @@ class TestMarket(TestCase):
         hh.AddVariable('SUP_LAB', 'desc 2', '')
         hh2.AddVariable('SUP_CA_LAB', 'desc 2', '')
         mod._GenerateFullSectorCodes()
-        mar.SupplyAllocation = [[(hh, 'SUP_LAB/2')], hh2]
+        mar.AddSupplier(hh, 'SUP_LAB/2')
+        mar.AddSupplier(hh2)
+        # mar.SupplyAllocation = [[(hh, 'SUP_LAB/2')], hh2]
         mar._GenerateEquations()
         self.assertEqual('SUP_LAB/2', mar.EquationBlock['SUP_CA_HH'].RHS())
         self.assertEqual('SUP_LAB-SUP_CA_HH', kill_spaces(mar.EquationBlock['SUP_US_HH2'].RHS()))
@@ -331,7 +335,9 @@ class TestMarket(TestCase):
         hh.AddVariable('SUP_LAB', 'desc 2', '')
         hh2.AddVariable('SUP_LAB', 'desc 2', '')
         mod._GenerateFullSectorCodes()
-        mar.SupplyAllocation = [[(hh, 'SUP_LAB/2')], hh2]
+        mar.AddSupplier(hh2)
+        mar.AddSupplier(hh, 'SUP_LAB/2')
+        #nmar.SupplyAllocation = [[(hh, 'SUP_LAB/2')], hh2]
         mar._GenerateEquations()
         self.assertEqual('SUP_LAB/2', mar.EquationBlock['SUP_CA_HH'].RHS())
         self.assertEqual('SUP_LAB-SUP_CA_HH', mar.EquationBlock['SUP_CA_HH2'].RHS())
@@ -355,7 +361,10 @@ class TestMarket(TestCase):
         hh2.AddVariable('SUP_CA_LAB', 'desc 2', '')
         hh3.AddVariable('SUP_CA_LAB', 'desc 2', '')
         mod._GenerateFullSectorCodes()
-        mar.SupplyAllocation = [[(hh, 'SUP_LAB/2'), (hh3, '0.')], hh2]
+        #mar.SupplyAllocation = [[(hh, 'SUP_LAB/2'), (hh3, '0.')], hh2]
+        mar.AddSupplier(hh2)
+        mar.AddSupplier(hh, 'SUP_LAB/2')
+        mar.AddSupplier(hh3, '0.')
         mar._GenerateEquations()
         self.assertEqual('SUP_LAB/2', mar.EquationBlock['SUP_CA_HH'].RHS())
         self.assertEqual('SUP_LAB-SUP_CA_HH-SUP_US_HH3', kill_spaces(mar.EquationBlock['SUP_US_HH2'].RHS()))
@@ -374,7 +383,7 @@ class TestMarket(TestCase):
         mod._GenerateFullSectorCodes()
         mar._GenerateTermsLowLevel('DEM', 'Demand')
         self.assertIn('-DEM_LAB', bus.EquationBlock['F'].RHS())
-        self.assertTrue('error' in bus.EquationBlock['DEM_LAB'].RHS().lower())
+        self.assertEqual('0.0', bus.EquationBlock['DEM_LAB'].RHS())
 
     def test_GenerateTermsLowLevel_3(self):
         mod = Model()

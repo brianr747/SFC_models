@@ -368,6 +368,14 @@ class EquationBlock(object):
         """
         return self.Equations[key]
 
+    def __contains__(self, key):
+        """
+        Is a variable in the EquationBlock
+        :param key: str
+        :return: bool
+        """
+        return key in self.Equations
+
     def ReplaceTokensFromLookup(self, lookup):
         for eq in self.Equations.values():
             eq.ReplaceTokensFromLookup(lookup)

@@ -293,6 +293,30 @@ class TestCountry(TestCase):
         with self.assertRaises(KeyError):
             can.LookupSector('Smurf')
 
+    def test_getitem(self):
+        # Hits both Model and Country GetItem
+        mod = Model()
+        can = Country(mod, 'Can', 'CA')
+        gov = DoNothingGovernment(can, 'Gov', 'GOV')
+        us = Country(mod, 'US', 'US')
+        with self.assertRaises(KeyError):
+            mod['x']
+        with self.assertRaises(KeyError):
+            can['x']
+        self.assertEqual(gov, mod['CA']['GOV'])
+
+    def test_AddCountryFail(self):
+        mod = Model()
+        c1 = Country(mod, 'c', 'c')
+        with self.assertRaises(LogicError):
+            Country(mod, 'c', 'c')
+
+    def test_AddSectorFail(self):
+        mod = Model()
+        c = Country(mod, 'C', 'C')
+        Sector(c, 's', code='S')
+        with self.assertRaises(LogicError):
+            Sector(c, 'try 2', code='S')
 
 class TestRegisterCashFlows(TestCase):
     def get_objects(self):
