@@ -340,9 +340,9 @@ class Model(Entity):
             cutoff = self.TimeSeriesCutoff
         try:
             series_holder = self.EquationSolver.TimeSeries
-            if group_of_series == 'step':
+            if group_of_series == 'step': # pragma: no cover [The GUI tells us quickly if this breaks]
                 series_holder = self.EquationSolver.TimeSeriesStepTrace
-            elif group_of_series == 'initial':
+            elif group_of_series == 'initial': # pragma: no cover
                 series_holder = self.EquationSolver.TimeSeriesInitialSteadyState
             if cutoff is None:
                 val = series_holder[series]

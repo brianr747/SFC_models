@@ -220,7 +220,7 @@ class Sector(Entity):
         else:
             self.AddVariable(term, desc, eqn)
 
-    def _GenerateEquationsFrontEnd(self):
+    def _GenerateEquationsFrontEnd(self): # pragma: no cover
         Logger('Running _GenerateEquations on {0} [{1}]', priority=3,
                data_to_format=(self.Code, self.ID))
         self._GenerateEquations()
@@ -307,11 +307,8 @@ class Market(Sector):
 
     def __init__(self, country, long_name, code):
         Sector.__init__(self, country, long_name, code, has_F=False)
-        self.NumSupply = 0
         self.AddVariable('SUP_' + code, 'Supply for market ' + code, '')
         self.AddVariable('DEM_' + code, 'Demand for market ' + code, '')
-        # Deprecated
-        self.SupplyAllocation = []
         self.ResidualSupply = None
         self.OtherSuppliers = []
 
@@ -348,9 +345,6 @@ class Market(Sector):
         """
         if self.ResidualSupply is None:
             supplier = self._SearchSupplier()
-            # self.SupplyAllocation = [[], supplier]
-        if len(self.SupplyAllocation) > 0:
-            self.NumSupply = len(self.SupplyAllocation) + 1
         self._GenerateTermsLowLevel('DEM', 'Demand')
         self._GenerateMultiSupply()
 
@@ -391,7 +385,6 @@ class Market(Sector):
                 # Since we assume that there is a single supplier, we can set the supply equation to
                 # point to the equation in the market.
                 s.AddCashFlow(var_name, self.GetVariableName(var_name), long_desc)
-                self.NumSupply += 1
             else:
                 # Must fill in demand equation in sectors.
                 s.AddCashFlow('-' + var_name, '', long_desc)
@@ -409,27 +402,6 @@ class Market(Sector):
             self.ResidualSupply = supplier
             return
         self.OtherSuppliers.append((supplier, supply_eqn))
-
-    def FixSingleSupply(self): # pragma: no cover
-        """
-        Deprecated function.
-
-        TODO: Eliminate this function.
-        :return:
-        """
-        if self.NumSupply != 1:
-            raise LogicError('Can only call this function with a single supply source!')
-        country = self.Parent
-        sup_name = 'SUP_' + self.Code
-        dem_name = 'DEM_' + self.Code
-        # Set aggregate supply equal to demand
-        self.SetEquationRightHandSide(sup_name, rhs=dem_name)
-        for s in self.Parent.GetSectors():
-            if s.ID == self.ID:
-                continue
-            if sup_name in s.Equations:
-                s.SetEquationRightHandSide(sup_name, self.EquationBlock[dem_name].RHS())
-                return
 
     def _GenerateMultiSupply(self):
         """

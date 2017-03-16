@@ -30,7 +30,7 @@ from io import BytesIO
 import copy
 if is_python_3:
     from tokenize import untokenize, NAME, ENDMARKER, ENCODING, OP
-else:
+else: # pragma: no cover
     from tokenize import untokenize, NAME, ENDMARKER, OP
 
 
@@ -274,7 +274,7 @@ class Term(object):
                     raise NotImplementedError('Non-simple parsing not done')
                     # self.IsSimple = False
             self.Term = term_s
-        else: # Python 2.7
+        else: # Python 2.7 # pragma: no cover
             # Missing the first term - augh
             if not g[-1][0] == ENDMARKER:  # pragma: no cover
                 raise LogicError('Internal error: tokenize behaviour changed')

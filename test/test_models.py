@@ -275,6 +275,11 @@ class TestModel(TestCase):
         mod.TimeSeriesSupressTimeZero = True
         self.assertEqual([1, 2], mod.GetTimeSeries('t'))
 
+    def test_GetItem(self):
+        mod = Model()
+        ca = Country(mod, 'CA', 'CA')
+        self.assertIn(ca, mod)
+
 
 class TestCountry(TestCase):
     def test_AddSector(self):
@@ -304,6 +309,12 @@ class TestCountry(TestCase):
         with self.assertRaises(KeyError):
             can['x']
         self.assertEqual(gov, mod['CA']['GOV'])
+
+    def test_contains(self):
+        mod = Model()
+        can = Country(mod, 'Can', 'CA')
+        gov = DoNothingGovernment(can, 'Gov', 'GOV')
+        self.assertIn(gov, can)
 
     def test_AddCountryFail(self):
         mod = Model()
@@ -375,5 +386,23 @@ class TestCurrencyZone(TestCase):
         for x in us_h.CurrencyZone.GetSectors():
             print(x.ID)
         self.assertEqual([us_h, china_h], us_h.CurrencyZone.GetSectors())
+
+    def test_lookup_sector(self):
+        mod = Model()
+        ca = Country(mod, 'Name', 'CA', currency='CAD')
+        ca_h = Sector(ca, 'Sec', 'HH')
+        us = Country(mod, 'Name', 'US', currency='CAD')
+        us_h = Sector(us, 'name', 'HH')
+        us_gov = Sector(us, 'name', "GOV")
+        czone = ca_h.CurrencyZone
+        self.assertEqual(us_gov, czone.LookupSector('GOV'))
+        # No hits
+        with self.assertRaises(LogicError):
+            czone.LookupSector('JJ')
+        # Multiple hits
+        with self.assertRaises(LogicError):
+            czone.LookupSector('HH')
+
+
 
 

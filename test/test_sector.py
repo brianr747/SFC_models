@@ -299,6 +299,27 @@ class TestMarket(TestCase):
         self.assertEqual('LAB__SUP_HH', hh.EquationBlock['SUP_LAB'].RHS())
         self.assertEqual('LAB__SUP_HH2', hh2.EquationBlock['SUP_LAB'].RHS())
 
+    def test_GenerateEquations_insert_supply(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'Eh')
+        mar = Market(can, 'Market', 'LAB')
+        bus = Sector(can, 'Business', 'BUS')
+        hh = Sector(can, 'Household', 'HH')
+        hh2 = Sector(can, 'Household', 'HH2')
+        bus.AddVariable('DEM_LAB', 'desc', 'x')
+        hh.AddVariable('SUP_LAB_WRONG_CODE', 'desc 2', '')
+        hh2.AddVariable('SUP_LAB_WRONG_CODE', 'desc 2', '')
+        mod._GenerateFullSectorCodes()
+        mar.AddSupplier(hh2)
+        mar.AddSupplier(hh, 'SUP_LAB/2')
+        # mar.SupplyAllocation = [[(hh, 'SUP_LAB/2')], hh2]
+        mar._GenerateEquations()
+        self.assertEqual('SUP_LAB/2', mar.EquationBlock['SUP_HH'].RHS())
+        self.assertEqual('SUP_LAB-SUP_HH', kill_spaces(mar.EquationBlock['SUP_HH2'].RHS()))
+        self.assertEqual('LAB__SUP_HH', hh.EquationBlock['SUP_LAB'].RHS())
+        self.assertEqual('LAB__SUP_HH2', hh2.EquationBlock['SUP_LAB'].RHS())
+
+
     def test_GenerateEquations_2_supply_multicountry(self):
         mod = Model()
         can = Country(mod, 'Canada, Eh?', 'CA')
@@ -391,10 +412,3 @@ class TestMarket(TestCase):
         mar = Market(can, 'Market', 'LAB')
         with self.assertRaises(LogicError):
             mar._GenerateTermsLowLevel('Blam!', 'desc')
-
-    def test_FixSingleSupply(self):
-        mod = Model()
-        can = Country(mod, 'Canada', 'Eh')
-        mar = Market(can, 'Market', 'LAB')
-        with self.assertRaises(LogicError):
-            mar.FixSingleSupply()

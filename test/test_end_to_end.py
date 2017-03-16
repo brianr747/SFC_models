@@ -71,7 +71,6 @@ class EndToEndTester(TestCase):
 
 
 
-
 class TestSIMEX1(EndToEndTester):
     """
     Tests model SIMEX1.
@@ -102,7 +101,7 @@ class TestREG(EndToEndTester):
     def get_builder(self):
         return sfc_models.gl_book.chapter6.REG('C', use_book_exogenous=True)
 
-    @unittest.skipIf(skip_end_to_end.upper()=='T', 'Slow test excluded')
+    @unittest.skipIf(skip_end_to_end=='T', 'Slow test excluded')
     def test_model(self):
         EndToEndTester.test_model(self)
 
@@ -112,7 +111,7 @@ class TestREG2(EndToEndTester):
 
     Big model; skipped if environment variable DontRunEndToEnd = 'T'
     """
-    @unittest.skipIf(skip_end_to_end.upper()=='T', 'Slow test excluded')
+    @unittest.skipIf(skip_end_to_end=='T', 'Slow test excluded')
     def test_model(self):
         EndToEndTester.test_model(self)
 
