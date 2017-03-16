@@ -1,3 +1,4 @@
+# coding=utf-8
 """
 models.py
 ==========
@@ -24,9 +25,9 @@ from __future__ import print_function
 import traceback
 
 import sfc_models.equation_solver
+from sfc_models.equation import EquationBlock, Equation
 from sfc_models.equation_parser import EquationParser
 from sfc_models.utils import Logger, LogicError
-from sfc_models.equation import EquationBlock, Equation
 
 
 class Entity(object):
@@ -100,6 +101,7 @@ class Model(Entity):
         self.State = 'Construction'
         self.DefaultCurrency = 'LOCAL'
         self.RunSteps = None
+        self.ExternalSector = None
         self.FinalEquationBlock = EquationBlock()
 
     def main(self, base_file_name=None):  # pragma: no cover
@@ -332,6 +334,7 @@ class Model(Entity):
         If self.TimeSeriesSupressZero is True, the first point is removed (the initial
         conditions period).
 
+        :param group_of_series:
         :param series: str
         :param cutoff: int
         :return: list
@@ -483,6 +486,8 @@ class Model(Entity):
         TODO: Add variable indicating whether the flow affects incomes for the source and
         destination.
 
+        :param is_income_dest:
+        :param is_income_source:
         :param source_sector: Sector
         :param target_sector: Sector
         :param amount_variable: str
@@ -778,6 +783,11 @@ class CurrencyZone(Entity):
         self.Currency = currency
         self.LongName = 'Currency Zone For ' + currency
         self.CountryList = []
+        # If we are created after the ExternalSector, need to register
+        # self. If we are created before, the ExternalSector registers us
+        # in its constructor.
+        if model.ExternalSector is not None:
+            model.ExternalSector.RegisterCurrency(currency)
 
     def GetSectors(self):
         """
@@ -802,5 +812,8 @@ class CurrencyZone(Entity):
             raise LogicError('Sector {0} does not exist in CurrencyZone {1}'.format(
                 short_code, self.Code))
         return out
+
+
+
 
 

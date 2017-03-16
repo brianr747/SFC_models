@@ -44,3 +44,4 @@ from sfc_models.sector_definitions import Household, HouseholdWithExpectations, 
 from sfc_models.sector_definitions import Treasury, CentralBank, TaxFlow
 from sfc_models.sector_definitions import FixedMarginBusiness, FixedMarginBusinessMultiOutput
 from sfc_models.sector_definitions import MoneyMarket, DepositMarket
+from sfc_models.external import ExchangeRates, ForexTransations, ExternalSector

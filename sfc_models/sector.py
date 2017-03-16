@@ -464,3 +464,5 @@ class FinancialAssetMarket(Market):
         Market.__init__(self, country, long_name, code)
         self.IssuerShortCode = issuer_short_code
         self.SearchListSource = self.CurrencyZone
+
+

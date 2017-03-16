@@ -264,7 +264,7 @@ class Term(object):
                 if len(g) == 5:
                     # Allow variable*variable as a "simple" Variable.
                     if g[1][0] == NAME and g[3][0] == NAME and g[2][0] == OP:
-                        if g[2][1] == '*':
+                        if g[2][1] in ('*', '/'):
                             self.Term = term_s
                             return
                 raise NotImplementedError('Non-simple parsing not done')
@@ -282,7 +282,7 @@ class Term(object):
                 if len(g) == 4:
                     # Allow variable*variable as a "simple" Variable.
                     if g[0][0] == NAME and g[2][0] == NAME and g[1][0] == OP:
-                        if g[1][1] == '*':
+                        if g[1][1] in ('*', '/'):
                             self.Term = term_s
                             return
                 raise NotImplementedError('Non-simple parsing not done')
@@ -320,8 +320,9 @@ class Term(object):
             self.Term = replace_token_from_lookup(self.Term, lookup)
             return
         if self.IsSimple:
-            if self.Term in lookup:
-                self.Term = lookup[self.Term]
+            self.Term = replace_token_from_lookup(self.Term, lookup)
+            #if self.Term in lookup:
+            #    self.Term = lookup[self.Term]
             return
         raise NotImplementedError('Need to handle non-simple terms somehow...') # pragma: no cover
 

@@ -52,6 +52,7 @@ class EquationSolver(object):
         self.TimeSeriesInitialSteadyState = TimeSeriesHolder('k')
         self.TimeSeriesStepTrace = TimeSeriesHolder('iteration')
         self.MaxIterations = 400
+        self.MaxTime = None
         self.Functions = {}
         self.ParameterSolveInitialSteadyState = False
         self.ParameterInitialSteadyStateMaxTime = 200
@@ -76,6 +77,8 @@ class EquationSolver(object):
         if self.RunEquationReduction:
             parser.EquationReduction()
         self.Parser = parser
+        if self.MaxTime is not None:
+            self.Parser.MaxTime = self.MaxTime
         if len(msg) > 0:
             warnings.warn('Could not parse some sections of input. Examine ParseString() output to view issues.',
                           SyntaxWarning)
