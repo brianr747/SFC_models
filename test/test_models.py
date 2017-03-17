@@ -280,6 +280,18 @@ class TestModel(TestCase):
         ca = Country(mod, 'CA', 'CA')
         self.assertIn(ca, mod)
 
+    def test_CashFlowCrossCurrencyFail(self):
+        mod = Model()
+        ca = Country(mod, 'Canada', 'CA')
+        us = Country(mod, 'U.S.', 'US')
+        sec_ca = Sector(ca, 'household', 'HH')
+        sec_ca.AddVariable('GIFT', 'Gifts', '5.')
+        sec_us = Sector(us, 'hh', 'HH')
+        # We can register this; we might add an ExternalSector later.
+        mod.RegisterCashFlow(sec_ca, sec_us, 'GIFT')
+        with self.assertRaises(LogicError):
+            mod._GenerateRegisteredCashFlows()
+
 
 class TestCountry(TestCase):
     def test_AddSector(self):

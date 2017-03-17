@@ -220,6 +220,9 @@ class Sector(Entity):
         else:
             self.AddVariable(term, desc, eqn)
 
+    def AddInitialCondition(self, variable_name, value):
+        self.GetModel().AddInitialCondition(self.ID, variable_name, value)
+
     def _GenerateEquationsFrontEnd(self): # pragma: no cover
         Logger('Running _GenerateEquations on {0} [{1}]', priority=3,
                data_to_format=(self.Code, self.ID))

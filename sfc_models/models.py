@@ -251,7 +251,8 @@ class Model(Entity):
 
     def AddInitialCondition(self, sector_fullcode, varname, value):
         """
-        Set the initial condition for a variable. Need to use the full code of the sector.
+        Set the initial condition for a variable. Need to use the full code of the sector -
+        or its ID (int).
 
         :param sector_fullcode: str
         :param varname: str
@@ -483,8 +484,10 @@ class Model(Entity):
 
         The amount_variable is the name of the local variable within the source sector.
 
-        TODO: Add variable indicating whether the flow affects incomes for the source and
-        destination.
+        Only allowed across currency zones if an ExternalSector object has been defined;
+        otherwise throws a LogicError.
+
+        The currency value of the amount_variable is assumed to be in the source currency.
 
         :param is_income_dest:
         :param is_income_source:
@@ -510,12 +513,24 @@ class Model(Entity):
         Logger('Model._GenerateRegisteredCashFlows()')
         Logger('Adding {0} cash flows to sectors', priority=3,
                data_to_format=(len(self.RegisteredCashFlows),))
-        for source_sector, target_sector, amount_variable, \
-            is_income_source, is_income_dest in self.RegisteredCashFlows:
+        for source_sector, target_sector, amount_variable, is_income_source, is_income_dest in self.RegisteredCashFlows:
+            is_cross_currency = source_sector.CurrencyZone != target_sector.CurrencyZone
+            if is_cross_currency:
+                if self.ExternalSector is None:
+                    msg = """Only can have cross-currency flows if an ExternalSector object is created\nSource={0} Destination={1}""".format(
+                        source_sector.FullCode, target_sector.FullCode)
+                    raise LogicError(msg)
             full_variable_name = source_sector.GetVariableName(amount_variable)
             source_sector.AddCashFlow('-' + full_variable_name, eqn=None,
                                       is_income=is_income_source)
-            target_sector.AddCashFlow('+' + full_variable_name, eqn=None,
+            if is_cross_currency:
+                fx = self.ExternalSector['FX']
+                fx._SendMoney(source_sector, full_variable_name)
+                term = fx._ReceiveMoney(target_sector=target_sector, source_sector=source_sector,
+                                        variable_name=full_variable_name)
+            else:
+                term = '+' + full_variable_name
+            target_sector.AddCashFlow(term, eqn=None,
                                       is_income=is_income_dest)
 
     def LookupSector(self, fullcode):
@@ -712,12 +727,16 @@ class Country(Entity):
 
     def LookupSector(self, code, is_full_code=False):
         """
-        Get the sector object via code or fullcode
+        Get the sector object via code or fullcode or ID (if you pass an int).
         :param code: str
         :param is_full_code: bool
         :return: Sector
         """
-        if is_full_code:
+        if type(code) is int:
+            for s in self.SectorList:
+                if code == s.ID:
+                    return s
+        elif is_full_code:
             for s in self.SectorList:
                 if s.FullCode == code:
                     return s
@@ -725,7 +744,7 @@ class Country(Entity):
             for s in self.SectorList:
                 if s.Code == code:
                     return s
-        raise KeyError('Sector does not exist - ' + code)
+        raise KeyError('Sector does not exist - ' + str(code))
 
     def GetSectors(self):
         """

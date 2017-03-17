@@ -5,7 +5,7 @@ Introduction
 ------------
 
 This document outlines what is expected to be implemented for Version 1.0 of
-*sfc_models*. This version is what will be described in the (first edition) of
+*sfc_models*. This version is what will be described in the to-be-published
 *Introduction to SFC Models Using Python* (by Brian Romanchuk). It seems likely
 that the *sfc_models* will evolve considerably as it used by others, but this
 Version 1.0 will act as a base implementation that matches the book documentation.
@@ -29,8 +29,8 @@ The following models from *Monetary Economics* (Godley and Lavoie) are hoped to
 be implemented.
 
 - *Model REG* from Chapter 6. **[DONE]**
-- *Model REG2* = *Model REG* with sectors in two Country objects.
-- *Model OPEN* from Chapter 6.
+- *Model REG2* = *Model REG* with sectors in two Country objects. **[DONE]**
+- *Model OPEN* from Chapter 6. *[Started]*
 - *Model DIS* from Chapter 9.
 - Possibly: *Model DISINF* from Chapter 9.
 - Possibly: *Model INSOUT* from Chapter 10.
@@ -45,6 +45,7 @@ Code Cleanup
 
 The following are the areas of code that will be examined.
 
+- Sanity checks of model output. (Do balance sheets balance?)
 - Logging will be back-filled throughout the code base. The user should be able
   to see what is happening by looking at the log. **[Started.]**
 - An Equation class may be added. Previously, equations were just lists of

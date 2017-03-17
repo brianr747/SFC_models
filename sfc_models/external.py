@@ -1,5 +1,6 @@
 from sfc_models.models import Country
 from sfc_models.sector import Sector
+import sfc_models.utils as utils
 
 
 class ExternalSector(Country):
@@ -33,6 +34,7 @@ class ExternalSector(Country):
         model.ExternalSector = self
         ExchangeRates(self)
         ForexTransations(self)
+        InternationalGold(self)
         for czone in model.CurrencyZoneList:
             self.RegisterCurrency(czone.Currency)
 
@@ -41,7 +43,12 @@ class ExternalSector(Country):
         # By default, fixed at 1.
         self['XR'].AddVariable(currency, desc, '1.0')
         desc = 'Net transactions in currency {0}'.format(currency)
-        self['FX'].AddVariable('NET_' + currency, desc, '')
+        fx = self['FX']
+        fx.AddVariable('NET_' + currency, desc, '')
+        fx.AddVariable('F_' + currency, 'Net Financial assets in ' + currency,
+                       'LAG_F_xx + NET_xx'.replace('xx', currency))
+        fx.AddVariable('LAG_F_' + currency, 'Previous period financial assets',
+                       'F_{0}(k-1)'.format(currency))
 
     def GetCrossRate(self, local, foreign):
         """
@@ -122,9 +129,14 @@ class ForexTransations(Sector):
         Sector.__init__(self, country=external_sector,
                         long_name='Foreign Exchange Transactions', code=code, has_F=False)
 
-    def _SendMoney(self, source_sector, variable_name, is_income):
+    def _SendMoney(self, source_sector, variable_name):
         """
         Half of an international transaction.
+
+        This is used internally by the framework; users should normally call
+        Model.RegisterCashFlow() or let the Market object handle international
+        cash flows. This will only need to be called if extended or modifying the
+        framework.
 
         The convention is that the amount is always based on the local currency
         of the sending Country.
@@ -134,19 +146,127 @@ class ForexTransations(Sector):
         This should not be called directly by users; however, we need to be able to
         handle interactions with Market objects.
 
+        Does not call AddCashFlow() on the sending Sector. The cash flow implications
+        have to be handled elsewhere. The reason being is that Market objects are
+        the major SendCash() user, and they do not have cash flows themselves. The demand
+        sectors are the source of the cash that is being sent overseas, so the
+        domestic cash flows will balance.
+
         :param source_sector: Sector
         :param variable_name: str
-        :param is_income: bool
         :return:
         """
-        if '__' not in variable_name:
+        if utils.is_local_variable(variable_name):
             variable_name = source_sector.GetVariableName(variable_name)
-        term = '-' + variable_name
-        source_sector.AddCashFlow('-' + variable_name, is_income=is_income)
         currency = source_sector.CurrencyZone.Currency
         currency_variable_name = self.Parent['XR'].GetVariableName(currency)
-        self.EquationBlock['NET_' + currency].AddTerm(term)
-        self.EquationBlock['NET_NUMERAIRE'].AddTerm(term + '/' + currency_variable_name)
+        self.EquationBlock['NET_' + currency].AddTerm('+' + variable_name)
+        self.EquationBlock['NET_NUMERAIRE'].AddTerm(
+            '-' + variable_name + '/' + currency_variable_name)
+
+    def _ReceiveMoney(self, target_sector, source_sector, variable_name):
+        """
+               Half of an international transaction.
+
+        This is used internally by the framework; users should normally call
+        Model.RegisterCashFlow() or let the Market object handle international
+        cash flows. This will only need to be called if extended or modifying the
+        framework.
+
+        The convention is that the amount is always based on the local currency
+        of the sending Country.
+
+        It is assumed that variable_name exists.
+
+        This should not be called directly by users; however, we need to be able to
+        handle interactions with Market objects.
+
+        Does not call AddCashFlow() on the receiving Sector. The cash flow implications
+        have to be handled elsewhere. Although this would likely be safe, the code is
+        symmetric with respect to _SendMoney
+
+        Returns the full cash flow term for the target sector (in target currency).
+
+        :param target_sector: Sector
+        :param source_sector: Sector
+        :param variable_name: str
+        :return: str
+        """
+        if utils.is_local_variable(variable_name):
+            variable_name = source_sector.GetVariableName(variable_name)
+        source_currency = source_sector.CurrencyZone.Currency
+        target_currency = target_sector.CurrencyZone.Currency
+        cross_rate = self.Parent.GetCrossRate(source_currency, target_currency)
+        source_sector_term = '-{0}*{1}'.format(variable_name, cross_rate)
+        self.EquationBlock['NET_' + target_currency].AddTerm(source_sector_term)
+        # The target currency cancels out...
+        term = '+{0}/{1}'.format(variable_name,
+                                 self.Parent['XR'].GetVariableName(source_currency))
+        self.EquationBlock['NET_NUMERAIRE'].AddTerm(term)
+        return source_sector_term
+
+
+class InternationalGold(Sector):
+    def __init__(self, external_sector, code='GOLD'):
+        """
+        Object to handle international Gold transactions.
+
+        It pushes variables onto transacting sectors; the only variables embedded in
+        this object is PRICE (the price of 1 oz of gold in NUMERAIRE), and NET_OZ,
+        which are the net transactions in OZ (should be zero normally).
+
+        These variables are only created if SetGoldPurchases is called; so as to not
+        clog the equation space of models that do not contain gold transactions.
+
+        If users want to use this object without calling SetGoldSales, they can call
+        SetUpVariables()
+        :param external_sector:
+        :param code:
+        """
+        Sector.__init__(self, country=external_sector, long_name='International Gold Market',
+                        code=code, has_F=False)
+        self.Owner = 'Gnomes of Zurich'
+
+    def GetVariableName(self, varname):
+        if varname in ('PRICE', 'NETOZ'):
+            if varname not in self.EquationBlock.GetEquationList():
+                self.SetUpVariables()
+        return Sector.GetVariableName(self, varname)
+
+    def SetUpVariables(self):
+        if 'PRICE' not in self.EquationBlock:
+            self.AddVariable('PRICE', 'Price of 1 oz gold in NUMERAIRE', '35.')
+        if 'NETOZ' not in self.EquationBlock:
+            self.AddVariable('NETOZ', 'Net EXT transaction in gold (oz)', '')
+
+    def SetGoldSales(self, sector, flow_variable_name, initial_stock):
+        """
+        Does all the set up for Gold Sales, including setting the initial stock.
+
+        Creates the gold PRICE variable if does not already exist.
+        :param sector:
+        :param flow_variable_name:
+        :param initial_stock:
+        :return:
+        """
+        loc_currency = sector.CurrencyZone.Currency
+        desc = 'Value of Gold Holdings ({0})'.format(loc_currency)
+        var_gold_price = self.GetVariableName('PRICE')
+        var_currency = self.Parent['XR'].GetVariableName(loc_currency)
+        sector.AddVariable('GOLDPRICE', 'Gold Price in {0}'.format(loc_currency),
+                           '{0} / {1}'.format(var_gold_price, var_currency))
+        eqn = '(LAG_GOLD_OZ * GOLDPRICE) - {0}'.format(flow_variable_name)
+        sector.AddVariable('GOLD', desc, eqn)
+        sector.AddVariable('LAG_GOLD_OZ', 'Previous period''s gold holdings (oz)', 'GOLD_OZ(k-1)')
+        sector.AddVariable('GOLD_OZ', 'Number of oz Held', 'GOLD / GOLDPRICE')
+        sector.AddInitialCondition('GOLD_OZ', initial_stock)
+        self.Parent['FX']._SendMoney(sector, flow_variable_name)
+
+
+
+
+
+
 
 
 

@@ -95,6 +95,21 @@ class TimeSeriesHolder(dict):
         return out
 
 
+def is_local_variable(variable_name):
+    """
+    Is a variable name a local or fully qualified?
+
+    >>> is_local_variable('FOO')
+    True
+    >>> is_local_variable('HH__FOO')
+    False
+
+    :param variable_name: str
+    :return: bool
+    """
+    return '__' not in variable_name
+
+
 def list_tokens(s):
     """
     Return a list of all NAME tokens (which can be variables, or function names) in a string.

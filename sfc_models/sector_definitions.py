@@ -22,6 +22,7 @@ limitations under the License.
 from sfc_models.sector import Sector, Market, FinancialAssetMarket
 from sfc_models.utils import Logger
 import sfc_models.utils as utils
+from sfc_models.utils import LogicError
 
 
 class BaseHousehold(Sector):
@@ -342,3 +343,29 @@ class DepositMarket(FinancialAssetMarket):
                           'Interest received on ' + self.LongName)
             dem_terms.append(s.GetVariableName(dem_name))
         self.AddVariable(dem_name, 'Total demand for ' + self.LongName, utils.create_equation_from_terms(dem_terms))
+
+class GoldStandardCentralBank(CentralBank):
+    """
+    Central bank that undertakes Gold purchases/sales to balance the foreign exchange
+    market.
+
+    Must create an ExternalSector object in the model.
+    """
+    def __init__(self,  country, long_name, code, treasury, initial_gold_stock):
+        CentralBank.__init__(self,  country, long_name, code, treasury)
+        self.InitialGoldStock = initial_gold_stock
+
+    def _GenerateEquations(self):
+        CentralBank._GenerateEquations(self)
+        ext = self.GetModel().ExternalSector
+        if ext is None:
+            msg = 'Must Create an ExternalSector in order to use {0}'.format(type(self))
+            raise LogicError(msg)
+        sales = 'GOLDSALES'
+        currency = self.CurrencyZone.Currency
+        desc = 'Net Sales of Gold in {0}'.format(currency)
+        currency_balance = ext['FX'].GetVariableName('NET_' + currency)
+        # A somewhat recursive definition; will have ugly convergence properties.
+        self.AddVariable(sales, desc, '{0} - {1}'.format(currency_balance, sales))
+        ext['GOLD'].SetGoldSales(self, sales,
+                                     self.InitialGoldStock)

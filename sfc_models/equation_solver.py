@@ -411,7 +411,12 @@ class EquationSolver(object):
             if len(failed) == len(vars_to_compute):
                 # NOTE: We should not get here; it means that the decoration variables are
                 # created incorrectly. Leave check to break infinite loops.
-                raise ValueError('Cannot solve decoration equations! <?>')
+                out = ''
+                Logger('Failure computing decoration equations!')
+                for var, eqn in vars_to_compute:
+                    out += '{0} = {1}\n'.format(var, eqn)
+                    Logger(out)
+                raise ValueError('Cannot solve decoration equations!\n'+out)
             vars_to_compute = failed
 
     def SolveEquation(self):
