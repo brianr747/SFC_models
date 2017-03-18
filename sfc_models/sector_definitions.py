@@ -78,11 +78,17 @@ class Capitalists(BaseHousehold):
 
 
 class DoNothingGovernment(Sector):
+    """
+    Consolidated government sector. Use this if you do not want to have to deal with
+    financial asset holdings.
+    """
     def __init__(self, country, long_name, code):
         Sector.__init__(self, country, long_name, code)
         self.AddVariable('DEM_GOOD', 'Government Consumption of Goods', '0.0')
         self.AddVariable('PRIM_BAL', 'Government Primary Fiscal Balance', 'T - DEM_GOOD')
         self.AddVariable('FISC_BAL', 'Government Fiscal Balance', 'INC')
+
+        #self.AddVariable('T', 'Government Taxes', '0.')
 
 
 class Treasury(Sector):
@@ -344,6 +350,7 @@ class DepositMarket(FinancialAssetMarket):
             dem_terms.append(s.GetVariableName(dem_name))
         self.AddVariable(dem_name, 'Total demand for ' + self.LongName, utils.create_equation_from_terms(dem_terms))
 
+
 class GoldStandardCentralBank(CentralBank):
     """
     Central bank that undertakes Gold purchases/sales to balance the foreign exchange
@@ -361,11 +368,47 @@ class GoldStandardCentralBank(CentralBank):
         if ext is None:
             msg = 'Must Create an ExternalSector in order to use {0}'.format(type(self))
             raise LogicError(msg)
-        sales = 'GOLDSALES'
+        purchases = 'GOLDPURCHASES'
         currency = self.CurrencyZone.Currency
-        desc = 'Net Sales of Gold in {0}'.format(currency)
+        desc = 'Net Purchases of Gold in TK; Forces EXT_FX_NET_TK to zero'.replace('TK', currency)
         currency_balance = ext['FX'].GetVariableName('NET_' + currency)
-        # A somewhat recursive definition; will have ugly convergence properties.
-        self.AddVariable(sales, desc, '{0} - {1}'.format(currency_balance, sales))
-        ext['GOLD'].SetGoldSales(self, sales,
+        # A somewhat recursive definition; has ugly convergence properties.
+        # In fact, will not converge without the step adaptation used.
+        # An alternative is to create a special function that is run as a final step
+        # before solving.
+        # It would get the final net supply terms, remove itself, and use that as the
+        # supply variable.
+        self.AddVariable(purchases, desc, '{0} - {1}'.format(purchases, currency_balance))
+        ext['GOLD'].SetGoldPurchases(self, purchases,
+                                     self.InitialGoldStock)
+
+
+class GoldStandardGovernment(DoNothingGovernment):
+    """
+    Central bank that undertakes Gold purchases/sales to balance the foreign exchange
+    market.
+
+    Must create an ExternalSector object in the model.
+    """
+    def __init__(self,  country, long_name, code, initial_gold_stock):
+        DoNothingGovernment.__init__(self,  country, long_name, code)
+        self.InitialGoldStock = initial_gold_stock
+
+    def _GenerateEquations(self):
+        DoNothingGovernment._GenerateEquations(self)
+        ext = self.GetModel().ExternalSector
+        if ext is None:
+            msg = 'Must Create an ExternalSector in order to use {0}'.format(type(self))
+            raise LogicError(msg)
+        purchases = 'GOLDPURCHASES'
+        currency = self.CurrencyZone.Currency
+        desc = 'Net Purchases of Gold in TK; Forces EXT_FX_NET_TK to zero'.replace('TK', currency)
+        currency_balance = ext['FX'].GetVariableName('NET_' + currency)
+        # A somewhat recursive definition; has ugly convergence properties.
+        # In fact, will not converge without the step adaptation used.
+        # An alternative is to create a special function that is run as a final step
+        # before solving.
+        # It would get the final net supply, remove itself, and use that to set supply.
+        self.AddVariable(purchases, desc, '{0} - {1}'.format(purchases, currency_balance))
+        ext['GOLD'].SetGoldPurchases(self, purchases,
                                      self.InitialGoldStock)

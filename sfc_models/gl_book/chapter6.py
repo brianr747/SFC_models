@@ -27,8 +27,7 @@ limitations under the License.
 """
 
 from sfc_models.gl_book import GL_book_model
-from sfc_models.models import *
-from sfc_models.sector_definitions import *
+from sfc_models.objects import *
 
 
 class REG(GL_book_model):
@@ -274,6 +273,154 @@ class REG2(GL_book_model): # pragma: no cover
             self.Model.AddInitialCondition('S_HH', 'F', 86.486)
             self.Model.AddInitialCondition('S_HH', 'DEM_DEP', 64.865)
             self.Model.AddInitialCondition('GOV_TRE', 'F', 2. * -86.486)
+            self.Model.AddGlobalEquation('t', 'decorated time axis', '1955. + k')
+        return self.Model
+
+    # noinspection PyPep8,PyPep8,PyPep8,PyPep8,PyPep8
+    def expected_output(self):
+        """
+        Expected output for the model (using default input).
+        Based on EViews output using code from Gennaro Zezza (from sfcmodels.net)
+
+        NOTE: A spreadsheet at sfcmodels.net gives different output; income is changing during the
+        same period as the rate change.
+
+        We ignore value at t=0
+        :return: list
+        """
+        out = [
+            ('t', [None, 1956., 1957., 1958., ]),
+            ('GOV_TRE__DEM_GOOD', [None, 40., 40., 40., 40.]),  # G
+            ('GOV_DEP__r', [0.025, ] * 10),
+            ('N_HH__WGT_DEP', [None, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, ]),
+            # Weight of deposits (bills)
+            ('N_HH__AfterTax',
+             '86.49\t86.49\t86.49\t86.49\t86.49\t88.27\t88.57\t88.79\t88.96\t89.09\t89.19\t89.26\t89.31\t89.35'),
+            # YD
+            # ('TRE_T', ),  # T
+            ('N_HH__DEM_GOOD',
+             'None\t86.48667\t86.48656\t86.48655\t86.48654\t87.55877\t88.02118\t88.37395\t88.64268\t88.84701\t89.00206'),
+            ('N_HH__SUP_LAB',
+             'None\t106.4866\t106.4866\t106.4866\t106.4865\t108.7204\t109.0749\t109.3441\t109.5482\t109.7027\t109.8192\t109.9068\t109.9724\t110.0213\t110.0575\t110.0841\t110.1035'),
+            ('S_HH__AfterTax',
+             '86.48666\t86.48656\t86.48655\t86.48654\t86.48654\t84.37456\t84.20819\t84.07316\t83.96609\t83.88098\t83.81313\t83.75889\t83.7154\t83.68043\t83.65222\t83.62939\t83.61085\t83.59574\t83.58338\t83.57325\t83.5649\t83.55801\t83.5523\t83.54755\t83.5436\t83.54028\t83.53751\t83.53517\t83.5332\t83.53154\t83.53013\t83.52893'),
+            ('N_HH__DEM_MON',
+             'None\t21.62\t21.62\t21.62\t21.62\t21.81\t21.95\t22.05\t22.13\t22.19\t22.23\t22.26\t22.29'),
+            # high-powered money (H)
+        ]
+        return out
+
+
+class OPENG(GL_book_model): # pragma: no cover
+    """
+    Implements Model OPENG from Chapter 6 of G&L. OPENG = "Open, with G adjustment"
+
+    Ignores any existing model that is passed in; the entire Model object is built
+    from scratch.
+    """
+
+    def build_country(self, model, paramz):
+        """
+        Builds a country object.
+        :param model: Model
+        :param paramz: dict
+        :return: None
+        """
+        country_name = paramz['Country Name']
+        country = Country(model, code=paramz['Country'], long_name=country_name)
+        self.Country = country
+        tre = Treasury(country, 'Treasury', 'TRE')
+        cb = GoldStandardCentralBank(country, 'Central Bank', 'CB', tre, 10.0)
+        mm = MoneyMarket(country, issuer_short_code='CB')
+        dep = DepositMarket(country, issuer_short_code='TRE')
+        tax = TaxFlow(country, 'TaxFlow', 'TF', .2, taxes_paid_to='TRE')
+
+        hh = Household(country, long_name='Household ' + country_name, code='HH',
+                       alpha_income=paramz['alpha_income'], alpha_fin=paramz['alpha_fin'])
+        goods = Market(country, 'Goods market ' + country_name, 'GOOD')
+        bus = FixedMarginBusinessMultiOutput(country, 'Business Sector', 'BUS', [goods,])
+        goods.AddSupplier(bus)
+        goods.AddVariable('MU', 'Propensity to import', paramz['mu'])
+        labour = Market(country, 'Labour market: ' + country_name, 'LAB')
+
+        # Create the goods demand function
+
+        # I normally would not commit a file in a half-finished state, but I want to make sure
+        # that I upload a lot of key changes to GitHub. The work in this class should have been
+        # done in a different branch; oops.
+
+        # Create the demand for deposits.  ('MON' is the residual asset.)
+        hh.AddVariable('L0', 'lambda_0: share of bills in wealth', paramz['L0'])
+        hh.AddVariable('L1', 'lambda_1: parameter related to interest rate', paramz['L1'])
+        hh.AddVariable('L2', 'lambda_2: parameter related to disposable income', paramz['L2'])
+        # Generate the equation. Need to get the name of the interest rate variable
+        r = dep.GetVariableName('r')
+        # The format() call will replace '{0}' with the contents of the 'r' variable.
+        eqn = 'L0 + L1 * {0} - L2 * (AfterTax/F)'.format(r)
+        hh.GenerateAssetWeighting([('DEP', eqn)], 'MON')
+
+    def other_country(self, country):
+        if country == 'N':
+            return 'S'
+        return 'N'
+
+    def generate_supply_allocation(self, mod, country):
+        Y = mod[country]['HH'].GetVariableName('INC')
+        other = self.other_country(country)
+        market = mod[country]['GOOD']
+        market.AddSupplier(mod[other]['BUS'], 'MU*{0}'.format(Y))
+        mod[other]['BUS'].AddMarket(market)
+
+    def build_model(self):
+        """
+
+        :return: Model
+        """
+        model = Model()
+        ExternalSector(model)
+        paramz = {
+            'Country': 'N',
+            'Country Name': 'North',
+            'alpha_income': .6,
+            'alpha_fin': .4,
+            'mu': '0.18761',
+            'L0': '0.635',
+            'L1': '5.',
+            'L2': '.01',
+        }
+        self.build_country(model, paramz)
+        paramz = {
+            'Country': 'S',
+            'Country Name': 'South',
+            'alpha_income': .7,
+            'alpha_fin': .3,
+            'mu': '0.18761',
+            'L0': '0.67',
+            'L1': '6.',
+            'L2': '.07',
+        }
+        self.build_country(model, paramz)
+        self.generate_supply_allocation(model, 'N')
+        self.generate_supply_allocation(model, 'S')
+        self.Model = model
+        if self.UseBookExogenous:
+            # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
+            model['N']['TRE'].SetExogenous('DEM_GOOD', '[20.,] * 105')
+            model['S']['TRE'].SetExogenous('DEM_GOOD', '[20.,] * 105')
+            model['N']['DEP'].SetExogenous('r', '[.025,]*105')
+            model['S']['DEP'].SetExogenous('r', '[.025,]*105')
+            model['S']['GOOD'].SetExogenous('MU', [0.18781] * 5 + [0.20781] * 105)
+            # NOTE:
+            # Initial conditions are only partial; there may be issues with some
+            # variables.
+            self.Model.AddInitialCondition('N_HH', 'AfterTax', 86.486)
+            self.Model.AddInitialCondition('S_HH', 'AfterTax', 86.486)
+            self.Model.AddInitialCondition('N_HH', 'F', 86.486)
+            self.Model.AddInitialCondition('N_HH', 'DEM_DEP', 64.865)
+            self.Model.AddInitialCondition('S_HH', 'F', 86.486)
+            self.Model.AddInitialCondition('S_HH', 'DEM_DEP', 64.865)
+            self.Model.AddInitialCondition('N_TRE', 'F', -86.486)
+            self.Model.AddInitialCondition('S_TRE', 'F', -86.486)
             self.Model.AddGlobalEquation('t', 'decorated time axis', '1955. + k')
         return self.Model
 

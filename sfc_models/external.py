@@ -65,6 +65,25 @@ class ExternalSector(Country):
         """
         return self['XR'].GetCrossRate(local, foreign)
 
+    def _ReceiveMoney(self, target_sector, source_sector, variable_name):
+        """
+        Convenience function; calls ForexTransactions._ReceiveMoney
+        :param target_sector: Sector
+        :param source_sector: Sector
+        :param variable_name: str
+        :return: str
+        """
+        return self['FX']._ReceiveMoney(target_sector, source_sector, variable_name)
+
+    def _SendMoney(self, source_sector, variable_name):
+        """
+        Convenience function, calls ForexTransactions._SendMoney
+        :param source_sector: Sector
+        :param variable_name: str
+        :return:
+        """
+        self['FX']._SendMoney(source_sector, variable_name)
+
 class ExchangeRates(Sector):
     """
     Object that handles all exchange rate information. Automatically created by
@@ -197,13 +216,13 @@ class ForexTransations(Sector):
         source_currency = source_sector.CurrencyZone.Currency
         target_currency = target_sector.CurrencyZone.Currency
         cross_rate = self.Parent.GetCrossRate(source_currency, target_currency)
-        source_sector_term = '-{0}*{1}'.format(variable_name, cross_rate)
-        self.EquationBlock['NET_' + target_currency].AddTerm(source_sector_term)
+        target_sector_term = '{0}*{1}'.format(variable_name, cross_rate)
+        self.EquationBlock['NET_' + target_currency].AddTerm('-' + target_sector_term)
         # The target currency cancels out...
-        term = '+{0}/{1}'.format(variable_name,
+        term = '+{0}*{1}'.format(variable_name,
                                  self.Parent['XR'].GetVariableName(source_currency))
         self.EquationBlock['NET_NUMERAIRE'].AddTerm(term)
-        return source_sector_term
+        return target_sector_term
 
 
 class InternationalGold(Sector):
@@ -235,18 +254,18 @@ class InternationalGold(Sector):
 
     def SetUpVariables(self):
         if 'PRICE' not in self.EquationBlock:
-            self.AddVariable('PRICE', 'Price of 1 oz gold in NUMERAIRE', '35.')
+            self.AddVariable('PRICE', 'Price of 1 oz gold in NUMERAIRE', '1.0')
         if 'NETOZ' not in self.EquationBlock:
             self.AddVariable('NETOZ', 'Net EXT transaction in gold (oz)', '')
 
-    def SetGoldSales(self, sector, flow_variable_name, initial_stock):
+    def SetGoldPurchases(self, sector, flow_variable_name, initial_stock):
         """
-        Does all the set up for Gold Sales, including setting the initial stock.
+        Does all the set up for Gold purchases, including setting the initial stock.
 
         Creates the gold PRICE variable if does not already exist.
-        :param sector:
-        :param flow_variable_name:
-        :param initial_stock:
+        :param sector: Sector
+        :param flow_variable_name: str
+        :param initial_stock: float
         :return:
         """
         loc_currency = sector.CurrencyZone.Currency
@@ -255,12 +274,15 @@ class InternationalGold(Sector):
         var_currency = self.Parent['XR'].GetVariableName(loc_currency)
         sector.AddVariable('GOLDPRICE', 'Gold Price in {0}'.format(loc_currency),
                            '{0} / {1}'.format(var_gold_price, var_currency))
-        eqn = '(LAG_GOLD_OZ * GOLDPRICE) - {0}'.format(flow_variable_name)
+        eqn = '(LAG_GOLD_OZ * GOLDPRICE) + {0}'.format(flow_variable_name)
         sector.AddVariable('GOLD', desc, eqn)
         sector.AddVariable('LAG_GOLD_OZ', 'Previous period''s gold holdings (oz)', 'GOLD_OZ(k-1)')
         sector.AddVariable('GOLD_OZ', 'Number of oz Held', 'GOLD / GOLDPRICE')
         sector.AddInitialCondition('GOLD_OZ', initial_stock)
         self.Parent['FX']._SendMoney(sector, flow_variable_name)
+        sector.AddCashFlow('-' + flow_variable_name, is_income=False)
+        full_flow_variable_name = sector.GetVariableName(flow_variable_name)
+        self.AddTermToEquation('NETOZ', '{0}*{1}'.format(var_currency, full_flow_variable_name))
 
 
 

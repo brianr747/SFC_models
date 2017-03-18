@@ -34,9 +34,9 @@ class TestMultiSupply(TestCase):
 
     def test_ctor_default(self):
         mod = Model()
-        can = Country(mod, 'Canada', 'CA')
+        can = Country(mod, 'Canada', 'CA', currency='LOC')
         marca = Market(can, 'market', 'GOOD')
-        us = Country(mod, 'US', 'US')
+        us = Country(mod, 'US', 'US', currency='LOC')
         marus = Market(us, 'market', 'GOOD')
         bus = FixedMarginBusinessMultiOutput(can, 'Business', 'BUS',
                                              market_list=[marca, marus])

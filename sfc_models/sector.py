@@ -1,5 +1,5 @@
 from sfc_models.equation import EquationBlock, Equation, Term
-from sfc_models.models import Entity
+from sfc_models.models import Entity, Model, Country
 from sfc_models.utils import Logger, replace_token_from_lookup, LogicError, create_equation_from_terms
 
 
@@ -417,44 +417,98 @@ class Market(Sector):
         # Set aggregate supply equal to demand
         self.SetEquationRightHandSide(sup_name, rhs=dem_name)
         # Generate individual supply equations
-        # terms: need to create a list of non-residual supply terms so that
-        # we can set the residual supply
-        terms = [sup_name, ]
-        sector_list = self.OtherSuppliers
+        # These are already supplied for everything other than the residual supply, so
+        # we need to build it up.
+        # Also, the name of the supply varies, depending on whether we are in te same
+        # country/region.
         residual_sector = self.ResidualSupply
-        for sector, eqn in sector_list:
-            local_name = 'SUP_' + sector.FullCode
-            terms.append(local_name)
-            self.AddVariable(local_name, 'Supply from {0}'.format(sector.LongName), eqn)
+
+        residual_equation = Equation(self.GetSupplierTerm(residual_sector),
+                                     'Residual supply', sup_name)
+        sector_list = self.OtherSuppliers
+        # residual supply = total supply less other supply terms
+        for supplier, _ in sector_list:
+            term = '-SUP_' + supplier.FullCode
+            residual_equation.AddTerm(term)
+        # Now that we have an equation for the residual sector, append it to the
+        # list of suppliers, so we can process all suppliers in one block of code.
+        sector_list.append((residual_sector, residual_equation.RHS()))
+
+        for supplier, eqn in sector_list:
+            local_name = 'SUP_' + supplier.FullCode
+            self.AddVariable(local_name, 'Supply from {0}'.format(supplier.LongName), eqn)
             # Push this local variable into the supplying sector
             # If we are in the same country, use 'SUP_{CODE}'
             # If we are in different countries, use 'SUP_{FULLCODE}'
-            if self.ShareParent(sector):
-                supply_name = 'SUP_' + self.Code
+            supply_name = self.GetSupplierTerm(supplier)
+            if supply_name not in supplier.EquationBlock:
+                supplier.AddVariable(supply_name, 'Supply to {0}'.format(self.FullCode), '')
+            if self.IsSharedCurrencyZone(supplier):
+                supplier.AddTermToEquation(supply_name, self.GetVariableName(local_name))
+                supplier.AddCashFlow('+' + supply_name)
             else:
-                supply_name = 'SUP_' + self.FullCode
-            if supply_name not in sector.EquationBlock:
-                sector.AddVariable(supply_name, 'Supply to {0}'.format(self.FullCode), '')
-            sector.AddTermToEquation(supply_name, self.GetVariableName(local_name))
-            # sector.SetEquationRightHandSide(supply_name, self.GetVariableName(local_name))
-            sector.AddCashFlow('+' + supply_name)
-        # Residual sector supplies rest
-        # noinspection PyUnusedLocal
-        # This declaration of sector is not needed, but I left it in case code from
-        # above is pasted here, without replacing 'sector' with residual_sector.
-        sector = residual_sector
-        local_name = 'SUP_' + residual_sector.FullCode
-        # Equation = [Total supply] - \Sum Individual suppliers
-        eqn = '-'.join(terms)
-        self.AddVariable(local_name, 'Supply from {0}'.format(residual_sector.LongName), eqn)
-        if self.ShareParent(residual_sector):
-            supply_name = 'SUP_' + self.Code
+                model = self.GetModel()
+                if model.ExternalSector is None:
+                    raise LogicError('Must create ExternalSector if we have cross-currency suppliers')
+                full_local_name = self.GetVariableName(local_name)
+                model.ExternalSector._SendMoney(self, full_local_name)
+                term = model.ExternalSector._ReceiveMoney(supplier, self, full_local_name)
+                supplier.AddTermToEquation(supply_name, term)
+                supplier.AddCashFlow(term)
+        return
+        # # Residual sector supplies rest
+        # # noinspection PyUnusedLocal
+        # # This declaration of sector is not needed, but I left it in case code from
+        # # above is pasted here, without replacing 'sector' with residual_sector.
+        # if not self.IsSharedCurrencyZone(residual_sector):
+        #     raise NotImplementedError('Currently does not support residual sectors in another currency')
+        # sector = residual_sector
+        # local_name = 'SUP_' + residual_sector.FullCode
+        # # Equation = [Total supply] - \Sum Individual suppliers
+        # eqn = '-'.join(terms)
+        # self.AddVariable(local_name, 'Supply from {0}'.format(residual_sector.LongName), eqn)
+        # if self.ShareParent(residual_sector):
+        #     supply_name = 'SUP_' + self.Code
+        # else:
+        #     supply_name = 'SUP_' + self.FullCode
+        # if supply_name not in residual_sector.EquationBlock:
+        #     residual_sector.AddVariable(supply_name, 'Supply to {0}'.format(self.FullCode), '')
+        # residual_sector.SetEquationRightHandSide(supply_name, self.GetVariableName(local_name))
+        # residual_sector.AddCashFlow('+' + supply_name)
+
+    def GetSupplierTerm(self, supplier):
+        """
+        What is the local variable name within a supplier for supply to this
+        market?
+
+        If same Country,
+        out = "SUP_{code}"
+
+        >>> mod = Model()
+        >>> ca = Country(mod, 'Canada', 'CA')
+        >>> mar = Market(ca, 'Market', 'GOOD')
+        >>> supplier = Sector(ca, 'Supplier', 'BUS')
+        >>> mar.GetSupplierTerm(supplier)
+        'SUP_GOOD'
+
+        Howevever, if we are in a different country, must use the full code.
+        out = "SUP_{FullCode}"
+
+        >>> mod = Model()
+        >>> ca = Country(mod, 'Canada, Eh?', 'CA')
+        >>> us = Country(mod, 'U.S.A.', 'US')
+        >>> mar = Market(ca, 'Market', 'GOOD')
+        >>> supplier = Sector(us, 'Supplier', 'BUS')
+        >>> mar.GetSupplierTerm(supplier)
+        'SUP_CA_GOOD'
+
+        :param supplier: Sector
+        :return: str
+        """
+        if self.ShareParent(supplier):
+            return 'SUP_' + self.Code
         else:
-            supply_name = 'SUP_' + self.FullCode
-        if supply_name not in residual_sector.EquationBlock:
-            residual_sector.AddVariable(supply_name, 'Supply to {0}'.format(self.FullCode), '')
-        residual_sector.SetEquationRightHandSide(supply_name, self.GetVariableName(local_name))
-        residual_sector.AddCashFlow('+' + supply_name)
+            return 'SUP_' + self.GetModel().GetSectorCodeWithCountry(self)
 
 
 class FinancialAssetMarket(Market):

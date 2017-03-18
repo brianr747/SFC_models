@@ -1,10 +1,19 @@
 from unittest import TestCase
+import doctest
 
+import sfc_models.sector
 from sfc_models.models import Model, Country
 from sfc_models.sector import Sector, Market
 from sfc_models.sector_definitions import Household
 from sfc_models.utils import LogicError
 from test.test_models import kill_spaces
+
+def load_tests(loader, tests, ignore):
+    """
+    Load doctests, so unittest discovery can find them.
+    """
+    tests.addTests(doctest.DocTestSuite(sfc_models.sector))
+    return tests
 
 
 class TestSector(TestCase):
@@ -319,11 +328,11 @@ class TestMarket(TestCase):
         self.assertEqual('LAB__SUP_HH', hh.EquationBlock['SUP_LAB'].RHS())
         self.assertEqual('LAB__SUP_HH2', hh2.EquationBlock['SUP_LAB'].RHS())
 
-
     def test_GenerateEquations_2_supply_multicountry(self):
         mod = Model()
-        can = Country(mod, 'Canada, Eh?', 'CA')
-        US = Country(mod, 'USA! USA!', 'US')
+        # Have to have the same currency for this test
+        can = Country(mod, 'Canada, Eh?', 'CA', currency='LOC')
+        US = Country(mod, 'USA! USA!', 'US', currency='LOC')
         mar = Market(can, 'Market', 'LAB')
         bus = Sector(can, 'Business', 'BUS')
         hh = Sector(can, 'Household', 'HH')
@@ -369,8 +378,9 @@ class TestMarket(TestCase):
 
     def test_GenerateEquations_2_supply_multicountry_3(self):
         mod = Model()
-        can = Country(mod, 'Canada, Eh?', 'CA')
-        US = Country(mod, 'USA! USA!', 'US')
+        # Need to stay in the same currency zone
+        can = Country(mod, 'Canada, Eh?', 'CA', currency='LOC')
+        US = Country(mod, 'USA! USA!', 'US', currency='LOC')
         mar = Market(can, 'Market', 'LAB')
         bus = Sector(can, 'Business', 'BUS')
         hh = Sector(can, 'Household', 'HH')
