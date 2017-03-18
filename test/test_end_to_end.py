@@ -88,6 +88,10 @@ class TestPC(EndToEndTester):
     def get_builder(self):
         return sfc_models.gl_book.chapter4.PC('C', use_book_exogenous=True)
 
+    @unittest.skipIf(skip_end_to_end == 'T', 'Slow test excluded')
+    def test_model(self):
+        EndToEndTester.test_model(self)
+
 
 class TestREG(EndToEndTester):
     """

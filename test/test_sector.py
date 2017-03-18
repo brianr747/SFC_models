@@ -120,6 +120,15 @@ class TestSector(TestCase):
             # Must be a simple variable as the cash flow
             s.AddCashFlow('f(X)', 'equation', 'Desc A')
 
+    def test_AddInitialConditions(self):
+        mod = Model()
+        us = Country(mod, 'desc', 'US')
+        s = Sector(us, 'desc', 'HH', has_F=False)
+        s.AddVariable('x', 'desc','1.0')
+        s.AddInitialCondition('x', '10.0')
+        targ = [(s.ID, 'x', '10.0'), ]
+        self.assertEqual(targ, mod.InitialConditions)
+
     def test_GenerateIncomeEquations(self):
         mod = Model()
         us = Country(mod, 'USA', 'US')

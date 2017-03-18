@@ -1,8 +1,16 @@
 from unittest import TestCase
+import os
+import unittest
 
 from sfc_models.models import Model, Country
-from sfc_models.sector import Sector
+from sfc_models.sector import Sector, Market
 from sfc_models.external import ExternalSector, ExchangeRates, ForexTransations
+from sfc_models.sector_definitions import GoldStandardCentralBank, GoldStandardGovernment, Treasury, MoneyMarket, DepositMarket
+from sfc_models.utils import LogicError
+
+
+# Set this environment variable to 'T' in order to skip the slower end-to-end tests.
+skip_end_to_end = os.getenv('DontRunEndToEnd')
 
 class TestExternalSector(TestCase):
     def test_ctor_1(self):
@@ -82,5 +90,103 @@ class TestExternalSector(TestCase):
         self.assertEqual([5., 5., 5., 5.], testfn('EXT_FX__NET_CAD'))
         self.assertEqual([0, -7.5, -7.5, -7.5], testfn('EXT_FX__NET_USD'))
         self.assertEqual([0., 0., 0., 0.], testfn('EXT_FX__NET_NUMERAIRE'))
+
+    def test_Market_handling(self):
+        mod = Model()
+        ext = ExternalSector(mod)
+        ca = Country(mod, 'Canada', 'CA', currency='CAD')
+        us = Country(mod, 'United States', 'US', currency='USD')
+        # gov_us.AddVariable('T', 'Government Taxes', '0.')
+        gov_ca = Sector(ca, 'Gummint', 'GOV')
+        gov_ca.AddVariable('DEM_GOOD', 'desc', '20.')
+        market = Market(ca, 'Market', 'GOOD')
+        supplier_ca = Sector(ca, 'Canada supplier', 'BUS')
+        supplier_us = Sector(us, 'US Supplier', 'BUS')
+        # Set supply so that CAD$10 is paid to each supplier.
+        market.AddSupplier(supplier_ca)
+        market.AddSupplier(supplier_us, '10.')
+        # Set CAD = 2, so 2 USD = 1 CAD (USD is weaker.)
+        mod.AddExogenous('EXT_XR', 'CAD', '[2.0,]*3')
+        mod.EquationSolver.MaxTime = 1
+        mod.main()
+        mod.TimeSeriesSupressTimeZero = True
+        # The business sector nets USD$20
+        self.assertEqual([20.], mod.GetTimeSeries('US_BUS__F'))
+        # The USD market is unbalanced; shortage of 20 USD
+        self.assertEqual([-20.], mod.GetTimeSeries('EXT_FX__NET_USD'))
+        # The CAD market is unbalanced; excess of 10 CAD
+        self.assertEqual([10.], mod.GetTimeSeries('EXT_FX__NET_CAD'))
+        # The supply in the US sector is USD $20
+        self.assertEqual([20.], mod.GetTimeSeries('US_BUS__SUP_CA_GOOD'))
+        # THe supply on the Canadian side is CAD $10
+        self.assertEqual([10.], mod.GetTimeSeries('CA_GOOD__SUP_US_BUS'))
+
+    def test_Market_fail_no_external(self):
+        mod = Model()
+        ca = Country(mod, 'Canada', 'CA', currency='CAD')
+        us = Country(mod, 'United States', 'US', currency='USD')
+        # gov_us.AddVariable('T', 'Government Taxes', '0.')
+        gov_ca = Sector(ca, 'Gummint', 'GOV')
+        gov_ca.AddVariable('DEM_GOOD', 'desc', '20.')
+        market = Market(ca, 'Market', 'GOOD')
+        supplier_ca = Sector(ca, 'Canada supplier', 'BUS')
+        supplier_us = Sector(us, 'US Supplier', 'BUS')
+        # Set supply so that CAD$10 is paid to each supplier.
+        market.AddSupplier(supplier_ca)
+        market.AddSupplier(supplier_us, '10.')
+        # Set CAD = 2, so 2 USD = 1 CAD (USD is weaker.)
+        with self.assertRaises(LogicError):
+            mod._GenerateFullSectorCodes()
+            market._GenerateEquations()
+
+    @unittest.skipIf(skip_end_to_end == 'T', 'Slow test excluded')
+    def test_GoldSectors(self):
+        # Relatively big test, but it takes a lot of work to get a model
+        # where we can create a GoldStandardCentralBank, and to set up the
+        # equations so that they need to intervene.
+        # Consider this an end-to-end test.
+        mod = Model()
+        ext = ExternalSector(mod)
+        ca = Country(mod, 'Canada', 'CA', currency='CAD')
+        us = Country(mod, 'United States', 'US', currency='USD')
+        gov_us = GoldStandardGovernment(us, 'US Gov', 'GOV', initial_gold_stock=0.)
+
+        # gov_ca = GoldStandardGovernment(ca, 'CA Gov', 'GOV', 200.)
+        tre_ca = Treasury(ca, 'Ministry of Finance', 'TRE')
+        cb_ca = GoldStandardCentralBank(ca, 'BoC', 'CB', tre_ca, initial_gold_stock=100.)
+        mon = MoneyMarket(ca, issuer_short_code='CB')
+        dep = DepositMarket(ca, issuer_short_code='TRE')
+        gov_us.AddVariable('T', 'Government Taxes', '0.')
+        tre_ca.AddVariable('T', 'Government Taxes', '0.')
+
+        tre_ca.SetEquationRightHandSide('DEM_GOOD', '20.')
+        market = Market(ca, 'Market', 'GOOD')
+        supplier_ca = Sector(ca, 'Canada supplier', 'BUS')
+        supplier_us = Sector(us, 'US Supplier', 'BUS')
+        market.AddSupplier(supplier_ca)
+        market.AddSupplier(supplier_us, '10.')
+        mod.EquationSolver.MaxTime = 1
+        mod.EquationSolver.MaxIterations = 90
+        mod.EquationSolver.ParameterErrorTolerance = 1e-1
+        mod.main()
+        mod.TimeSeriesSupressTimeZero = True
+        # markets should be balanced
+        self.assertAlmostEqual(0., mod.GetTimeSeries('EXT_FX__NET_CAD')[0], places=2)
+        self.assertAlmostEqual(0., mod.GetTimeSeries('EXT_FX__NET_USD')[0], places=2)
+        # U.S. buys 10 units of GOLD
+        self.assertAlmostEqual(10., mod.GetTimeSeries('US_GOV__GOLDPURCHASES')[0], places=2)
+        # Canada sells 10 units
+        self.assertAlmostEqual(-10., mod.GetTimeSeries('CA_CB__GOLDPURCHASES')[0], places=2)
+
+    def test_MissingExternalForGoldSectors(self):
+        mod = Model()
+        ca = Country(mod, 'Canada', 'CA')
+        gov = GoldStandardGovernment(ca, ' ', 'GOV', 1000.)
+        with self.assertRaises(LogicError):
+            gov._GenerateEquations()
+        tre = Treasury(ca, 'FinMin', 'TRE')
+        cb = GoldStandardCentralBank(ca, 'desc', 'CB', treasury=tre, initial_gold_stock=1000.)
+        with self.assertRaises(LogicError):
+            cb._GenerateEquations()
 
 

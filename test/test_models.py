@@ -310,6 +310,12 @@ class TestCountry(TestCase):
         with self.assertRaises(KeyError):
             can.LookupSector('Smurf')
 
+    def test_LookupSectorByCode(self):
+        mod = Model()
+        can = Country(mod, 'Canada', 'CA')
+        hh = Sector(can, 'desc', 'Code')
+        self.assertEqual(hh, can.LookupSector(hh.ID))
+
     def test_getitem(self):
         # Hits both Model and Country GetItem
         mod = Model()

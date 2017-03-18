@@ -54,6 +54,7 @@ class EquationSolver(object):
         self.MaxIterations = 400
         self.MaxTime = None
         self.Functions = {}
+        self.ParameterErrorTolerance = None
         self.ParameterSolveInitialSteadyState = False
         self.ParameterInitialSteadyStateMaxTime = 200
         self.ParameterInitialSteadyStateErrorToler = 1e-4
@@ -316,7 +317,10 @@ class EquationSolver(object):
         # NOTE:
         # We are missing the decorative variables, but they have no effect on the convergence
         relative_error = 1.
-        err_toler = float(self.Parser.Err_Tolerance)
+        if self.ParameterErrorTolerance is None:
+            err_toler = float(self.Parser.Err_Tolerance)
+        else:
+            err_toler = self.ParameterErrorTolerance
         num_tries = 0
         trace_keys = list(initial.keys())
         trace_keys.sort()

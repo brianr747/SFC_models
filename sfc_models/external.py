@@ -181,7 +181,7 @@ class ForexTransations(Sector):
         currency_variable_name = self.Parent['XR'].GetVariableName(currency)
         self.EquationBlock['NET_' + currency].AddTerm('+' + variable_name)
         self.EquationBlock['NET_NUMERAIRE'].AddTerm(
-            '-' + variable_name + '/' + currency_variable_name)
+            '-' + variable_name + '*' + currency_variable_name)
 
     def _ReceiveMoney(self, target_sector, source_sector, variable_name):
         """
