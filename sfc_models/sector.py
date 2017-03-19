@@ -9,6 +9,8 @@ class Sector(EconomicObject):
     """
 
     def __init__(self, country, code, long_name='', has_F=True):
+        if long_name == '':
+            long_name = 'Sector Object {0} in Country {1}'.format(code, country.Code)
         self.Code = code
         EconomicObject.__init__(self, country, code=code)
         self.CurrencyZone = country.CurrencyZone
@@ -324,6 +326,8 @@ class Market(Sector):
     """
 
     def __init__(self, country, code, long_name=''):
+        if long_name == '':
+            long_name = 'Market {0} in Country {1}'.format(code, country.Code)
         Sector.__init__(self, country, code, long_name, has_F=False)
         self.AddVariable('SUP_' + code, 'Supply for market ' + code, '')
         self.AddVariable('DEM_' + code, 'Demand for market ' + code, '')

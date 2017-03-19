@@ -40,6 +40,8 @@ class BaseHousehold(Sector):
         :param long_name: str
         :param code: str
         """
+        if long_name == '':
+            long_name = 'Household {0} in Country {1}'.format(code, country.Code)
         Sector.__init__(self, country, code, long_name=long_name, has_F=True)
         self.AlphaIncome = alpha_income
         self.AlphaFin = alpha_fin
@@ -131,6 +133,8 @@ class DoNothingGovernment(Sector):
     financial asset holdings.
     """
     def __init__(self, country, code, long_name=''):
+        if long_name == '':
+            long_name = 'Government {0} in Country {1}'.format(code, country.Code)
         Sector.__init__(self, country, code, long_name)
         self.AddVariable('DEM_GOOD', 'Government Consumption of Goods', '0.0')
         self.AddVariable('PRIM_BAL', 'Government Primary Fiscal Balance', 'T - DEM_GOOD')
@@ -141,6 +145,8 @@ class DoNothingGovernment(Sector):
 
 class Treasury(Sector):
     def __init__(self, country, code, long_name=''):
+        if long_name == '':
+            long_name = 'Treasury {0} in Country {1}'.format(code, country.Code)
         Sector.__init__(self, country, code, long_name)
         self.AddVariable('DEM_GOOD', 'Government Consumption of Goods', '0.0')
         self.AddVariable('PRIM_BAL', 'Government Primary Fiscal Balance', 'T - DEM_GOOD')
@@ -150,6 +156,8 @@ class Treasury(Sector):
 
 class CentralBank(Sector):
     def __init__(self, country, code, long_name='', treasury=None):
+        if long_name == '':
+            long_name = 'Central Bank {0} in Country {1}'.format(code, Country.Code)
         Sector.__init__(self, country, code, long_name, has_F=True)
         self.Treasury = treasury
         # Demand for deposits = F + Supply of money (Central bank net worth plus money supply)
@@ -164,6 +172,8 @@ class CentralBank(Sector):
 class FixedMarginBusiness(Sector):
     def __init__(self, country, code, long_name='', profit_margin=0.0, labour_input_name='LAB',
                  output_name='GOOD'):
+        if long_name == '':
+            long_name = 'Business {0} in Country {1}'.format(code, country.Code)
         Sector.__init__(self,country, code, long_name, has_F=True)
         self.ProfitMargin = profit_margin
         self.LabourInputName = labour_input_name
@@ -204,6 +214,8 @@ class FixedMarginBusinessMultiOutput(Sector):
 
     def __init__(self, country, code, long_name='', profit_margin=0.0,
                  labour_input_name='LAB', market_list=()):
+        if long_name == '':
+            long_name = 'Multi-Output Business {0} in Country {1}'.format(code, country.Code)
         Sector.__init__(self, country, code, long_name=long_name, has_F=True)
         self.ProfitMargin = profit_margin
         self.LabourInputName = labour_input_name
@@ -254,6 +266,8 @@ class TaxFlow(Sector):
     """
 
     def __init__(self, country, code, long_name='', taxrate=0.0, taxes_paid_to='GOV'):
+        if long_name == '':
+            long_name = 'TaxFlow Object {0} in Country {1}'.format(code, country.Code)
         Sector.__init__(self, country, code, long_name, has_F=False)
         self.AddVariable('TaxRate', 'Tax rate', '%0.4f' % (taxrate,))
         self.AddVariable('T', 'Taxes Paid', '')
@@ -414,6 +428,8 @@ class GoldStandardCentralBank(CentralBank):
     Must create an ExternalSector object in the model.
     """
     def __init__(self, country, code, long_name='', treasury=None, initial_gold_stock=0.0):
+        if long_name == '':
+            long_name = 'Gold Standard Central Bank {0} in {1}'.format(code, country.Code)
         CentralBank.__init__(self, country, code, long_name=long_name, treasury=treasury)
         self.InitialGoldStock = initial_gold_stock
 
@@ -446,6 +462,8 @@ class GoldStandardGovernment(DoNothingGovernment):
     Must create an ExternalSector object in the model.
     """
     def __init__(self, country, code, long_name='', initial_gold_stock=0.0):
+        if long_name == '':
+            long_name = 'Gold Standard Government {0} in Country {1}'.format(code, country.Code)
         DoNothingGovernment.__init__(self, country, code, long_name)
         self.InitialGoldStock = initial_gold_stock
 
