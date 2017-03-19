@@ -34,7 +34,7 @@ def main():
     # Create model, which holds all entities
     mod = Model()
     # Create first country - Canada.
-    can = Country(mod, 'Canada', 'CA')
+    can = Country(mod, 'CA', 'Canada')
     # Create sectors
     gov = DoNothingGovernment(can, 'Government', 'GOV')
     hh = Household(can, 'Household', 'HH', alpha_income=.6, alpha_fin=.4)
@@ -49,7 +49,7 @@ def main():
     # This is a very error-prone way of building the model; if we repeat code blocks, they should be in
     # a function.
     # Create United States - Almost identical to Canada.
-    us = Country(mod, 'United States', 'US')
+    us = Country(mod, 'US', 'United States')
     # Create sectors
     gov2 = DoNothingGovernment(us, 'Government', 'GOV')
     hh2 = Household(us, 'Household', 'HH', alpha_income=.6, alpha_fin=.4)

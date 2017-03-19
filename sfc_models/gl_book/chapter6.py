@@ -327,7 +327,7 @@ class OPENG(GL_book_model): # pragma: no cover
         :return: None
         """
         country_name = paramz['Country Name']
-        country = Country(model, code=paramz['Country'], long_name=country_name)
+        country = Country(model, code=paramz['Country'], description=country_name)
         self.Country = country
         tre = Treasury(country, 'Treasury', 'TRE')
         cb = GoldStandardCentralBank(country, 'Central Bank', 'CB', tre, 10.0)

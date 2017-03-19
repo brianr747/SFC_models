@@ -35,7 +35,7 @@ def main():
     # Create model, which holds all entities
     mod = Model()
     # Create first country - Canada. (This model only has one country.)
-    can = Country(mod, 'Canada', 'CA')
+    can = Country(mod, 'CA', 'Canada')
     # Create sectors
     gov = DoNothingGovernment(can, 'Government', 'GOV')
     hh = Household(can, 'Household', 'HH', alpha_income=.6, alpha_fin=.4)

@@ -1,18 +1,18 @@
 from sfc_models.equation import EquationBlock, Equation, Term
-from sfc_models.models import Entity, Model, Country
+from sfc_models.models import EconomicObject, Model, Country
 from sfc_models.utils import Logger, replace_token_from_lookup, LogicError, create_equation_from_terms
 
 
-class Sector(Entity):
+class Sector(EconomicObject):
     """
     All sectors derive from this class.
     """
 
     def __init__(self, country, long_name, code, has_F=True):
         self.Code = code
-        Entity.__init__(self, country, code=code)
+        EconomicObject.__init__(self, country, code=code)
         self.CurrencyZone = country.CurrencyZone
-        country.AddSector(self)
+        country._AddSector(self)
         # This is calculated by the Model
         self.FullCode = ''
         self.LongName = long_name
@@ -221,9 +221,20 @@ class Sector(Entity):
             self.AddVariable(term, desc, eqn)
 
     def AddInitialCondition(self, variable_name, value):
+        """
+        Add an initial condition for a variable associated with this sector.
+        :param variable_name: str
+        :param value: float
+        :return:
+        """
         self.GetModel().AddInitialCondition(self.ID, variable_name, value)
 
     def _GenerateEquationsFrontEnd(self): # pragma: no cover
+        """
+        Used by graphical front ends; generates a logging message. (In Model.Main(),
+        the logging is done by the Model before it calls the Sector.)
+        :return:
+        """
         Logger('Running _GenerateEquations on {0} [{1}]', priority=3,
                data_to_format=(self.Code, self.ID))
         self._GenerateEquations()
@@ -250,6 +261,10 @@ class Sector(Entity):
         return out
 
     def _CreateFinalEquations(self):
+        """
+        Returns the final set of equations, with the full names of variables.
+        :return: list
+        """
         out = []
         lookup = {}
         for varname in self.EquationBlock.GetEquationList():
@@ -485,9 +500,9 @@ class Market(Sector):
         out = "SUP_{code}"
 
         >>> mod = Model()
-        >>> ca = Country(mod, 'Canada', 'CA')
-        >>> mar = Market(ca, 'Market', 'GOOD')
-        >>> supplier = Sector(ca, 'Supplier', 'BUS')
+        >>> ca = Country(mod, 'CA')
+        >>> mar = Market(ca, '', 'GOOD')
+        >>> supplier = Sector(ca,'', 'BUS')
         >>> mar.GetSupplierTerm(supplier)
         'SUP_GOOD'
 
@@ -495,10 +510,10 @@ class Market(Sector):
         out = "SUP_{FullCode}"
 
         >>> mod = Model()
-        >>> ca = Country(mod, 'Canada, Eh?', 'CA')
-        >>> us = Country(mod, 'U.S.A.', 'US')
-        >>> mar = Market(ca, 'Market', 'GOOD')
-        >>> supplier = Sector(us, 'Supplier', 'BUS')
+        >>> ca = Country(mod, 'CA')
+        >>> us = Country(mod, '', 'US')
+        >>> mar = Market(ca, '', 'GOOD')
+        >>> supplier = Sector(us,'', 'BUS')
         >>> mar.GetSupplierTerm(supplier)
         'SUP_CA_GOOD'
 
@@ -517,7 +532,7 @@ class FinancialAssetMarket(Market):
     Must be a single issuer.
     """
 
-    def __init__(self, country, long_name, code, issuer_short_code):
+    def __init__(self, country, long_name, code, issuer_short_code=''):
         Market.__init__(self, country, long_name, code)
         self.IssuerShortCode = issuer_short_code
         self.SearchListSource = self.CurrencyZone

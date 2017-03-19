@@ -28,9 +28,8 @@ class ExternalSector(Country):
     A Model can only have one ExternalSector; the object registers itself as the
     Model.ExternalSector when created.
     """
-    def __init__(self, model, code='EXT', currency='NUMERAIRE'):
-        Country.__init__(self, model, long_name='External Sector', code=code,
-                         currency=currency)
+    def __init__(self, model):
+        Country.__init__(self, model, code='EXT', long_name='External Sector', currency='NUMERAIRE')
         model.ExternalSector = self
         ExchangeRates(self)
         ForexTransations(self)

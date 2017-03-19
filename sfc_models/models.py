@@ -30,24 +30,24 @@ from sfc_models.equation_parser import EquationParser
 from sfc_models.utils import Logger, LogicError
 
 
-class Entity(object):
+class EconomicObject(object):
     """
-    Entity class
+    EconomicObject class
     Base class for model entities. Gives them a unique numeric id to make debugging and
-    some coding tasks easier. For example, if two Entity's have a different ID, they are distinct,
-    and so an Entity can exclude itself when iterating through a list of Sector objects.
+    some coding tasks easier. For example, if two EconomicObject's have a different ID, they are distinct,
+    and so an EconomicObject can exclude itself when iterating through a list of Sector objects.
 
     Can create function for displaying, etc.
     """
     ID = 0
 
     def __init__(self, parent=None, code=''):
-        self.ID = Entity.ID
-        Entity.ID += 1
+        self.ID = EconomicObject.ID
+        EconomicObject.ID += 1
         self.Parent = parent
         self.Code = code
         self.LongName = ''
-        Logger('Entity Created: {0} ID = {1}', priority=1, data_to_format=(type(self),self.ID))
+        Logger('EconomicObject Created: {0} ID = {1}', priority=1, data_to_format=(type(self),self.ID))
 
     def GetModel(self):
         """
@@ -62,12 +62,12 @@ class Entity(object):
     def ShareParent(self, other):
         """
         Does this entity have the same parent?
-        :param other:  Entity
+        :param other:  EconomicObject
         :return: bool
         """
         return self.Parent == other.Parent
 
-class Model(Entity):
+class Model(EconomicObject):
     """
     Model class.
 
@@ -79,12 +79,12 @@ class Model(Entity):
         Create the Model object. All the economic class objects (Country, Sector) live within
         a Model.
 
-        Unlike other Entity subclasses, the Model object is a base object, and has no parent.
+        Unlike other EconomicObject subclasses, the Model object is a base object, and has no parent.
 
         It is possible for two Model objects to coexist; there is no interaction between them
         (other than side effects from global Parameters).
         """
-        Entity.__init__(self)
+        EconomicObject.__init__(self)
         self.CountryList = []
         self.Exogenous = []
         self.InitialConditions = []
@@ -411,9 +411,10 @@ class Model(Entity):
             Logger('\n\nError raised:\n')
             traceback.print_exc(file=Logger.get_handle())
 
-    def AddCountry(self, country):
+    def _AddCountry(self, country):
         """
-        Add a country to the list.
+        Add a country to the list. This is called by the object constructore; users should
+        not call this.
 
         :param country: Country
         :return: None
@@ -693,13 +694,13 @@ class Model(Entity):
         return item in self.CountryList
 
 
-class Country(Entity):
+class Country(EconomicObject):
     """
     Country class. Somewhat redundant in a closed economy model, but we need for multi-region models.
     """
 
-    def __init__(self, model, long_name, code, currency=None):
-        Entity.__init__(self, model)
+    def __init__(self, model, code, long_name='', currency=None):
+        EconomicObject.__init__(self, model)
         self.Code = code
         self.LongName = long_name
         self.SectorList = []
@@ -708,12 +709,13 @@ class Country(Entity):
             self.Currency = code
         else:
             self.Currency = currency
-        model.AddCountry(self)
+        model._AddCountry(self)
 
 
-    def AddSector(self, sector):
+    def _AddSector(self, sector):
         """
-        Add a sector to this country.
+        Add a sector to this country. This is called by the Sector constructore; users
+        should not call directly.
 
         :param sector: Sector
         :return:
@@ -785,20 +787,20 @@ class Region(Country):
 
     If currency is not specified, uses the default currency.
     """
-    def __init__(self, model, long_name, code, currency=None):
+    def __init__(self, model, code, long_name='', currency=None):
         if currency is None:
             currency = model.DefaultCurrency
-        Country.__init__(self, model, long_name, code, currency)
+        Country.__init__(self, model, code, long_name=long_name, currency=currency)
 
 
-class CurrencyZone(Entity):
+class CurrencyZone(EconomicObject):
     """
     CurrencyZone: A set of Country {region} objects that share a currency.
 
     Created automatically by the Model as Country objects are added.
     """
     def __init__(self, model, currency):
-        Entity.__init__(self, model, code=currency)
+        EconomicObject.__init__(self, model, code=currency)
         self.Currency = currency
         self.LongName = 'Currency Zone For ' + currency
         self.CountryList = []

@@ -41,7 +41,7 @@ class TestExternalSector(TestCase):
     def test_SendMoney(self):
         mod = Model()
         ext = ExternalSector(mod)
-        ca = Country(mod, 'Canada', 'CA', currency='CAD')
+        ca = Country(mod, 'CA', 'Canada', currency='CAD')
         hh_ca = Sector(ca, 'Canada HH', 'HH')
         hh_ca.AddVariable('GIFT', 'Gifts!', '5.')
         fx = ext['FX']
@@ -52,8 +52,8 @@ class TestExternalSector(TestCase):
     def test_ReceiveMoney(self):
         mod = Model()
         ext = ExternalSector(mod)
-        ca = Country(mod, 'Canada', 'CA', currency='CAD')
-        us = Country(mod, 'U.S.', 'US', currency='USD')
+        ca = Country(mod, 'CA', 'Canada', currency='CAD')
+        us = Country(mod, 'US', 'U.S.', currency='USD')
         hh_ca = Sector(ca, 'Canada HH', 'HH')
         hh_ca.AddVariable('GIFT', 'Gifts!', '5.')
         hh_us = Sector(us, 'Household', 'HH')
@@ -75,8 +75,8 @@ class TestExternalSector(TestCase):
     def test_CashFlow(self):
         mod = Model()
         ext = ExternalSector(mod)
-        ca = Country(mod, 'Canada', 'CA', currency='CAD')
-        us = Country(mod, 'United States', 'US', currency='USD')
+        ca = Country(mod, 'CA', 'Canada', currency='CAD')
+        us = Country(mod, 'US', 'United States', currency='USD')
         hh_ca = Sector(ca, 'Canada HH', 'HH')
         hh_us = Sector(us, 'US HH', 'HH')
         hh_ca.AddVariable('GIFT', 'Gifts!', '5.')
@@ -94,8 +94,8 @@ class TestExternalSector(TestCase):
     def test_Market_handling(self):
         mod = Model()
         ext = ExternalSector(mod)
-        ca = Country(mod, 'Canada', 'CA', currency='CAD')
-        us = Country(mod, 'United States', 'US', currency='USD')
+        ca = Country(mod, 'CA', 'Canada', currency='CAD')
+        us = Country(mod, 'US', 'United States', currency='USD')
         # gov_us.AddVariable('T', 'Government Taxes', '0.')
         gov_ca = Sector(ca, 'Gummint', 'GOV')
         gov_ca.AddVariable('DEM_GOOD', 'desc', '20.')
@@ -123,8 +123,8 @@ class TestExternalSector(TestCase):
 
     def test_Market_fail_no_external(self):
         mod = Model()
-        ca = Country(mod, 'Canada', 'CA', currency='CAD')
-        us = Country(mod, 'United States', 'US', currency='USD')
+        ca = Country(mod, 'CA', 'Canada', currency='CAD')
+        us = Country(mod, 'US', 'United States', currency='USD')
         # gov_us.AddVariable('T', 'Government Taxes', '0.')
         gov_ca = Sector(ca, 'Gummint', 'GOV')
         gov_ca.AddVariable('DEM_GOOD', 'desc', '20.')
@@ -147,8 +147,8 @@ class TestExternalSector(TestCase):
         # Consider this an end-to-end test.
         mod = Model()
         ext = ExternalSector(mod)
-        ca = Country(mod, 'Canada', 'CA', currency='CAD')
-        us = Country(mod, 'United States', 'US', currency='USD')
+        ca = Country(mod, 'CA', 'Canada', currency='CAD')
+        us = Country(mod, 'US', 'United States', currency='USD')
         gov_us = GoldStandardGovernment(us, 'US Gov', 'GOV', initial_gold_stock=0.)
 
         # gov_ca = GoldStandardGovernment(ca, 'CA Gov', 'GOV', 200.)
@@ -180,7 +180,7 @@ class TestExternalSector(TestCase):
 
     def test_MissingExternalForGoldSectors(self):
         mod = Model()
-        ca = Country(mod, 'Canada', 'CA')
+        ca = Country(mod, 'CA', 'Canada')
         gov = GoldStandardGovernment(ca, ' ', 'GOV', 1000.)
         with self.assertRaises(LogicError):
             gov._GenerateEquations()

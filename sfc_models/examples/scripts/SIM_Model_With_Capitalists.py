@@ -29,7 +29,7 @@ from sfc_models.sector_definitions import Household, DoNothingGovernment, TaxFlo
 
 def CreateCountry(mod, name, code):
     # Create the country.
-    cntry = Country(mod, name, code)
+    cntry = Country(mod, code, name)
     # Create sectors
     DoNothingGovernment(cntry, 'Government', 'GOV')
     Household(cntry, 'Household', 'HH', alpha_income=.75, alpha_fin=.5)

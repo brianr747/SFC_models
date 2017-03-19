@@ -5,9 +5,13 @@ ex20161206_SIM_with_deposits.py
 ex20170209_SIMEX1.py
 ex20170221_Model_PC.py
 ex20170225_Model_REG.py
+ex20170307_Model_REG2.py
 intro_3_02_example.py
 intro_3_03_hello_world_1.py
 intro_3_03_hello_world_2.py
 intro_3_03_hello_world_3.py
 intro_3_03_hello_world_4.py
+sfcmod_FX.py
+sfcmod_OPENG.py
+sfcmod_REG2.py
 SIM_Model_With_Capitalists.py

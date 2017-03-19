@@ -17,17 +17,17 @@ def kill_spaces(s):
 
 class TestEntity(TestCase):
     def test_ctor(self):
-        Entity.ID = 0
-        a = Entity()
+        EconomicObject.ID = 0
+        a = EconomicObject()
         self.assertEqual(a.ID, 0)
-        b = Entity(a)
+        b = EconomicObject(a)
         self.assertEqual(b.ID, 1)
         self.assertEqual(b.Parent.ID, 0)
 
     def test_root(self):
-        a = Entity()
-        b = Entity(a)
-        c = Entity(b)
+        a = EconomicObject()
+        b = EconomicObject(a)
+        c = EconomicObject(b)
         self.assertEqual(a, a.GetModel())
         self.assertEqual(a, b.GetModel())
         self.assertEqual(a, c.GetModel())
@@ -54,15 +54,15 @@ class Stub(object):
 class TestModel(TestCase):
     def test_GenerateFullCodes_1(self):
         mod = Model()
-        country = Country(mod, 'USA!', 'US')
+        country = Country(mod, 'US', 'USA!')
         household = Sector(country, 'Household', 'HH')
         mod._GenerateFullSectorCodes()
         self.assertEqual(household.FullCode, 'HH')
 
     def test_GenerateFullCodes_2(self):
         mod = Model()
-        us = Country(mod, 'USA', 'US')
-        can = Country(mod, 'Canada', 'Eh?')
+        us = Country(mod, 'US', 'USA')
+        can = Country(mod, 'Eh?', 'Canada')
         household = Sector(us, 'Household', 'HH')
         can_hh = Sector(can, 'Household', 'HH')
         mod._GenerateFullSectorCodes()
@@ -71,8 +71,8 @@ class TestModel(TestCase):
 
     def test_LookupSector(self):
         mod = Model()
-        us = Country(mod, 'USA', 'US')
-        can = Country(mod, 'Canada', 'Eh?')
+        us = Country(mod, 'US', 'USA')
+        can = Country(mod, 'Eh?', 'Canada')
         household = Sector(us, 'Household', 'HH')
         can_hh = Sector(can, 'Household', 'HH')
         mod._GenerateFullSectorCodes()
@@ -110,7 +110,7 @@ class TestModel(TestCase):
 
     def test_GenerateInitialCond(self):
         mod = Model()
-        us = Country(mod, 'USA', 'US')
+        us = Country(mod, 'US', 'USA')
         household = Sector(us, 'Household', 'HH')
         household.AddVariable('foo', 'desc', 'x')
         mod._GenerateFullSectorCodes()
@@ -120,7 +120,7 @@ class TestModel(TestCase):
 
     def test_GenerateInitialCondFail(self):
         mod = Model()
-        us = Country(mod, 'USA', 'US')
+        us = Country(mod, 'US', 'USA')
         household = Sector(us, 'Household', 'HH')
         mod._GenerateFullSectorCodes()
         mod.InitialConditions = [('HH', 'FooFoo', '0.1')]
@@ -129,7 +129,7 @@ class TestModel(TestCase):
 
     def test_ProcessExogenous(self):
         mod = Model()
-        us = Country(mod, 'USA', 'US')
+        us = Country(mod, 'US', 'USA')
         household = Sector(us, 'Household', 'HH')
         household.AddVariable('foo', 'desc', 'x')
         mod._GenerateFullSectorCodes()
@@ -140,13 +140,13 @@ class TestModel(TestCase):
     def test_GetSectors(self):
         mod = Model()
         self.assertEqual(0, len(mod.GetSectors()))
-        us = Country(mod, 'USA', 'US')
+        us = Country(mod, 'US', 'USA')
         self.assertEqual(0, len(mod.GetSectors()))
         household = Sector(us, 'Household', 'HH')
         self.assertEqual(1, len(mod.GetSectors()))
         hh2 = Sector(us, 'Household2', 'HH2')
         self.assertEqual(2, len(mod.GetSectors()))
-        ca = Country(mod, 'country', 'code')
+        ca = Country(mod, 'code', 'country')
         hh3 = Sector(ca, 'sec3', 'sec3')
         secs = mod.GetSectors()
         self.assertEqual(3, len(secs))
@@ -189,7 +189,7 @@ class TestModel(TestCase):
 
     def test_ForceExogenous2(self):
         mod = Model()
-        us = Country(mod, 'USA', 'US')
+        us = Country(mod, 'US', 'USA')
         household = Sector(us, 'Household', 'HH')
         mod._GenerateFullSectorCodes()
         mod.Exogenous = [('HH', 'Foo', 'TEST')]
@@ -200,7 +200,7 @@ class TestModel(TestCase):
         # Just count the number if times the stub is called
         stub = Stub()
         mod = Model()
-        us = Country(mod, 'USA', 'US')
+        us = Country(mod, 'US', 'USA')
         h1 = Sector(us, 'Household', 'HH')
         h2 = Sector(us, 'Capitalists', 'CAP')
         h1._GenerateEquations = stub.stub_fun
@@ -211,7 +211,7 @@ class TestModel(TestCase):
     def test_CreateFinalFunctions(self):
         stub = Stub()
         mod = Model()
-        us = Country(mod, 'USA', 'US')
+        us = Country(mod, 'US', 'USA')
         h1 = Sector(us, 'Household', 'HH')
         h2 = Sector(us, 'Household2', 'H2')
         h1._CreateFinalEquations = stub.stub_return
@@ -248,7 +248,7 @@ class TestModel(TestCase):
         # Since dump format will change, keep this as a very loose test. We can tighten the testing
         # on Sector.Dump() later
         mod = Model()
-        country = Country(mod, 'USA! USA!', 'US')
+        country = Country(mod, 'US', 'USA! USA!')
         household = Sector(country, 'Household', 'HH')
         hh_dump = household.Dump()
         mod_dump = mod.DumpEquations()
@@ -282,8 +282,8 @@ class TestModel(TestCase):
 
     def test_CashFlowCrossCurrencyFail(self):
         mod = Model()
-        ca = Country(mod, 'Canada', 'CA')
-        us = Country(mod, 'U.S.', 'US')
+        ca = Country(mod, 'CA', 'Canada')
+        us = Country(mod, 'US', 'U.S.')
         sec_ca = Sector(ca, 'household', 'HH')
         sec_ca.AddVariable('GIFT', 'Gifts', '5.')
         sec_us = Sector(us, 'hh', 'HH')
@@ -296,13 +296,13 @@ class TestModel(TestCase):
 class TestCountry(TestCase):
     def test_AddSector(self):
         mod = Model()
-        can = Country(mod, 'Canada', 'Eh')
+        can = Country(mod, 'Eh', 'Canada')
         gov = DoNothingGovernment(can, 'Government', 'GOV')
         self.assertEqual(can.SectorList[0].ID, gov.ID)
 
     def test_LookupSector(self):
         mod = Model()
-        can = Country(mod, 'Canada', 'Eh')
+        can = Country(mod, 'Eh', 'Canada')
         gov = DoNothingGovernment(can, 'Government', 'GOV')
         hh = Household(can, 'Household', 'HH', .9, .2)
         self.assertEqual(can.LookupSector('HH').ID, hh.ID)
@@ -312,14 +312,14 @@ class TestCountry(TestCase):
 
     def test_LookupSectorByCode(self):
         mod = Model()
-        can = Country(mod, 'Canada', 'CA')
+        can = Country(mod, 'CA', 'Canada')
         hh = Sector(can, 'desc', 'Code')
         self.assertEqual(hh, can.LookupSector(hh.ID))
 
     def test_getitem(self):
         # Hits both Model and Country GetItem
         mod = Model()
-        can = Country(mod, 'Can', 'CA')
+        can = Country(mod, 'CA', 'Can')
         gov = DoNothingGovernment(can, 'Gov', 'GOV')
         us = Country(mod, 'US', 'US')
         with self.assertRaises(KeyError):
@@ -330,7 +330,7 @@ class TestCountry(TestCase):
 
     def test_contains(self):
         mod = Model()
-        can = Country(mod, 'Can', 'CA')
+        can = Country(mod, 'CA', 'Can')
         gov = DoNothingGovernment(can, 'Gov', 'GOV')
         self.assertIn(gov, can)
 
@@ -350,7 +350,7 @@ class TestCountry(TestCase):
 class TestRegisterCashFlows(TestCase):
     def get_objects(self):
         mod = Model()
-        co = Country(mod, 'name', 'code')
+        co = Country(mod, 'code', 'name')
         sec1 = Sector(co, 'Sector1', 'SEC1')
         sec2 = Sector(co, 'Sector2', 'SEC2')
         return mod, sec1, sec2
@@ -377,27 +377,27 @@ class TestCurrencyZone(TestCase):
     def test_create1(self):
         mod = Model()
         self.assertEqual(0, len(mod.CurrencyZoneList))
-        ca = Country(mod, 'Name', 'CA')
+        ca = Country(mod, 'CA', 'Name')
         self.assertEqual(1, len(mod.CurrencyZoneList))
-        us = Country(mod, 'Name', 'US')
+        us = Country(mod, 'US', 'Name')
         self.assertEqual(2, len(mod.CurrencyZoneList))
 
     def test_create2(self):
         mod = Model()
         self.assertEqual(0, len(mod.CurrencyZoneList))
-        ca = Country(mod, 'Name', 'CA', currency='RMB')
+        ca = Country(mod, 'CA', 'Name', currency='RMB')
         self.assertEqual(1, len(mod.CurrencyZoneList))
-        us = Country(mod, 'Name', 'US', currency='RMB')
+        us = Country(mod, 'US', 'Name', currency='RMB')
         self.assertEqual(1, len(mod.CurrencyZoneList))
         self.assertEqual('RMB', mod.CurrencyZoneList[0].Currency)
 
     def test_get_sectors(self):
         mod = Model()
-        ca = Country(mod, 'Name', 'CA', currency='CAD')
+        ca = Country(mod, 'CA', 'Name', currency='CAD')
         ca_h = Sector(ca, 'Sec', 'HH')
-        us = Country(mod, 'Name', 'US', currency='RMB')
+        us = Country(mod, 'US', 'Name', currency='RMB')
         us_h = Sector(us, 'name', 'HH')
-        china = Country(mod, 'Name', 'China', currency='RMB')
+        china = Country(mod, 'China', 'Name', currency='RMB')
         china_h = Sector(china, 'name', 'HH')
         self.assertEqual([ca_h,], ca_h.CurrencyZone.GetSectors())
         print(china_h.ID)
@@ -407,9 +407,9 @@ class TestCurrencyZone(TestCase):
 
     def test_lookup_sector(self):
         mod = Model()
-        ca = Country(mod, 'Name', 'CA', currency='CAD')
+        ca = Country(mod, 'CA', 'Name', currency='CAD')
         ca_h = Sector(ca, 'Sec', 'HH')
-        us = Country(mod, 'Name', 'US', currency='CAD')
+        us = Country(mod, 'US', 'Name', currency='CAD')
         us_h = Sector(us, 'name', 'HH')
         us_gov = Sector(us, 'name', "GOV")
         czone = ca_h.CurrencyZone

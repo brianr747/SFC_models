@@ -30,7 +30,7 @@ def main():
     # Create model, which holds all entities
     mod = Model()
     # Create first country - Canada. (This model only has one country.)
-    can = Country(mod, 'Canada', 'CA')
+    can = Country(mod, 'CA', 'Canada')
     # Create sectors
     tre = Treasury(can, 'Treasury', 'TRE')
     cb = CentralBank(can, 'Central Bank', 'CB', treasury=tre)

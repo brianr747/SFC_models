@@ -33,7 +33,7 @@ def main():
     mod = Model()
     mod.EquationSolver.TraceStep = 10
     # Create first country - Canada. (This model only has one country.)
-    can = Country(mod, 'Canada', 'CA')
+    can = Country(mod, 'CA', 'Canada')
     # Create sectors
     gov = DoNothingGovernment(can, 'Government', 'GOV')
     hh = Household(can, 'Household', 'HH', alpha_income=.6, alpha_fin=.4)

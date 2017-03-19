@@ -45,6 +45,11 @@ if "main" in dir(ex20170225_Model_REG):
     ex20170225_Model_REG.main()
 
 
+import ex20170307_Model_REG2
+if "main" in dir(ex20170307_Model_REG2):
+    ex20170307_Model_REG2.main()
+
+
 import intro_3_02_example
 if "main" in dir(intro_3_02_example):
     intro_3_02_example.main()
@@ -68,6 +73,21 @@ if "main" in dir(intro_3_03_hello_world_3):
 import intro_3_03_hello_world_4
 if "main" in dir(intro_3_03_hello_world_4):
     intro_3_03_hello_world_4.main()
+
+
+import sfcmod_FX
+if "main" in dir(sfcmod_FX):
+    sfcmod_FX.main()
+
+
+import sfcmod_OPENG
+if "main" in dir(sfcmod_OPENG):
+    sfcmod_OPENG.main()
+
+
+import sfcmod_REG2
+if "main" in dir(sfcmod_REG2):
+    sfcmod_REG2.main()
 
 
 import SIM_Model_With_Capitalists
