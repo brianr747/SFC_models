@@ -15,6 +15,25 @@ For another take on SFC models in Python see: https://github.com/kennt/monetary-
 
 Developed under Python 3.4, and is compatible with Python 2.7.
 
+Description Syntax Change
+-------------------------
+
+In Version 0.5, the constructor order for Country and Sector objects will be changed.
+The long_name (or description) variable is going to be demoted to optional. It will now
+be possible to create objects with just two arguments::
+
+ca = Country(model_object, 'CA')
+
+instead of (old syntax)::
+
+ca = Country(model_object, 'Canada', 'CA')
+
+This change will first show up in a new branch, and the code base within sfc_models will be
+refactored. Once done, it will be merged into the development/master branches.
+
+In my view, this is a major quality of life improvement for future users, at the cost of breaking
+what I assume is still a small base of external user's code.
+
 Road To Version 1.0
 -------------------
 
@@ -43,11 +62,13 @@ involves a major refactoring of the code, and has changed behaviour.
   module. The existing *sectors.py* was renamed to *sector_definitions.py*. My old
   example code that did "import \*" from *sfc_models.models* no longer works. (?)
 
-There are no *major* refactorings now expected to take place before version 1.0 release. As a result,
-the project status will be changed to 'beta' in Version 0.4. Methods that are not expected to be
-used by people who are not creating new classes will have '_' added in front of their name (so they
-disappear from help()), but this is viewed as acceptable. Otherwise, variables and methods will
-only be renamed if they are obviously not following a standard pattern.
+There are no *major* refactorings now expected to take place before version 1.0 release.
+**(Update: the previous statement turned out to be dead wrong; see the discussion of
+the description change above.)** As a result, the project status will be changed to
+'beta' in Version 0.4. Methods that are not expected to be used by people who are not
+creating new classes will have '_' added in front of their name (so they disappear from
+help()), but this is viewed as acceptable. Otherwise, variables and methods will only be
+renamed if they are obviously not following a standard pattern.
 
 Sub-package: gl_book
 --------------------
@@ -82,6 +103,7 @@ relies upon economic intuition to reduce the dimension of the search space.
 
 Dependencies
 ------------
+
 - *matplotlib*: for plots in *examples*. (Essentially optional, may be required later
   if the solver algorithm needs beefing up.)
 
