@@ -8,7 +8,7 @@ class Sector(EconomicObject):
     All sectors derive from this class.
     """
 
-    def __init__(self, country, long_name, code, has_F=True):
+    def __init__(self, country, code, long_name='', has_F=True):
         self.Code = code
         EconomicObject.__init__(self, country, code=code)
         self.CurrencyZone = country.CurrencyZone
@@ -323,8 +323,8 @@ class Market(Sector):
     Market Not really a sector, but keep it in the same list.
     """
 
-    def __init__(self, country, long_name, code):
-        Sector.__init__(self, country, long_name, code, has_F=False)
+    def __init__(self, country, code, long_name=''):
+        Sector.__init__(self, country, code, long_name, has_F=False)
         self.AddVariable('SUP_' + code, 'Supply for market ' + code, '')
         self.AddVariable('DEM_' + code, 'Demand for market ' + code, '')
         self.ResidualSupply = None
@@ -501,8 +501,8 @@ class Market(Sector):
 
         >>> mod = Model()
         >>> ca = Country(mod, 'CA')
-        >>> mar = Market(ca, '', 'GOOD')
-        >>> supplier = Sector(ca,'', 'BUS')
+        >>> mar = Market(ca, 'GOOD')
+        >>> supplier = Sector(ca, 'BUS')
         >>> mar.GetSupplierTerm(supplier)
         'SUP_GOOD'
 
@@ -511,9 +511,9 @@ class Market(Sector):
 
         >>> mod = Model()
         >>> ca = Country(mod, 'CA')
-        >>> us = Country(mod, '', 'US')
-        >>> mar = Market(ca, '', 'GOOD')
-        >>> supplier = Sector(us,'', 'BUS')
+        >>> us = Country(mod, 'US')
+        >>> mar = Market(ca, 'GOOD')
+        >>> supplier = Sector(us, 'BUS')
         >>> mar.GetSupplierTerm(supplier)
         'SUP_CA_GOOD'
 
@@ -532,8 +532,8 @@ class FinancialAssetMarket(Market):
     Must be a single issuer.
     """
 
-    def __init__(self, country, long_name, code, issuer_short_code=''):
-        Market.__init__(self, country, long_name, code)
+    def __init__(self, country, code, long_name='', issuer_short_code='GOV'):
+        Market.__init__(self, country, code, long_name)
         self.IssuerShortCode = issuer_short_code
         self.SearchListSource = self.CurrencyZone
 

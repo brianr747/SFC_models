@@ -30,16 +30,16 @@ def CreateCountry(mod, name, code):
     # Create the country.
     cntry = Country(mod, code, name)
     # Create sectors
-    DoNothingGovernment(cntry, 'Government', 'GOV')
-    hou = Household(cntry, 'Household', 'HH', alpha_income=.75, alpha_fin=.5)
+    DoNothingGovernment(cntry, 'GOV', 'Government')
+    hou = Household(cntry, 'HH', 'Household')
     hou.AddVariable('TaxRate', 'Tax rate for workers', '.2')
-    cap = Capitalists(cntry, 'Capitalists', 'CAP', alpha_income=.2, alpha_fin=.3)
+    cap = Capitalists(cntry, 'CAP', 'Capitalists')
     cap.AddVariable('TaxRate', 'Tax rate for capitalists', '0.3')
-    FixedMarginBusiness(cntry, 'Business Sector', 'BUS', profit_margin=0.2)
+    FixedMarginBusiness(cntry, 'BUS', 'Business Sector')
     # Create the linkages between sectors - tax flow, markets - labour ('LAB'), goods ('GOOD')
-    TaxFlow(cntry, 'TaxFlow', 'TF', .2)
-    Market(cntry, 'Labour market', 'LAB')
-    Market(cntry, 'Goods market', 'GOOD')
+    TaxFlow(cntry, 'TF', 'TaxFlow', .2)
+    Market(cntry, 'LAB', 'Labour market')
+    Market(cntry, 'GOOD', 'Goods market')
     return cntry
 
 

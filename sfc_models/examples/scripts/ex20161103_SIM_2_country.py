@@ -36,14 +36,14 @@ def main():
     # Create first country - Canada.
     can = Country(mod, 'CA', 'Canada')
     # Create sectors
-    gov = DoNothingGovernment(can, 'Government', 'GOV')
-    hh = Household(can, 'Household', 'HH', alpha_income=.6, alpha_fin=.4)
+    gov = DoNothingGovernment(can, 'GOV', 'Government')
+    hh = Household(can, 'HH', 'Household')
     # A literally non-profit business sector
-    bus = FixedMarginBusiness(can, 'Business Sector', 'BUS', profit_margin=0.0)
+    bus = FixedMarginBusiness(can, 'BUS', 'Business Sector')
     # Create the linkages between sectors - tax flow, markets - labour ('LAB'), goods ('GOOD')
-    tax = TaxFlow(can, 'TaxFlow', 'TF', .2)
-    labour = Market(can, 'Labour market', 'LAB')
-    goods = Market(can, 'Goods market', 'GOOD')
+    tax = TaxFlow(can, 'TF', 'TaxFlow', .2)
+    labour = Market(can, 'LAB', 'Labour market')
+    goods = Market(can, 'GOOD', 'Goods market')
 
     # Create a second country, with non-zero profits
     # This is a very error-prone way of building the model; if we repeat code blocks, they should be in
@@ -51,14 +51,14 @@ def main():
     # Create United States - Almost identical to Canada.
     us = Country(mod, 'US', 'United States')
     # Create sectors
-    gov2 = DoNothingGovernment(us, 'Government', 'GOV')
-    hh2 = Household(us, 'Household', 'HH', alpha_income=.6, alpha_fin=.4)
+    gov2 = DoNothingGovernment(us, 'GOV', 'Government')
+    hh2 = Household(us, 'HH', 'Household')
     # ********** Profit margin of 10% *****************
-    bus2 = FixedMarginBusiness(us, 'Business Sector', 'BUS', profit_margin=0.1)
+    bus2 = FixedMarginBusiness(us, 'BUS', 'Business Sector', profit_margin=.1)
     # Create the linkages between sectors - tax flow, markets - labour ('LAB'), goods ('GOOD')
-    tax2 = TaxFlow(us, 'TaxFlow', 'TF', .2)
-    labor2 = Market(us, 'Labor market', 'LAB')
-    goods2 = Market(us, 'Goods market', 'GOOD')
+    tax2 = TaxFlow(us, 'TF', 'TaxFlow', .2)
+    labor2 = Market(us, 'LAB', 'Labor market')
+    goods2 = Market(us, 'GOOD', 'Goods market')
     # *****************************************************************
     # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
     # Since we have a two country model, we need to specify the full sector code, which includes the country code.

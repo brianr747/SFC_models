@@ -18,7 +18,7 @@ class TestHouseHold(TestCase):
     def test_GenerateEquations_alpha(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        hh = Household(can, 'Household', 'HH', alpha_fin=.2, alpha_income=.9)
+        hh = Household(can, 'HH', 'Household', alpha_fin=0.2, alpha_income=0.9)
         hh._GenerateEquations()
         self.assertEqual(hh.EquationBlock['AlphaFin'].RHS(), '0.2000')
         self.assertEqual(hh.EquationBlock['AlphaIncome'].RHS(), '0.9000')
@@ -35,13 +35,12 @@ class TestMultiSupply(TestCase):
     def test_ctor_default(self):
         mod = Model()
         can = Country(mod, 'CA', 'Canada', currency='LOC')
-        marca = Market(can, 'market', 'GOOD')
+        marca = Market(can, 'GOOD', 'market')
         us = Country(mod, 'US', 'US', currency='LOC')
-        marus = Market(us, 'market', 'GOOD')
-        bus = FixedMarginBusinessMultiOutput(can, 'Business', 'BUS',
-                                             market_list=[marca, marus])
-        bus2 = FixedMarginBusinessMultiOutput(us, 'Business', 'BUS',
-                                              market_list=[marca, marus], profit_margin=.1)
+        marus = Market(us, 'GOOD', 'market')
+        bus = FixedMarginBusinessMultiOutput(can, 'BUS', 'Business', market_list=[marca, marus])
+        bus2 = FixedMarginBusinessMultiOutput(us, 'BUS', 'Business', market_list=[marca, marus],
+                                              profit_margin=.1)
         self.assertIn('SUP_GOOD', bus.EquationBlock.Equations)
         self.assertIn('SUP_US_GOOD', bus.EquationBlock.Equations)
         marus.AddSupplier(bus2, 'allocation_equation')
@@ -60,7 +59,7 @@ class TestDoNothingGovernment(TestCase):
     def test_GenerateEquations(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        gov = DoNothingGovernment(can, 'Government', 'GOV')
+        gov = DoNothingGovernment(can, 'GOV', 'Government')
         gov._GenerateEquations()
         self.assertEqual(gov.EquationBlock['DEM_GOOD'].RHS(), '0.0')
 
@@ -69,7 +68,7 @@ class TestTreasury(TestCase):
     def test_GenerateEquations(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        gov = Treasury(can, 'Government', 'GOV')
+        gov = Treasury(can, 'GOV', 'Government')
         gov._GenerateEquations()
         self.assertEqual(gov.EquationBlock['DEM_GOOD'].RHS(), '0.0')
 
@@ -78,8 +77,8 @@ class TestCentralBank(TestCase):
     def test_GenerateEquations(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        tre = Treasury(can, 'Treasury', 'TRE')
-        cb = CentralBank(can, 'Central Bank', 'CB', tre)
+        tre = Treasury(can, 'TRE', 'Treasury')
+        cb = CentralBank(can, 'CB', 'Central Bank', tre)
         mod._GenerateFullSectorCodes()
         cb._GenerateEquations()
         self.assertEqual(cb.Treasury, tre)
@@ -89,11 +88,11 @@ class TestTaxFlow(TestCase):
     def test_GenerateEquations(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        tf = TaxFlow(can, 'Taxation Flows', 'Tax', .1)  # Supply side for the win!
+        tf = TaxFlow(can, 'Tax', 'Taxation Flows', taxrate=.1, taxes_paid_to='GOV')  # Supply side for the win!
         self.assertTrue('T' in tf.EquationBlock.Equations)
         self.assertTrue('TaxRate' in tf.EquationBlock.Equations)
-        hh = Household(can, 'Household', 'HH', alpha_fin=.2, alpha_income=.9)
-        gov = DoNothingGovernment(can, 'Gummint', 'GOV')
+        hh = Household(can, 'HH', 'Household')
+        gov = DoNothingGovernment(can, 'GOV', 'Gummint')
         mod._GenerateFullSectorCodes()
         tf._GenerateEquations()
         self.assertEqual('0.1000', tf.EquationBlock['TaxRate'].RHS())
@@ -106,12 +105,12 @@ class TestTaxFlow(TestCase):
     def test_GenerateEquationsSpecialised(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        tf = TaxFlow(can, 'Taxation Flows', 'Tax', .1)
+        tf = TaxFlow(can, 'Tax', 'Taxation Flows', .1)
         self.assertTrue('T' in tf.EquationBlock.Equations)
         self.assertTrue('TaxRate' in tf.EquationBlock.Equations)
-        hh = Household(can, 'Household', 'HH', alpha_fin=.2, alpha_income=.9)
+        hh = Household(can, 'HH', 'Household')
         hh.AddVariable('TaxRate', 'Sector level tax rate', '0,2')
-        gov = DoNothingGovernment(can, 'Gummint', 'GOV')
+        gov = DoNothingGovernment(can, 'GOV', 'Gummint')
         mod._GenerateFullSectorCodes()
         tf._GenerateEquations()
         self.assertEqual('0.1000', tf.EquationBlock['TaxRate'].RHS())
@@ -126,9 +125,9 @@ class TestFixedMarginBusiness(TestCase):
     def test_ctor_default(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        bus = FixedMarginBusiness(can, 'Business', 'BUS')
+        bus = FixedMarginBusiness(can, 'BUS', 'Business')
         self.assertEqual(0., bus.ProfitMargin)
-        mar = Market(can, 'market', 'GOOD')
+        mar = Market(can, 'GOOD', 'market')
         mod._GenerateFullSectorCodes()
         bus._GenerateEquations()
         self.assertEqual('GOOD__SUP_GOOD', bus.EquationBlock['DEM_LAB'].RHS().replace(' ', ''))
@@ -136,8 +135,8 @@ class TestFixedMarginBusiness(TestCase):
     def test_GenerateEquations(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        bus = FixedMarginBusiness(can, 'Business', 'BUS', profit_margin=0.1)
-        mar = Market(can, 'market', 'GOOD')
+        bus = FixedMarginBusiness(can, 'BUS', 'Business', profit_margin=0.1)
+        mar = Market(can, 'GOOD', 'market')
         mod._GenerateFullSectorCodes()
         bus._GenerateEquations()
         self.assertEqual('0.900*GOOD__SUP_GOOD', bus.EquationBlock['DEM_LAB'].RHS().replace(' ', ''))
@@ -145,7 +144,7 @@ class TestFixedMarginBusiness(TestCase):
     def test_no_market(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        bus = FixedMarginBusiness(can, 'Business', 'BUS')
+        bus = FixedMarginBusiness(can, 'BUS', 'Business')
         with self.assertRaises(Warning):
             bus._GenerateEquations()
 
@@ -154,9 +153,9 @@ class TestCapitalists(TestCase):
         mod = Model()
         can = Country(mod, 'CA', 'Canada')
         us = Country(mod, 'US', 'US of A')
-        bus = FixedMarginBusiness(can, 'Business', 'BUS', profit_margin=.1)
-        mar = Market(can, 'market', 'GOOD')
-        cap = Capitalists(can, 'Capitalists', 'CAP', .4, .4)
+        bus = FixedMarginBusiness(can, 'BUS', 'Business')
+        mar = Market(can, 'GOOD', 'market')
+        cap = Capitalists(can, 'CAP', 'Capitalists', .4)
         mod._GenerateFullSectorCodes()
         bus._GenerateEquations()
         self.assertEqual('CA_BUS__PROF', cap.EquationBlock['DIV'].RHS())
@@ -166,9 +165,9 @@ class TestMoneyMarket(TestCase):
     def test_all(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        gov = DoNothingGovernment(can, 'Government', 'GOV')
-        hou = Household(can, 'Household', 'HH', .5, .5)
-        hou2 = Household(can, 'Household2', 'HH2', .5, .5)
+        gov = DoNothingGovernment(can, 'GOV', 'Government')
+        hou = Household(can, 'HH', 'Household', .5)
+        hou2 = Household(can, 'HH2', 'Household2', .5)
         mm = MoneyMarket(can)
         mod._GenerateFullSectorCodes()
         mod._GenerateEquations()
@@ -185,9 +184,9 @@ class TestDepositMarket(TestCase):
     def test_all(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        gov = DoNothingGovernment(can, 'Government', 'GOV')
-        hou = Household(can, 'Household', 'HH', .5, .5)
-        dummy = Sector(can, 'Dummy', 'DUM')
+        gov = DoNothingGovernment(can, 'GOV', 'Government')
+        hou = Household(can, 'HH', 'Household', .5)
+        dummy = Sector(can, 'DUM', 'Dummy')
         mm = MoneyMarket(can)
         dep = DepositMarket(can)
         # Need to add demand functions in household sector

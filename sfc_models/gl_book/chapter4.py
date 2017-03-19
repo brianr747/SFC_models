@@ -41,15 +41,18 @@ class PC(GL_book_model):
 
     def build_model(self):
         country = self.Country
-        tre = Treasury(country, 'Treasury', 'TRE')
-        cb = CentralBank(country, 'Central Bank', 'CB', treasury=tre)
-        hh = Household(country, 'Household', 'HH', alpha_income=.6, alpha_fin=.4)
+        tre = Treasury(country, 'TRE', 'Treasury')
+        cb = CentralBank(country, 'CB', 'Central Bank')
+        cb.Treasury = tre
+        hh = Household(country, 'HH', 'Household')
+        hh.AlphaIncome = 0.6
+        hh.AlphaFin = 0.4
         # A literally non-profit business sector
-        bus = FixedMarginBusiness(country, 'Business Sector', 'BUS', profit_margin=0.0)
+        bus = FixedMarginBusiness(country, 'BUS', 'Business Sector')
         # Create the linkages between sectors - tax flow, markets - labour ('LAB'), goods ('GOOD')
-        tax = TaxFlow(country, 'TaxFlow', 'TF', .2, taxes_paid_to='TRE')
-        labour = Market(country, 'Labour market', 'LAB')
-        goods = Market(country, 'Goods market', 'GOOD')
+        tax = TaxFlow(country, 'TF', 'TaxFlow', taxrate=.2, taxes_paid_to='TRE')
+        labour = Market(country, 'LAB', 'Labour market')
+        goods = Market(country, 'GOOD', 'Goods market')
         mm = MoneyMarket(country, issuer_short_code='CB')
         dep = DepositMarket(country, issuer_short_code='TRE')
         # Create the demand for deposits.  ('MON' is the residual asset.)

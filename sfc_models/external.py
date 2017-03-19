@@ -89,8 +89,7 @@ class ExchangeRates(Sector):
     ExternalSector; users should never need to create one independently.
     """
     def __init__(self, external_sector):
-        Sector.__init__(self, country=external_sector, long_name='Exchange Rate Info',
-                        code='XR', has_F=False)
+        Sector.__init__(self, country=external_sector, code='XR', long_name='Exchange Rate Info', has_F=False)
 
     def GetCrossRate(self, local, foreign):
         """
@@ -143,9 +142,8 @@ class ForexTransations(Sector):
     The convention is that each sector exchanges for units of "NUMERAIRE"; we just have to
     ensure that the net transactions for each currency versus "NUMERAIRE" are nil.
     """
-    def __init__(self, external_sector, code='FX'):
-        Sector.__init__(self, country=external_sector,
-                        long_name='Foreign Exchange Transactions', code=code, has_F=False)
+    def __init__(self, external_sector, code='FX', long_name='Foreign Exchange Transactions'):
+        Sector.__init__(self, country=external_sector, code=code, long_name=long_name, has_F=False)
 
     def _SendMoney(self, source_sector, variable_name):
         """
@@ -225,7 +223,7 @@ class ForexTransations(Sector):
 
 
 class InternationalGold(Sector):
-    def __init__(self, external_sector, code='GOLD'):
+    def __init__(self, external_sector, code='GOLD', long_name='International Gold Market'):
         """
         Object to handle international Gold transactions.
 
@@ -238,11 +236,9 @@ class InternationalGold(Sector):
 
         If users want to use this object without calling SetGoldSales, they can call
         SetUpVariables()
-        :param external_sector:
         :param code:
         """
-        Sector.__init__(self, country=external_sector, long_name='International Gold Market',
-                        code=code, has_F=False)
+        Sector.__init__(self, country=external_sector, code=code, long_name=long_name, has_F=False)
         self.Owner = 'Gnomes of Zurich'
 
     def GetVariableName(self, varname):

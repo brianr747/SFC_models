@@ -41,14 +41,14 @@ class SIM(GL_book_model):
 
     def build_model(self):
         country = self.Country
-        gov = DoNothingGovernment(country, 'Government', 'GOV')
-        hh = Household(country, 'Household', 'HH', alpha_income=.6, alpha_fin=.4)
+        gov = DoNothingGovernment(country, 'GOV', 'Government')
+        hh = Household(country, 'HH', 'Household', alpha_income=.6, alpha_fin=.4)
         # A literally non-profit business sector
-        bus = FixedMarginBusiness(country, 'Business Sector', 'BUS', profit_margin=0.0)
+        bus = FixedMarginBusiness(country, 'BUS', 'Business Sector')
         # Create the linkages between sectors - tax flow, markets - labour ('LAB'), goods ('GOOD')
-        tax = TaxFlow(country, 'TaxFlow', 'TF', .2)
-        labour = Market(country, 'Labour market', 'LAB')
-        goods = Market(country, 'Goods market', 'GOOD')
+        tax = TaxFlow(country, 'TF', 'TaxFlow', taxrate=.2)
+        labour = Market(country, 'LAB', 'Labour market')
+        goods = Market(country, 'GOOD', 'Goods market')
         if self.UseBookExogenous:
             # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
             gov.SetExogenous('DEM_GOOD', '[0.,] + [20.,] * 105')
@@ -95,14 +95,14 @@ class SIMEX1(GL_book_model):
 
     def build_model(self):
         country = self.Country
-        gov = DoNothingGovernment(country, 'Government', 'GOV')
-        hh = HouseholdWithExpectations(country, 'Household', 'HH', alpha_income=.6, alpha_fin=.4)
+        gov = DoNothingGovernment(country, 'GOV', 'Government')
+        hh = HouseholdWithExpectations(country, 'HH', 'Household', alpha_income=.6, alpha_fin=.4)
         # A literally non-profit business sector
-        bus = FixedMarginBusiness(country, 'Business Sector', 'BUS', profit_margin=0.0)
+        bus = FixedMarginBusiness(country, 'BUS', 'Business Sector')
         # Create the linkages between sectors - tax flow, markets - labour ('LAB'), goods ('GOOD')
-        tax = TaxFlow(country, 'TaxFlow', 'TF', .2)
-        labour = Market(country, 'Labour market', 'LAB')
-        goods = Market(country, 'Goods market', 'GOOD')
+        tax = TaxFlow(country, 'TF', 'TaxFlow', .2)
+        labour = Market(country, 'LAB', 'Labour market')
+        goods = Market(country, 'GOOD', 'Goods market')
         if self.UseBookExogenous:
             # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
             gov.SetExogenous('DEM_GOOD', '[0.,] + [20.,] * 105')

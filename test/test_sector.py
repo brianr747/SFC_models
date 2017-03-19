@@ -20,22 +20,22 @@ class TestSector(TestCase):
     def test_ctor_chain(self):
         mod = Model()
         country = Country(mod, 'US', 'USA! USA!')
-        household = Sector(country, 'Household', 'HH')
+        household = Sector(country, 'HH', 'Household')
         self.assertEqual(household.Parent.Code, 'US')
         self.assertEqual(household.Parent.Parent.Code, '')
 
     def test_HasNoF(self):
         mod = Model()
         country = Country(mod, 'code', 'name')
-        sec = Sector(country, 'Name', 'Code', has_F=False)
+        sec = Sector(country, 'Code', 'Name', has_F=False)
         self.assertNotIn('F', sec.GetVariables())
 
     def test_BadUnderBars(self):
         mod = Model()
         country = Country(mod, 'US', 'US')
-        sec = Sector(country, 'Bad', 'B__A__D')
+        sec = Sector(country, 'B__A__D', 'Bad')
         sec.AddVariable('foo', 'desc', 'x')
-        sec2 = Sector(country, 'OK sector', 'OK')
+        sec2 = Sector(country, 'OK', 'OK sector')
         mod._GenerateFullSectorCodes()
         with self.assertRaises(ValueError):
             sec.GetVariableName('foo')
@@ -52,7 +52,7 @@ class TestSector(TestCase):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
         # Need to block the automatic creation of F, INC
-        can_hh = Sector(can, 'Household', 'HH', has_F=False)
+        can_hh = Sector(can, 'HH', 'Household', has_F=False)
         can_hh.AddVariable('y', 'Vertical axis', '2.0')
         can_hh.AddVariable('x', 'Horizontal axis', 'y - t')
         self.assertEqual(can_hh.GetVariables(), ['x', 'y'])
@@ -60,7 +60,7 @@ class TestSector(TestCase):
     def test_GetVariableName_1(self):
         mod = Model()
         us = Country(mod, 'US', 'USA')
-        household = Household(us, 'Household', 'HH', .9, .2)
+        household = Household(us, 'HH', 'Household', .9)
         mod._GenerateFullSectorCodes()
         household._GenerateEquations()
         self.assertEqual(household.GetVariableName('AlphaFin'), 'HH__AlphaFin')
@@ -68,7 +68,7 @@ class TestSector(TestCase):
     def test_GetVariableName_2(self):
         mod = Model()
         us = Country(mod, 'US', 'USA')
-        household = Household(us, 'Household', 'HH', .9, .2)
+        household = Household(us, 'HH', 'Household', .9)
         ID = household.ID
         target = '_{0}__{1}'.format(ID, 'AlphaFin')
         self.assertEqual(target, household.GetVariableName('AlphaFin'))
@@ -76,7 +76,7 @@ class TestSector(TestCase):
     def test_GetVariableName_3(self):
         mod = Model()
         us = Country(mod, 'US', 'USA')
-        hh = Sector(us, 'Household', 'HH')
+        hh = Sector(us, 'HH', 'Household')
         mod._GenerateFullSectorCodes()
         with self.assertRaises(KeyError):
             hh.GetVariableName('Kaboom')
@@ -84,7 +84,7 @@ class TestSector(TestCase):
     def test_AddCashFlow(self):
         mod = Model()
         us = Country(mod, 'US', 'USA')
-        s = Sector(us, 'Household', 'HH')
+        s = Sector(us, 'HH', 'Household')
         s.AddCashFlow('A', 'H_A', 'Desc A')
         s.AddCashFlow('- B', 'H_B', 'Desc B')
         s.AddCashFlow(' - C', 'H_C', 'Desc C')
@@ -93,7 +93,7 @@ class TestSector(TestCase):
     def test_AddCashFlow_2(self):
         mod = Model()
         us = Country(mod, 'US', 'USA')
-        s = Sector(us, 'Household', 'HH')
+        s = Sector(us, 'HH', 'Household')
         s.AddCashFlow('A', 'equation', 'Desc A')
         s.AddCashFlow('', 'equation', 'desc')
         with self.assertRaises(ValueError):
@@ -106,7 +106,7 @@ class TestSector(TestCase):
     def test_AddCashFlow_3(self):
         mod = Model()
         us = Country(mod, 'US', 'USA')
-        s = Sector(us, 'Household', 'HH')
+        s = Sector(us, 'HH', 'Household')
         s.AddVariable('X', 'desc', '')
         s.AddCashFlow('X', 'equation', 'Desc A')
         self.assertEqual('equation', s.EquationBlock['X'].RHS())
@@ -114,7 +114,7 @@ class TestSector(TestCase):
     def test_AddCashFlow_bad(self):
         mod = Model()
         us = Country(mod, 'US', 'USA')
-        s = Sector(us, 'Household', 'HH')
+        s = Sector(us, 'HH', 'Household')
         s.AddVariable('X', 'desc', '')
         with self.assertRaises(NotImplementedError):
             # Must be a simple variable as the cash flow
@@ -123,7 +123,7 @@ class TestSector(TestCase):
     def test_AddInitialConditions(self):
         mod = Model()
         us = Country(mod, 'US', 'desc')
-        s = Sector(us, 'desc', 'HH', has_F=False)
+        s = Sector(us, 'HH', 'desc', has_F=False)
         s.AddVariable('x', 'desc','1.0')
         s.AddInitialCondition('x', '10.0')
         targ = [(s.ID, 'x', '10.0'), ]
@@ -132,14 +132,14 @@ class TestSector(TestCase):
     def test_GenerateIncomeEquations(self):
         mod = Model()
         us = Country(mod, 'US', 'USA')
-        s = Sector(us, 'Household', 'HH')
+        s = Sector(us, 'HH', 'Household')
         self.assertEqual('LAG_F', s.EquationBlock['F'].RHS())
         self.assertEqual('F(k-1)', s.EquationBlock['LAG_F'].RHS())
 
     def test_GenerateIncomeEquations_2(self):
         mod = Model()
         us = Country(mod, 'US', 'USA')
-        s = Sector(us, 'Household', 'HH')
+        s = Sector(us, 'HH', 'Household')
         s.AddCashFlow('X', 'eq')
         self.assertEqual('LAG_F+X', s.EquationBlock['F'].RHS())
         self.assertEqual('F(k-1)', s.EquationBlock['LAG_F'].RHS())
@@ -147,7 +147,7 @@ class TestSector(TestCase):
     def test_GenerateIncomeEquations_3(self):
         mod = Model()
         us = Country(mod, 'US', 'USA')
-        s = Sector(us, 'Household', 'HH')
+        s = Sector(us, 'HH', 'Household')
         s.AddCashFlow('X', 'eq')
         s.AddCashFlow('Y', 'eq2')
         self.assertEqual('LAG_F+X+Y', s.EquationBlock['F'].RHS())
@@ -156,7 +156,7 @@ class TestSector(TestCase):
     def test_GenerateFinalEquations(self):
         mod = Model()
         us = Country(mod, 'US', 'USA')
-        s = Sector(us, 'Household', 'HH', has_F=False)
+        s = Sector(us, 'HH', 'Household', has_F=False)
         mod._GenerateFullSectorCodes()
         # Can no longer directly inject data into the Sector object
         s.AddVariableFromEquation('x=a+1 # foo')
@@ -171,7 +171,7 @@ class TestSector(TestCase):
     def test_GenerateAssetWeightings_1(self):
         mod = Model()
         us = Country(mod, 'US', 'USA')
-        s = Sector(us, 'Household', 'HH')
+        s = Sector(us, 'HH', 'Household')
         s.GenerateAssetWeighting((), 'MON')
         self.assertEqual('1.0', s.EquationBlock['WGT_MON'].RHS())
         self.assertEqual('F*WGT_MON', kill_spaces(s.EquationBlock['DEM_MON'].RHS()))
@@ -195,7 +195,7 @@ class TestSector(TestCase):
     def test_GenerateAssetWeightings_2(self):
         mod = Model()
         us = Country(mod, 'US', 'USA')
-        s = Sector(us, 'Household', 'HH')
+        s = Sector(us, 'HH', 'Household')
         s.GenerateAssetWeighting([('BOND', '0.5'), ], 'MON')
         self.assertEqual('0.5', s.EquationBlock['WGT_BOND'].RHS())
         self.assertEqual('F*WGT_BOND', kill_spaces(s.EquationBlock['DEM_BOND'].RHS()))
@@ -205,7 +205,7 @@ class TestSector(TestCase):
     def test_GenerateAssetWeightingAbsolute(self):
         mod = Model()
         us = Country(mod, 'US', 'USA')
-        s = Sector(us, 'Household', 'HH')
+        s = Sector(us, 'HH', 'Household')
         with self.assertRaises(NotImplementedError):
             s.GenerateAssetWeighting([('BOND', '0.5'), ], 'MON',
                                      is_absolute_weighting=True)
@@ -213,14 +213,14 @@ class TestSector(TestCase):
     def test_SetExogenous(self):
         mod = Model()
         us = Country(mod, 'US', 'USA')
-        s = Sector(us, 'Household', 'HH')
+        s = Sector(us, 'HH', 'Household')
         s.SetExogenous('varname', 'val')
         self.assertEqual([(s, 'varname', 'val'), ], mod.Exogenous)
 
     def test_setRHS(self):
         mod = Model()
         us = Country(mod, 'US', 'USA')
-        s = Sector(us, 'Household', 'HH')
+        s = Sector(us, 'HH', 'Household')
         s.AddVariable('foo', 'variable foo', 'x')
         self.assertEqual('x', s.EquationBlock['foo'].RHS())
         s.SetEquationRightHandSide('foo', 'y')
@@ -231,7 +231,7 @@ class TestSector(TestCase):
     def test_AddTerm(self):
         mod = Model()
         us = Country(mod, 'US', 'USA! USA!')
-        s = Sector(us, 'Desc', 'SEC')
+        s = Sector(us, 'SEC', 'Desc')
         s.AddVariable('SUP_GOOD', 'Supply of goods', '')
         s.AddTermToEquation('SUP_GOOD', 'Kaboom')
         self.assertEqual('Kaboom', s.EquationBlock['SUP_GOOD'].RHS())
@@ -239,18 +239,18 @@ class TestSector(TestCase):
     def test_AddTerm_KeyError(self):
         mod = Model()
         us = Country(mod, 'US', 'USA! USA!')
-        s = Sector(us, 'Desc', 'SEC')
+        s = Sector(us, 'SEC', 'Desc')
         with self.assertRaises(KeyError):
             s.AddTermToEquation('SUP', 'x')
 
     def test_IsSharedCurrencyZone(self):
         mod = Model()
         ca = Country(mod, 'CA', 'Name', currency='CAD')
-        ca_h = Sector(ca, 'Sec', 'HH')
+        ca_h = Sector(ca, 'HH', 'Sec')
         us = Country(mod, 'US', 'Name', currency='RMB')
-        us_h = Sector(us, 'name', 'HH')
+        us_h = Sector(us, 'HH', 'name')
         china = Country(mod, 'China', 'Name', currency='RMB')
-        china_h = Sector(china, 'name', 'HH')
+        china_h = Sector(china, 'HH', 'name')
         self.assertFalse(ca_h.IsSharedCurrencyZone(us_h))
         self.assertFalse(us_h.IsSharedCurrencyZone(ca_h))
         self.assertTrue(us_h.IsSharedCurrencyZone(china_h))
@@ -259,9 +259,9 @@ class TestMarket(TestCase):
     def test_GenerateEquations(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        mar = Market(can, 'Market', 'LAB')
-        bus = Sector(can, 'Business', 'BUS')
-        hh = Sector(can, 'Household', 'HH')
+        mar = Market(can, 'LAB', 'Market')
+        bus = Sector(can, 'BUS', 'Business')
+        hh = Sector(can, 'HH', 'Household')
         bus.AddVariable('DEM_LAB', 'desc', 'x')
         hh.AddVariable('SUP_LAB', 'desc 2', '')
         mod._GenerateFullSectorCodes()
@@ -276,8 +276,8 @@ class TestMarket(TestCase):
     def test_GenerateEquations_no_supply(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        mar = Market(can, 'Market', 'LAB')
-        bus = Sector(can, 'Business', 'BUS')
+        mar = Market(can, 'LAB', 'Market')
+        bus = Sector(can, 'BUS', 'Business')
         bus.AddVariable('DEM_LAB', 'desc', '')
         mod._GenerateFullSectorCodes()
         with self.assertRaises(ValueError):
@@ -286,10 +286,10 @@ class TestMarket(TestCase):
     def test_GenerateEquations_2_supply_fail(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        mar = Market(can, 'Market', 'LAB')
-        bus = Sector(can, 'Business', 'BUS')
-        hh = Sector(can, 'Household', 'HH')
-        hh2 = Sector(can, 'Household', 'HH2')
+        mar = Market(can, 'LAB', 'Market')
+        bus = Sector(can, 'BUS', 'Business')
+        hh = Sector(can, 'HH', 'Household')
+        hh2 = Sector(can, 'HH2', 'Household')
         bus.AddVariable('DEM_LAB', 'desc', 'x')
         hh.AddVariable('SUP_LAB', 'desc 2', '')
         hh2.AddVariable('SUP_LAB', 'desc 2', '')
@@ -300,10 +300,10 @@ class TestMarket(TestCase):
     def test_GenerateEquations_2_supply(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        mar = Market(can, 'Market', 'LAB')
-        bus = Sector(can, 'Business', 'BUS')
-        hh = Sector(can, 'Household', 'HH')
-        hh2 = Sector(can, 'Household', 'HH2')
+        mar = Market(can, 'LAB', 'Market')
+        bus = Sector(can, 'BUS', 'Business')
+        hh = Sector(can, 'HH', 'Household')
+        hh2 = Sector(can, 'HH2', 'Household')
         bus.AddVariable('DEM_LAB', 'desc', 'x')
         hh.AddVariable('SUP_LAB', 'desc 2', '')
         hh2.AddVariable('SUP_LAB', 'desc 2', '')
@@ -320,10 +320,10 @@ class TestMarket(TestCase):
     def test_GenerateEquations_insert_supply(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        mar = Market(can, 'Market', 'LAB')
-        bus = Sector(can, 'Business', 'BUS')
-        hh = Sector(can, 'Household', 'HH')
-        hh2 = Sector(can, 'Household', 'HH2')
+        mar = Market(can, 'LAB', 'Market')
+        bus = Sector(can, 'BUS', 'Business')
+        hh = Sector(can, 'HH', 'Household')
+        hh2 = Sector(can, 'HH2', 'Household')
         bus.AddVariable('DEM_LAB', 'desc', 'x')
         hh.AddVariable('SUP_LAB_WRONG_CODE', 'desc 2', '')
         hh2.AddVariable('SUP_LAB_WRONG_CODE', 'desc 2', '')
@@ -342,11 +342,11 @@ class TestMarket(TestCase):
         # Have to have the same currency for this test
         can = Country(mod, 'CA', 'Canada, Eh?', currency='LOC')
         US = Country(mod, 'US', 'USA! USA!', currency='LOC')
-        mar = Market(can, 'Market', 'LAB')
-        bus = Sector(can, 'Business', 'BUS')
-        hh = Sector(can, 'Household', 'HH')
+        mar = Market(can, 'LAB', 'Market')
+        bus = Sector(can, 'BUS', 'Business')
+        hh = Sector(can, 'HH', 'Household')
         # Somehow, Americans are supplying labour in Canada...
-        hh2 = Sector(US, 'Household', 'HH2')
+        hh2 = Sector(US, 'HH2', 'Household')
         bus.AddVariable('DEM_LAB', 'desc', 'x')
         hh.AddVariable('SUP_LAB', 'desc 2', '')
         hh2.AddVariable('SUP_CA_LAB', 'desc 2', '')
@@ -366,10 +366,10 @@ class TestMarket(TestCase):
         mod = Model()
         can = Country(mod, 'CA', 'Canada, Eh?')
         US = Country(mod, 'US', 'USA! USA!')
-        mar = Market(can, 'Market', 'LAB')
-        bus = Sector(can, 'Business', 'BUS')
-        hh = Sector(can, 'Household', 'HH')
-        hh2 = Sector(can, 'Household', 'HH2')
+        mar = Market(can, 'LAB', 'Market')
+        bus = Sector(can, 'BUS', 'Business')
+        hh = Sector(can, 'HH', 'Household')
+        hh2 = Sector(can, 'HH2', 'Household')
         bus.AddVariable('DEM_LAB', 'desc', 'x')
         hh.AddVariable('SUP_LAB', 'desc 2', '')
         hh2.AddVariable('SUP_LAB', 'desc 2', '')
@@ -390,12 +390,12 @@ class TestMarket(TestCase):
         # Need to stay in the same currency zone
         can = Country(mod, 'CA', 'Canada, Eh?', currency='LOC')
         US = Country(mod, 'US', 'USA! USA!', currency='LOC')
-        mar = Market(can, 'Market', 'LAB')
-        bus = Sector(can, 'Business', 'BUS')
-        hh = Sector(can, 'Household', 'HH')
+        mar = Market(can, 'LAB', 'Market')
+        bus = Sector(can, 'BUS', 'Business')
+        hh = Sector(can, 'HH', 'Household')
         # Somehow, Americans are supplying labour in Canada...
-        hh2 = Sector(US, 'Household', 'HH2')
-        hh3 = Sector(US, 'Household#3', 'HH3')
+        hh2 = Sector(US, 'HH2', 'Household')
+        hh3 = Sector(US, 'HH3', 'Household#3')
         bus.AddVariable('DEM_LAB', 'desc', 'x')
         hh.AddVariable('SUP_LAB', 'desc 2', '')
         hh2.AddVariable('SUP_CA_LAB', 'desc 2', '')
@@ -417,8 +417,8 @@ class TestMarket(TestCase):
     def test_GenerateTermsLowLevel(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        mar = Market(can, 'Market', 'LAB')
-        bus = Sector(can, 'Business', 'BUS')
+        mar = Market(can, 'LAB', 'Market')
+        bus = Sector(can, 'BUS', 'Business')
         bus.AddVariable('DEM_LAB', 'desc', '')
         mod._GenerateFullSectorCodes()
         mar._GenerateTermsLowLevel('DEM', 'Demand')
@@ -428,6 +428,6 @@ class TestMarket(TestCase):
     def test_GenerateTermsLowLevel_3(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        mar = Market(can, 'Market', 'LAB')
+        mar = Market(can, 'LAB', 'Market')
         with self.assertRaises(LogicError):
             mar._GenerateTermsLowLevel('Blam!', 'desc')

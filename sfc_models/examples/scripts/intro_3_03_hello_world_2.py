@@ -34,6 +34,5 @@ sfc_models.register_standard_logs(output_dir='output',
 # Start work.
 mod = Model()
 can = Country(mod, 'CA', 'Canada')
-household = Household(can, 'Household Sector', 'HH',
-                      alpha_income=.7, alpha_fin=.3)
+household = Household(can, 'HH', 'Household Sector')
 mod.main()

@@ -37,14 +37,14 @@ def main():
     # Create first country - Canada. (This model only has one country.)
     can = Country(mod, 'CA', 'Canada')
     # Create sectors
-    gov = DoNothingGovernment(can, 'Government', 'GOV')
-    hh = Household(can, 'Household', 'HH', alpha_income=.6, alpha_fin=.4)
+    gov = DoNothingGovernment(can, 'GOV', 'Government')
+    hh = Household(can, 'HH', 'Household')
     # A literally non-profit business sector
-    bus = FixedMarginBusiness(can, 'Business Sector', 'BUS', profit_margin=0.0)
+    bus = FixedMarginBusiness(can, 'BUS', 'Business Sector')
     # Create the linkages between sectors - tax flow, markets - labour ('LAB'), goods ('GOOD')
-    tax = TaxFlow(can, 'TaxFlow', 'TF', .2)
-    labour = Market(can, 'Labour market', 'LAB')
-    goods = Market(can, 'Goods market', 'GOOD')
+    tax = TaxFlow(can, 'TF', 'TaxFlow', .2)
+    labour = Market(can, 'LAB', 'Labour market')
+    goods = Market(can, 'GOOD', 'Goods market')
     # Add the financial markets
     # GOV -> issuing sector
     mm = MoneyMarket(can, issuer_short_code='GOV')

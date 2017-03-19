@@ -30,7 +30,8 @@ class BaseHousehold(Sector):
     Base class for all household sectors
     """
 
-    def __init__(self, country, long_name, code, alpha_income=.7, alpha_fin=.3, consumption_good_name='GOOD'):
+    def __init__(self, country, code, long_name='', alpha_income=.6, alpha_fin=.4,
+                 consumption_good_name='GOOD'):
         """
         Describes SFC model typical household sector. Subclasses are need to specify
         income source.
@@ -38,11 +39,8 @@ class BaseHousehold(Sector):
         :param country: Country
         :param long_name: str
         :param code: str
-        :param alpha_income: float
-        :param alpha_fin: float
-        :param consumption_good_name: str
         """
-        Sector.__init__(self, country, long_name, code)
+        Sector.__init__(self, country, code, long_name=long_name, has_F=True)
         self.AlphaIncome = alpha_income
         self.AlphaFin = alpha_fin
         self.IsTaxable = True
@@ -66,8 +64,8 @@ class BaseHousehold(Sector):
 
 
 class Household(BaseHousehold):
-    def __init__(self, country, long_name, code, alpha_income=.7, alpha_fin=.3, consumption_good_name='GOOD',
-                 labour_name='LAB'):
+    def __init__(self, country, code, long_name='', alpha_income=.6, alpha_fin=.4,
+                 consumption_good_name='GOOD', labour_name='LAB'):
         """
         Typical household sector, that consumes one good ('GOOD' by default) and
         provides labour ('LAB' by default).
@@ -75,13 +73,9 @@ class Household(BaseHousehold):
         :param country: Country
         :param long_name: str
         :param code: str
-        :param alpha_income: float
-        :param alpha_fin: float
-        :param consumption_good_name: float
-        :param labour_name: str
         """
-        BaseHousehold.__init__(self, country, long_name, code, alpha_income, alpha_fin,
-                               consumption_good_name=consumption_good_name)
+        BaseHousehold.__init__(self, country, code, long_name, alpha_income=alpha_income,
+                               alpha_fin=alpha_fin, consumption_good_name=consumption_good_name)
         self.AddVariable('SUP_' + labour_name, 'Supply of Labour', '0.')
         # self.SetEquationRightHandSide('PreTax', 'SUP_' + labour_name)
 
@@ -101,8 +95,10 @@ class HouseholdWithExpectations(Household):
     of realised after tax income.
     """
 
-    def __init__(self, country, long_name, code, alpha_income=.7, alpha_fin=.3):
-        Household.__init__(self, country, long_name, code, alpha_income, alpha_fin)
+    def __init__(self, country, code, long_name='', alpha_income=.7, alpha_fin=.3,
+                 consumption_good_name='GOOD', labour_name='LAB'):
+        Household.__init__(self, country, code, long_name=long_name, alpha_income=alpha_income,
+                           alpha_fin=alpha_fin, consumption_good_name=consumption_good_name)
         self.SetEquationRightHandSide('DEM_GOOD',
                                       'AlphaIncome * EXP_AfterTax + AlphaFin * LAG_F')
         self.AddVariable('LAG_AfterTax', 'Lagged Aftertax income', 'AfterTax(k-1)')
@@ -117,8 +113,11 @@ class HouseholdWithExpectations(Household):
 
 
 class Capitalists(BaseHousehold):
-    def __init__(self, country, long_name, code, alpha_income=.7, alpha_fin=.3):
-        BaseHousehold.__init__(self, country, long_name, code, alpha_income, alpha_fin)
+    def __init__(self, country, code, long_name='', alpha_income=.7, alpha_fin=.3,
+                 consumption_good_name='GOOD'):
+        BaseHousehold.__init__(self, country, code, long_name=long_name, alpha_fin=alpha_fin,
+                               alpha_income=alpha_income,
+                               consumption_good_name=consumption_good_name)
         self.AddVariable('DIV', 'Dividends', '')
         # self.SetEquationRightHandSide('PreTax', 'DIV')
 
@@ -131,8 +130,8 @@ class DoNothingGovernment(Sector):
     Consolidated government sector. Use this if you do not want to have to deal with
     financial asset holdings.
     """
-    def __init__(self, country, long_name, code):
-        Sector.__init__(self, country, long_name, code)
+    def __init__(self, country, code, long_name=''):
+        Sector.__init__(self, country, code, long_name)
         self.AddVariable('DEM_GOOD', 'Government Consumption of Goods', '0.0')
         self.AddVariable('PRIM_BAL', 'Government Primary Fiscal Balance', 'T - DEM_GOOD')
         self.AddVariable('FISC_BAL', 'Government Fiscal Balance', 'INC')
@@ -141,8 +140,8 @@ class DoNothingGovernment(Sector):
 
 
 class Treasury(Sector):
-    def __init__(self, country, long_name, code):
-        Sector.__init__(self, country, long_name, code)
+    def __init__(self, country, code, long_name=''):
+        Sector.__init__(self, country, code, long_name)
         self.AddVariable('DEM_GOOD', 'Government Consumption of Goods', '0.0')
         self.AddVariable('PRIM_BAL', 'Government Primary Fiscal Balance', 'T - DEM_GOOD')
         # Treasury has no money holdings
@@ -150,8 +149,8 @@ class Treasury(Sector):
 
 
 class CentralBank(Sector):
-    def __init__(self, country, long_name, code, treasury=None):
-        Sector.__init__(self, country, long_name, code)
+    def __init__(self, country, code, long_name='', treasury=None):
+        Sector.__init__(self, country, code, long_name, has_F=True)
         self.Treasury = treasury
         # Demand for deposits = F + Supply of money (Central bank net worth plus money supply)
         self.AddVariable('DEM_DEP', 'Demand for deposits', 'F + SUP_MON')
@@ -163,8 +162,9 @@ class CentralBank(Sector):
 
 
 class FixedMarginBusiness(Sector):
-    def __init__(self, country, long_name, code, profit_margin=0.0, output_name='GOOD', labour_input_name='LAB'):
-        Sector.__init__(self, country, long_name, code)
+    def __init__(self, country, code, long_name='', profit_margin=0.0, labour_input_name='LAB',
+                 output_name='GOOD'):
+        Sector.__init__(self,country, code, long_name, has_F=True)
         self.ProfitMargin = profit_margin
         self.LabourInputName = labour_input_name
         self.OutputName = output_name
@@ -202,8 +202,9 @@ class FixedMarginBusinessMultiOutput(Sector):
     that assume the supply objects exist first!).
     """
 
-    def __init__(self, country, long_name, code, market_list=[], profit_margin=0.0, labour_input_name='LAB'):
-        Sector.__init__(self, country, long_name, code)
+    def __init__(self, country, code, long_name='', profit_margin=0.0,
+                 labour_input_name='LAB', market_list=()):
+        Sector.__init__(self, country, code, long_name=long_name, has_F=True)
         self.ProfitMargin = profit_margin
         self.LabourInputName = labour_input_name
         self.MarketList = market_list
@@ -252,8 +253,8 @@ class TaxFlow(Sector):
     Uses the TaxRate of this object, or the TaxRate of the sector (if it is defined).
     """
 
-    def __init__(self, country, long_name, code, taxrate=0.0, taxes_paid_to='GOV'):
-        Sector.__init__(self, country, long_name, code, has_F=False)
+    def __init__(self, country, code, long_name='', taxrate=0.0, taxes_paid_to='GOV'):
+        Sector.__init__(self, country, code, long_name, has_F=False)
         self.AddVariable('TaxRate', 'Tax rate', '%0.4f' % (taxrate,))
         self.AddVariable('T', 'Taxes Paid', '')
         self.TaxingSector = taxes_paid_to
@@ -305,8 +306,9 @@ class MoneyMarket(FinancialAssetMarket):
     Note that since SUP and DEM are always realised (for now), the money stock is equal to the supply by the issuer.
     """
 
-    def __init__(self, country, long_name='Money', code='MON', issuer_short_code='GOV'):
-        FinancialAssetMarket.__init__(self, country, long_name, code, issuer_short_code)
+    def __init__(self, country, code='MON', long_name='', issuer_short_code='GOV'):
+        FinancialAssetMarket.__init__(self, country, code, long_name,
+                                      issuer_short_code=issuer_short_code)
 
     def _GenerateEquations(self):
         """
@@ -361,8 +363,9 @@ class DepositMarket(FinancialAssetMarket):
     issuer.
     """
 
-    def __init__(self, country, long_name='Deposit', code='DEP', issuer_short_code='GOV'):
-        FinancialAssetMarket.__init__(self, country, long_name, code, issuer_short_code)
+    def __init__(self, country, code='DEP', long_name='', issuer_short_code='GOV'):
+        FinancialAssetMarket.__init__(self, country, code, long_name=long_name,
+                                      issuer_short_code=issuer_short_code)
         self.AddVariable('r', 'Interest rate', '0.')
         self.AddVariable('LAG_r', 'Lagged Interest rate', 'r(k-1)')
 
@@ -410,8 +413,8 @@ class GoldStandardCentralBank(CentralBank):
 
     Must create an ExternalSector object in the model.
     """
-    def __init__(self,  country, long_name, code, treasury=None, initial_gold_stock=0.):
-        CentralBank.__init__(self,  country, long_name, code, treasury)
+    def __init__(self, country, code, long_name='', treasury=None, initial_gold_stock=0.0):
+        CentralBank.__init__(self, country, code, long_name=long_name, treasury=treasury)
         self.InitialGoldStock = initial_gold_stock
 
     def _GenerateEquations(self):
@@ -442,8 +445,8 @@ class GoldStandardGovernment(DoNothingGovernment):
 
     Must create an ExternalSector object in the model.
     """
-    def __init__(self,  country, long_name, code, initial_gold_stock=0.0):
-        DoNothingGovernment.__init__(self,  country, long_name, code)
+    def __init__(self, country, code, long_name='', initial_gold_stock=0.0):
+        DoNothingGovernment.__init__(self, country, code, long_name)
         self.InitialGoldStock = initial_gold_stock
 
     def _GenerateEquations(self):

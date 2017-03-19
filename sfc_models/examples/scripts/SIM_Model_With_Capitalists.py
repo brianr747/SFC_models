@@ -31,15 +31,15 @@ def CreateCountry(mod, name, code):
     # Create the country.
     cntry = Country(mod, code, name)
     # Create sectors
-    DoNothingGovernment(cntry, 'Government', 'GOV')
-    Household(cntry, 'Household', 'HH', alpha_income=.75, alpha_fin=.5)
-    Capitalists(cntry, 'Capitalists', 'CAP', alpha_income=.2, alpha_fin=.3)
+    DoNothingGovernment(cntry, 'GOV', 'Government')
+    Household(cntry, 'HH', 'Household')
+    Capitalists(cntry, 'CAP', 'Capitalists')
     # A literally non-profit business sector
-    FixedMarginBusiness(cntry, 'Business Sector', 'BUS', profit_margin=0.2)
+    FixedMarginBusiness(cntry, 'BUS', 'Business Sector')
     # Create the linkages between sectors - tax flow, markets - labour ('LAB'), goods ('GOOD')
-    TaxFlow(cntry, 'TaxFlow', 'TF', .2)
-    Market(cntry, 'Labour market', 'LAB')
-    Market(cntry, 'Goods market', 'GOOD')
+    TaxFlow(cntry, 'TF', 'TaxFlow', .2)
+    Market(cntry, 'LAB', 'Labour market')
+    Market(cntry, 'GOOD', 'Goods market')
     return cntry
 
 

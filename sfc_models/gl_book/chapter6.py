@@ -43,28 +43,29 @@ class REG(GL_book_model):
     def build_model(self):
         country = self.Country
         # As before, there's only one copy of the governmental sectors
-        tre = Treasury(country, 'Treasury', 'TRE')
-        cb = CentralBank(country, 'Central Bank', 'CB', treasury=tre)
+        tre = Treasury(country, 'TRE', 'Treasury')
+        cb = CentralBank(country, 'CB', 'Central Bank', treasury=tre)
         # Now we split
-        hh_n = Household(country, 'Household - North', 'HH_N', alpha_income=.6, alpha_fin=.4, labour_name='LAB_N',
-                         consumption_good_name='GOOD_N')
-        hh_s = Household(country, 'Household - South', 'HH_S', alpha_income=.7, alpha_fin=.3, labour_name='LAB_S',
-                         consumption_good_name='GOOD_S')
+        hh_n = Household(country, 'HH_N', 'Household - North', alpha_income=.6, alpha_fin=.4,
+                         labour_name='LAB_N', consumption_good_name='GOOD_N')
 
-        goods_n = Market(country, 'Goods market - North', 'GOOD_N')
-        goods_s = Market(country, 'Goods market - South', 'GOOD_S')
+        hh_s = Household(country, 'HH_S', 'Household - South', alpha_income=.7, alpha_fin=.3,
+                         labour_name='LAB_S', consumption_good_name='GOOD_S')
+
+        goods_n = Market(country, 'GOOD_N', 'Goods market - North')
+        goods_s = Market(country, 'GOOD_S', 'Goods market - South')
         goods_n.AddVariable('MU', 'Propensity to import', '0.18781')
         goods_s.AddVariable('MU', 'Propensity to import', '0.18781')
 
         # A literally non-profit business sector
-        bus_n = FixedMarginBusinessMultiOutput(country, 'Business Sector - North', 'BUS_N', [goods_n, goods_s],
+        bus_n = FixedMarginBusinessMultiOutput(country, 'BUS_N', market_list=[goods_n, goods_s],
                                                profit_margin=0.0, labour_input_name='LAB_N')
-        bus_s = FixedMarginBusinessMultiOutput(country, 'Business Sector - South', 'BUS_S', [goods_n, goods_s],
+        bus_s = FixedMarginBusinessMultiOutput(country, 'BUS_S', market_list=[goods_n, goods_s],
                                                profit_margin=0.0, labour_input_name='LAB_S')
         # Create the linkages between sectors - tax flow, markets - labour ('LAB'), goods ('GOOD')
-        tax = TaxFlow(country, 'TaxFlow', 'TF', .2, taxes_paid_to='TRE')
-        labour_s = Market(country, 'Labour market', 'LAB_S')
-        labour_n = Market(country, 'Labour market', 'LAB_N')
+        tax = TaxFlow(country, 'TF', 'TaxFlow', taxrate=.2, taxes_paid_to='TRE')
+        labour_s = Market(country, 'LAB_S', 'Labour market')
+        labour_n = Market(country, 'LAB_N', 'Labour market')
 
         mm = MoneyMarket(country, issuer_short_code='CB')
         dep = DepositMarket(country, issuer_short_code='TRE')
@@ -180,13 +181,12 @@ class REG2(GL_book_model): # pragma: no cover
         country_name = paramz['Country Name']
         country = Region(model, code=paramz['Country'], long_name=country_name)
         self.Country = country
-        hh = Household(country, long_name='Household ' + country_name, code='HH',
-                       alpha_income=paramz['alpha_income'], alpha_fin=paramz['alpha_fin'])
-        goods = Market(country, 'Goods market ' + country_name, 'GOOD')
-        bus = FixedMarginBusinessMultiOutput(country, 'Business Sector', 'BUS', [goods,])
+        hh = Household(country, code='HH', long_name='Household ' + country_name)
+        goods = Market(country, 'GOOD', 'Goods market ' + country_name)
+        bus = FixedMarginBusinessMultiOutput(country, 'BUS', 'Business Sector', market_list=[goods, ])
         goods.AddSupplier(bus)
         goods.AddVariable('MU', 'Propensity to import', paramz['mu'])
-        labour = Market(country, 'Labour market: ' + country_name, 'LAB')
+        labour = Market(country, 'LAB', 'Labour market: ' + country_name)
 
         # Create the goods demand function
 
@@ -223,11 +223,11 @@ class REG2(GL_book_model): # pragma: no cover
         """
         model = Model()
         central_gov = Region(model, code='GOV', long_name='Central Government Sector')
-        tre = Treasury(central_gov, 'Treasury', 'TRE')
-        cb = CentralBank(central_gov, 'Central Bank', 'CB', tre)
-        mm = MoneyMarket(central_gov, issuer_short_code='CB')
+        tre = Treasury(central_gov, 'TRE', 'Treasury')
+        cb = CentralBank(central_gov, 'CB', 'Central Bank', tre)
+        mm = MoneyMarket(central_gov,issuer_short_code='CB')
         dep = DepositMarket(central_gov, issuer_short_code='TRE')
-        tax = TaxFlow(central_gov, 'TaxFlow', 'TF', .2, taxes_paid_to='TRE')
+        tax = TaxFlow(central_gov, 'TF', 'TaxFlow', taxrate=.2, taxes_paid_to='TRE')
         tre.SetEquationRightHandSide('DEM_GOOD','DEM_N_GOOD + DEM_S_GOOD')
         tre.AddVariable('DEM_N_GOOD', 'Demand for goods in the North', '')
         tre.AddVariable('DEM_S_GOOD', 'Demand for goods in the South', '')
@@ -329,19 +329,18 @@ class OPENG(GL_book_model): # pragma: no cover
         country_name = paramz['Country Name']
         country = Country(model, code=paramz['Country'], description=country_name)
         self.Country = country
-        tre = Treasury(country, 'Treasury', 'TRE')
-        cb = GoldStandardCentralBank(country, 'Central Bank', 'CB', tre, 10.0)
-        mm = MoneyMarket(country, issuer_short_code='CB')
-        dep = DepositMarket(country, issuer_short_code='TRE')
-        tax = TaxFlow(country, 'TaxFlow', 'TF', .2, taxes_paid_to='TRE')
+        tre = Treasury(country, 'TRE', 'Treasury')
+        cb = GoldStandardCentralBank(country, 'CB', 'Central Bank', tre)
+        mm = MoneyMarket(country)
+        dep = DepositMarket(country)
+        tax = TaxFlow(country, 'TF', 'TaxFlow', .2)
 
-        hh = Household(country, long_name='Household ' + country_name, code='HH',
-                       alpha_income=paramz['alpha_income'], alpha_fin=paramz['alpha_fin'])
-        goods = Market(country, 'Goods market ' + country_name, 'GOOD')
-        bus = FixedMarginBusinessMultiOutput(country, 'Business Sector', 'BUS', [goods,])
+        hh = Household(country, code='HH', long_name='Household ' + country_name)
+        goods = Market(country, 'GOOD', 'Goods market ' + country_name)
+        bus = FixedMarginBusinessMultiOutput(country, 'BUS', 'Business Sector', [goods, ])
         goods.AddSupplier(bus)
         goods.AddVariable('MU', 'Propensity to import', paramz['mu'])
-        labour = Market(country, 'Labour market: ' + country_name, 'LAB')
+        labour = Market(country, 'LAB', 'Labour market: ' + country_name)
 
         # Create the goods demand function
 

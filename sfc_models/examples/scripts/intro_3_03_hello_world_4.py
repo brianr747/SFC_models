@@ -34,8 +34,7 @@ sfc_models.register_standard_logs(output_dir='output',
 
 mod = Model()
 can = Country(mod, 'CA', 'Canada')
-household = Household(can, 'Household Sector', 'HH',
-                      alpha_income=.7, alpha_fin=.3)
-business = FixedMarginBusiness(can, 'Business Sector', 'BUS')
-market = Market(can, 'Goods Market', 'GOOD')
+household = Household(can, 'HH', 'Household Sector')
+business = FixedMarginBusiness(can, 'BUS', 'Business Sector')
+market = Market(can, 'GOOD', 'Goods Market')
 mod.main()

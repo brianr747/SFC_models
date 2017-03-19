@@ -32,19 +32,19 @@ def main():
     # Create first country - Canada. (This model only has one country.)
     can = Country(mod, 'CA', 'Canada')
     # Create sectors
-    tre = Treasury(can, 'Treasury', 'TRE')
-    cb = CentralBank(can, 'Central Bank', 'CB', treasury=tre)
-    hh = Household(can, 'Household', 'HH', alpha_income=.6, alpha_fin=.4)
+    tre = Treasury(can, 'TRE', 'Treasury')
+    cb = CentralBank(can, 'CB', 'Central Bank')
+    hh = Household(can, 'HH', 'Household')
     # A literally non-profit business sector
-    bus = FixedMarginBusiness(can, 'Business Sector', 'BUS', profit_margin=0.0)
+    bus = FixedMarginBusiness(can, 'BUS', 'Business Sector')
     # Create the linkages between sectors - tax flow, markets - labour ('LAB'), goods ('GOOD')
-    tax = TaxFlow(can, 'TaxFlow', 'TF', .2, taxes_paid_to='TRE')
-    labour = Market(can, 'Labour market', 'LAB')
-    goods = Market(can, 'Goods market', 'GOOD')
+    tax = TaxFlow(can, 'TF', 'TaxFlow', .2)
+    labour = Market(can, 'LAB', 'Labour market')
+    goods = Market(can, 'GOOD', 'Goods market')
     # Add the financial markets
     # GOV -> issuing sector
-    mm = MoneyMarket(can, issuer_short_code='CB')
-    dep = DepositMarket(can, issuer_short_code='TRE')
+    mm = MoneyMarket(can)
+    dep = DepositMarket(can)
     # --------------------------------------------
     # Financial asset demand equations
     # Need to call this before we set the demand functions for
