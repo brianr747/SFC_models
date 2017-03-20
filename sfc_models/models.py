@@ -700,8 +700,24 @@ class Country(EconomicObject):
     """
 
     def __init__(self, model, code, long_name='', currency=None):
+        """
+        Create a Country object.
+
+        Please note that the Currency cannot be changed by just changing the Currency data member. This
+        is because the membership in a CurrencyZone object defines currency status, and not just the
+        string value of Currency.
+
+        TODO: Create a ChangeCurrency() method.
+
+        :param model: Model
+        :param code: str
+        :param long_name: str
+        :param currency: str
+        """
         EconomicObject.__init__(self, model)
         self.Code = code
+        if long_name == '':
+            long_name = 'Country ' + code
         self.LongName = long_name
         self.SectorList = []
         self.CurrencyZone = None

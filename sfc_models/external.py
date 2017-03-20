@@ -1,3 +1,4 @@
+# coding=utf-8
 from sfc_models.models import Country
 from sfc_models.sector import Sector
 import sfc_models.utils as utils
