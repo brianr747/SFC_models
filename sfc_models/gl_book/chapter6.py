@@ -317,6 +317,8 @@ class OPENG(GL_book_model): # pragma: no cover
 
     Ignores any existing model that is passed in; the entire Model object is built
     from scratch.
+
+    NOTE: Still under development.
     """
 
     def build_country(self, model, paramz):
@@ -327,7 +329,7 @@ class OPENG(GL_book_model): # pragma: no cover
         :return: None
         """
         country_name = paramz['Country Name']
-        country = Country(model, code=paramz['Country'], description=country_name)
+        country = Country(model, code=paramz['Country'], long_name=country_name)
         self.Country = country
         tre = Treasury(country, 'TRE', 'Treasury')
         cb = GoldStandardCentralBank(country, 'CB', 'Central Bank', tre)

@@ -275,6 +275,7 @@ class InternationalGold(Sector):
         sector.AddVariable('LAG_GOLD_OZ', 'Previous period''s gold holdings (oz)', 'GOLD_OZ(k-1)')
         sector.AddVariable('GOLD_OZ', 'Number of oz Held', 'GOLD / GOLDPRICE')
         sector.AddInitialCondition('GOLD_OZ', initial_stock)
+        sector.AddInitialCondition('LAG_GOLD_OZ', initial_stock)
         self.Parent['FX']._SendMoney(sector, flow_variable_name)
         sector.AddCashFlow('-' + flow_variable_name, is_income=False)
         full_flow_variable_name = sector.GetVariableName(flow_variable_name)
