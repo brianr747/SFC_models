@@ -88,7 +88,7 @@ class TestExternalSector(TestCase):
         testfn = mod.GetTimeSeries
         self.assertEqual([0., -5., -10., -15.], testfn('CA_HH__F'))
         self.assertEqual([5., 5., 5., 5.], testfn('EXT_FX__NET_CAD'))
-        self.assertEqual([0, -7.5, -7.5, -7.5], testfn('EXT_FX__NET_USD'))
+        self.assertEqual([-7.5, -7.5, -7.5, -7.5], testfn('EXT_FX__NET_USD'))
         self.assertEqual([0., 0., 0., 0.], testfn('EXT_FX__NET_NUMERAIRE'))
 
     def test_Market_handling(self):

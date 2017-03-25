@@ -111,12 +111,14 @@ class EquationSolver(object):
         Logger('Set Initial Conditions')
         variables = TimeSeriesHolder('k')
         # variables['k'] = list(range(0, self.Parser.MaxTime+1))
+        time_zero_constants = dict()
         # First pass: include exogenous
         for var in self.VariableList:
             if var in self.Parser.InitialConditions:
                 try:
                     ic = eval(self.Parser.InitialConditions[var], globals())
                     ic = float(ic)
+                    time_zero_constants[var] = ic
                 except:
                     raise ValueError('Cannot parse initial conditions for: ' + var)
             else:
@@ -126,7 +128,7 @@ class EquationSolver(object):
             k_series = list(range(0, self.Parser.MaxTime + 1))
             k_series = [float(x) for x in k_series]
             self.Parser.Exogenous.append(('k', k_series))
-        time_zero_constants = dict()
+
         # Second pass: overwrite exogenous
         for var, eqn in self.Parser.Exogenous:
             if type(eqn) == str:
@@ -153,18 +155,24 @@ class EquationSolver(object):
             variables[var] = val[0:self.Parser.MaxTime + 1]
             time_zero_constants[var] = val[0]
         # Third pass: clean up constant endogenous
-        for var, eqn in self.Parser.Endogenous:
-            # noinspection PyBroadException
-            try:
-                val = eval(eqn, globals())
-                if type(val) is int:
-                    val = float(val)
-                if type(val) is float:
-                    variables[var] = [val, ]
-                    time_zero_constants[var] = val
-            except:
-                # If not a constant, we will blow up. We step over any problems.
-                continue
+        changes_made = True
+        while changes_made:
+            changes_made = False
+            for var, eqn in self.Parser.Endogenous:
+                # noinspection PyBroadException
+                if (var in time_zero_constants.keys()) or (var in self.Parser.InitialConditions.keys()):
+                    continue
+                try:
+                    val = eval(eqn, globals(), time_zero_constants)
+                    if type(val) is int:
+                        val = float(val)
+                    if type(val) is float:
+                        variables[var] = [val, ]
+                        time_zero_constants[var] = val
+                        changes_made = True
+                except:
+                    # If not a constant, we will blow up. We step over any problems.
+                    continue
         # Fourth pass: constant decoration
         did_any = True
         while did_any:
@@ -251,13 +259,14 @@ class EquationSolver(object):
             lastval = TS[-1]
             prev = TS[-2]
             bad = False
-            if abs(lastval) < 1e-4:
-                if not abs(prev) < 1e-4:
-                    bad = True
-            else:
-                err = abs(lastval - prev) / lastval
-                if err > self.ParameterInitialSteadyStateErrorToler:
-                    bad = True
+            if abs(lastval-prev) > self.ParameterInitialSteadyStateErrorToler:
+                if abs(lastval) < 1e-4:
+                    if not abs(prev) < 1e-4:
+                        bad = True
+                else:
+                    err = abs(lastval - prev) / lastval
+                    if err > self.ParameterInitialSteadyStateErrorToler:
+                        bad = True
             if bad:
                 bad_variables.append(var)
             else:

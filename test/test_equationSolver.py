@@ -87,7 +87,7 @@ class TestEquationSolver(TestCase):
         v = obj.TimeSeries
         self.assertEqual([10., ] * 4, v['t'])
         self.assertEqual([0, 1, 2, 3], v['k'])
-        self.assertEqual([0.], v['x'])
+        self.assertEqual([10.], v['x'])
         self.assertEqual([math.sqrt(20)], v['z'])
 
     def test_SolveStep_1(self):
@@ -104,11 +104,11 @@ class TestEquationSolver(TestCase):
         obj.ExtractVariableList()
         obj.SetInitialConditions()
         obj.SolveStep(1)
-        self.assertEqual([0., 10.], obj.TimeSeries['x'])
+        self.assertEqual([10., 10.], obj.TimeSeries['x'])
         # Note that equation does not hold at t=0
         self.assertEqual([2., 11.], obj.TimeSeries['z'])
         obj.SolveStep(2)
-        self.assertEqual([0., 10., 10.], obj.TimeSeries['x'])
+        self.assertEqual([10., 10., 10.], obj.TimeSeries['x'])
         # Note that equation does not hold at t=0
         self.assertEqual([2., 11., 11.], obj.TimeSeries['z'])
 
@@ -126,8 +126,8 @@ class TestEquationSolver(TestCase):
         obj.SetInitialConditions()
         obj.SolveStep(1)
         obj.SolveStep(2)
-        self.assertEqual([0., 10., 10.], obj.TimeSeries['x'])
-        self.assertEqual([0., 0., 10.], obj.TimeSeries['z'])
+        self.assertEqual([10., 10., 10.], obj.TimeSeries['x'])
+        self.assertEqual([0., 10., 10.], obj.TimeSeries['z'])
 
     def test_SolveStep_3(self):
         obj = EquationSolver()
@@ -354,7 +354,7 @@ class TestEquationSolver(TestCase):
         obj.SetInitialConditions()
         obj.SolveStep(1)
         obj.SolveStep(2)
-        self.assertEqual([0., .1, .1], obj.TimeSeries['x'])
+        self.assertEqual([0.1, .1, .1], obj.TimeSeries['x'])
 
     def test_FailLog0(self):
         obj = EquationSolver()
@@ -541,7 +541,7 @@ class TestEquationSolver(TestCase):
 
         obj.AddFunction('f', squarer)
         obj.SolveStep(1)
-        self.assertEqual([0., 10.], obj.TimeSeries['x'])
+        self.assertEqual([10., 10.], obj.TimeSeries['x'])
         # Note that equation does not hold at t=0
         self.assertEqual([0., 100.], obj.TimeSeries['z'])
         obj.SolveStep(2)

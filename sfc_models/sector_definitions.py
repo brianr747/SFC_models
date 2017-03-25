@@ -483,5 +483,7 @@ class GoldStandardGovernment(DoNothingGovernment):
         # before solving.
         # It would get the final net supply, remove itself, and use that to set supply.
         self.AddVariable(purchases, desc, '{0} - {1}'.format(purchases, currency_balance))
+        # Set purchases to 0 at k=0 so that we have a well-defined GOLD variable
+        self.AddInitialCondition(purchases, 0.0)
         ext['GOLD'].SetGoldPurchases(self, purchases,
                                      self.InitialGoldStock)
