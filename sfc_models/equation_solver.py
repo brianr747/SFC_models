@@ -160,7 +160,7 @@ class EquationSolver(object):
             changes_made = False
             for var, eqn in self.Parser.Endogenous:
                 # noinspection PyBroadException
-                if (var in time_zero_constants.keys()) or (var in self.Parser.InitialConditions.keys()):
+                if (var in time_zero_constants.keys()) or (var in self.Parser.InitialConditions.keys()): # pragma: no cover [no idea how to trigger this easily...]
                     continue
                 try:
                     val = eval(eqn, globals(), time_zero_constants)

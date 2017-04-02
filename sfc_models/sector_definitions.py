@@ -127,10 +127,10 @@ class Capitalists(BaseHousehold):
         BaseHousehold._GenerateEquations(self)
 
 
-class DoNothingGovernment(Sector):
+class ConsolidatedGovernment(Sector):
     """
     Consolidated government sector. Use this if you do not want to have to deal with
-    financial asset holdings.
+    financial asset holdings; otherwise, you need to decompose into Treasury and CentralBank.
     """
     def __init__(self, country, code, long_name=''):
         if long_name == '':
@@ -139,9 +139,13 @@ class DoNothingGovernment(Sector):
         self.AddVariable('DEM_GOOD', 'Government Consumption of Goods', '0.0')
         self.AddVariable('PRIM_BAL', 'Government Primary Fiscal Balance', 'T - DEM_GOOD')
         self.AddVariable('FISC_BAL', 'Government Fiscal Balance', 'INC')
+        self.AddVariable('T', 'Government Taxes', '0.')
 
-        #self.AddVariable('T', 'Government Taxes', '0.')
-
+class DoNothingGovernment(ConsolidatedGovernment):
+    """
+    Just another name for ConsolidatedGovernment.
+    """
+    pass
 
 class Treasury(Sector):
     def __init__(self, country, code, long_name=''):
@@ -152,12 +156,13 @@ class Treasury(Sector):
         self.AddVariable('PRIM_BAL', 'Government Primary Fiscal Balance', 'T - DEM_GOOD')
         # Treasury has no money holdings
         self.AddVariable('DEM_MON', 'Demand for Money', '0.0')
+        self.AddVariable('T', 'Taxes received', '0.0')
 
 
 class CentralBank(Sector):
     def __init__(self, country, code, long_name='', treasury=None):
         if long_name == '':
-            long_name = 'Central Bank {0} in Country {1}'.format(code, Country.Code)
+            long_name = 'Central Bank {0} in Country {1}'.format(code, country.Code)
         Sector.__init__(self, country, code, long_name, has_F=True)
         self.Treasury = treasury
         # Demand for deposits = F + Supply of money (Central bank net worth plus money supply)
@@ -299,6 +304,7 @@ class TaxFlow(Sector):
         # work on other sectors
         tax_fullname = self.GetVariableName('T')
         gov = self.CurrencyZone.LookupSector(self.TaxingSector)
+        gov.SetEquationRightHandSide('T', tax_fullname)
         gov.AddCashFlow('T', tax_fullname, 'Tax revenue received.')
 
 
@@ -454,7 +460,7 @@ class GoldStandardCentralBank(CentralBank):
                                      self.InitialGoldStock)
 
 
-class GoldStandardGovernment(DoNothingGovernment):
+class GoldStandardGovernment(ConsolidatedGovernment):
     """
     Central bank that undertakes Gold purchases/sales to balance the foreign exchange
     market.
@@ -464,11 +470,11 @@ class GoldStandardGovernment(DoNothingGovernment):
     def __init__(self, country, code, long_name='', initial_gold_stock=0.0):
         if long_name == '':
             long_name = 'Gold Standard Government {0} in Country {1}'.format(code, country.Code)
-        DoNothingGovernment.__init__(self, country, code, long_name)
+        ConsolidatedGovernment.__init__(self, country, code, long_name)
         self.InitialGoldStock = initial_gold_stock
 
     def _GenerateEquations(self):
-        DoNothingGovernment._GenerateEquations(self)
+        ConsolidatedGovernment._GenerateEquations(self)
         ext = self.GetModel().ExternalSector
         if ext is None:
             msg = 'Must Create an ExternalSector in order to use {0}'.format(type(self))

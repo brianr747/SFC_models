@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from sfc_models.models import *
 from sfc_models.sector import Sector
-from sfc_models.sector_definitions import Household, DoNothingGovernment
+from sfc_models.sector_definitions import Household, ConsolidatedGovernment
 
 
 def kill_spaces(s):
@@ -297,13 +297,13 @@ class TestCountry(TestCase):
     def test_AddSector(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        gov = DoNothingGovernment(can, 'GOV', 'Government')
+        gov = ConsolidatedGovernment(can, 'GOV', 'Government')
         self.assertEqual(can.SectorList[0].ID, gov.ID)
 
     def test_LookupSector(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        gov = DoNothingGovernment(can, 'GOV', 'Government')
+        gov = ConsolidatedGovernment(can, 'GOV', 'Government')
         hh = Household(can, 'HH', 'Household', .9)
         self.assertEqual(can.LookupSector('HH').ID, hh.ID)
         self.assertEqual(can.LookupSector('GOV').ID, gov.ID)
@@ -320,7 +320,7 @@ class TestCountry(TestCase):
         # Hits both Model and Country GetItem
         mod = Model()
         can = Country(mod, 'CA', 'Can')
-        gov = DoNothingGovernment(can, 'GOV', 'Gov')
+        gov = ConsolidatedGovernment(can, 'GOV', 'Gov')
         us = Country(mod, 'US', 'US')
         with self.assertRaises(KeyError):
             mod['x']
@@ -331,7 +331,7 @@ class TestCountry(TestCase):
     def test_contains(self):
         mod = Model()
         can = Country(mod, 'CA', 'Can')
-        gov = DoNothingGovernment(can, 'GOV', 'Gov')
+        gov = ConsolidatedGovernment(can, 'GOV', 'Gov')
         self.assertIn(gov, can)
 
     def test_AddCountryFail(self):

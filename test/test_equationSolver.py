@@ -348,13 +348,13 @@ class TestEquationSolver(TestCase):
          z = t
          x=1/z
          exogenous
-         t=[10.]*20
+         t=[0., 10., 10., 10.]
          MaxTime=3""")
         obj.ExtractVariableList()
         obj.SetInitialConditions()
         obj.SolveStep(1)
         obj.SolveStep(2)
-        self.assertEqual([0.1, .1, .1], obj.TimeSeries['x'])
+        self.assertEqual([0., .1, .1], obj.TimeSeries['x'])
 
     def test_FailLog0(self):
         obj = EquationSolver()
@@ -383,11 +383,12 @@ class TestEquationSolver(TestCase):
          w = y
          x = log10(0)
          exogenous
-         t=[10.]*20
-         MaxTime=3""")
+         t=[10., 11., 12.]
+         MaxTime=2""")
         obj.ExtractVariableList()
         obj.SetInitialConditions()
         obj.MaxIterations = 1
+        #obj.SolveStep(1)
         with self.assertRaises(ValueError):
             obj.SolveStep(1)
 

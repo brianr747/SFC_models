@@ -23,14 +23,14 @@ from sfc_models.utils import register_standard_logs
 from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models.models import *
 from sfc_models.sector import Market
-from sfc_models.sector_definitions import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness, Capitalists
+from sfc_models.sector_definitions import Household, ConsolidatedGovernment, TaxFlow, FixedMarginBusiness, Capitalists
 
 
 def CreateCountry(mod, name, code):
     # Create the country.
     cntry = Country(mod, code, name)
     # Create sectors
-    DoNothingGovernment(cntry, 'GOV', 'Government')
+    ConsolidatedGovernment(cntry, 'GOV', 'Government')
     hou = Household(cntry, 'HH', 'Household')
     hou.AddVariable('TaxRate', 'Tax rate for workers', '.2')
     cap = Capitalists(cntry, 'CAP', 'Capitalists')

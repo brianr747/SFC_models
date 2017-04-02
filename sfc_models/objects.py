@@ -40,7 +40,7 @@ from sfc_models.examples.install_examples import install_examples
 from sfc_models.utils import register_standard_logs, LogicError
 from sfc_models.models import Model, Country, Region
 from sfc_models.sector import Market
-from sfc_models.sector_definitions import Household, HouseholdWithExpectations, DoNothingGovernment
+from sfc_models.sector_definitions import Household, HouseholdWithExpectations, ConsolidatedGovernment
 from sfc_models.sector_definitions import Treasury, CentralBank, TaxFlow
 from sfc_models.sector_definitions import GoldStandardCentralBank, GoldStandardGovernment
 from sfc_models.sector_definitions import FixedMarginBusiness, FixedMarginBusinessMultiOutput

@@ -24,7 +24,7 @@ from sfc_models.examples.Quick2DPlot import Quick2DPlot
 from sfc_models.models import Model, Country
 from sfc_models.sector import Market
 from sfc_models.utils import Logger, get_file_base
-from sfc_models.sector_definitions import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness
+from sfc_models.sector_definitions import Household, ConsolidatedGovernment, TaxFlow, FixedMarginBusiness
 
 
 def main():
@@ -36,7 +36,7 @@ def main():
     # Create first country - Canada.
     can = Country(mod, 'CA', 'Canada')
     # Create sectors
-    gov = DoNothingGovernment(can, 'GOV', 'Government')
+    gov = ConsolidatedGovernment(can, 'GOV', 'Government')
     hh = Household(can, 'HH', 'Household')
     # A literally non-profit business sector
     bus = FixedMarginBusiness(can, 'BUS', 'Business Sector')
@@ -51,7 +51,7 @@ def main():
     # Create United States - Almost identical to Canada.
     us = Country(mod, 'US', 'United States')
     # Create sectors
-    gov2 = DoNothingGovernment(us, 'GOV', 'Government')
+    gov2 = ConsolidatedGovernment(us, 'GOV', 'Government')
     hh2 = Household(us, 'HH', 'Household')
     # ********** Profit margin of 10% *****************
     bus2 = FixedMarginBusiness(us, 'BUS', 'Business Sector', profit_margin=.1)

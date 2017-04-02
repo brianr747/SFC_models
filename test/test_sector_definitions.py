@@ -59,9 +59,20 @@ class TestDoNothingGovernment(TestCase):
     def test_GenerateEquations(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        gov = DoNothingGovernment(can, 'GOV', 'Government')
+        gov = ConsolidatedGovernment(can, 'GOV', 'Government')
         gov._GenerateEquations()
         self.assertEqual(gov.EquationBlock['DEM_GOOD'].RHS(), '0.0')
+
+    def test_missing_tax(self):
+        """
+        Test that we can run without TaxFlow without errors.
+        :return:
+        """
+        mod = Model()
+        can = Country(mod, 'CA')
+        ConsolidatedGovernment(can, 'GOV')
+        mod.EquationSolver.MaxTime = 1
+        mod.main()
 
 
 class TestTreasury(TestCase):
@@ -71,6 +82,17 @@ class TestTreasury(TestCase):
         gov = Treasury(can, 'GOV', 'Government')
         gov._GenerateEquations()
         self.assertEqual(gov.EquationBlock['DEM_GOOD'].RHS(), '0.0')
+
+    def test_missing_tax(self):
+        """
+        Just make sure we can build the moddel without throwing an error.
+        :return:
+        """
+        mod = Model()
+        can = Country(mod, 'CA')
+        tre = Treasury(can, 'TRE')
+        mod.EquationSolver.MaxTime = 1
+        mod.main()
 
 
 class TestCentralBank(TestCase):
@@ -83,16 +105,23 @@ class TestCentralBank(TestCase):
         cb._GenerateEquations()
         self.assertEqual(cb.Treasury, tre)
 
+    def test_name(self):
+        mod = Model()
+        ca = Country(mod, 'CA')
+        cb = CentralBank(ca, 'CB')
+        self.assertIn('CB', cb.LongName)
+        self.assertIn('CA', cb.LongName)
+
 
 class TestTaxFlow(TestCase):
     def test_GenerateEquations(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        tf = TaxFlow(can, 'Tax', 'Taxation Flows', taxrate=.1, taxes_paid_to='GOV')  # Supply side for the win!
+        tf = TaxFlow(can, 'Tax', taxrate=.1, taxes_paid_to='GOV')  # Supply side for the win!
         self.assertTrue('T' in tf.EquationBlock.Equations)
         self.assertTrue('TaxRate' in tf.EquationBlock.Equations)
         hh = Household(can, 'HH', 'Household')
-        gov = DoNothingGovernment(can, 'GOV', 'Gummint')
+        gov = ConsolidatedGovernment(can, 'GOV', 'Gummint')
         mod._GenerateFullSectorCodes()
         tf._GenerateEquations()
         self.assertEqual('0.1000', tf.EquationBlock['TaxRate'].RHS())
@@ -110,7 +139,7 @@ class TestTaxFlow(TestCase):
         self.assertTrue('TaxRate' in tf.EquationBlock.Equations)
         hh = Household(can, 'HH', 'Household')
         hh.AddVariable('TaxRate', 'Sector level tax rate', '0,2')
-        gov = DoNothingGovernment(can, 'GOV', 'Gummint')
+        gov = ConsolidatedGovernment(can, 'GOV', 'Gummint')
         mod._GenerateFullSectorCodes()
         tf._GenerateEquations()
         self.assertEqual('0.1000', tf.EquationBlock['TaxRate'].RHS())
@@ -125,7 +154,7 @@ class TestFixedMarginBusiness(TestCase):
     def test_ctor_default(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        bus = FixedMarginBusiness(can, 'BUS', 'Business')
+        bus = FixedMarginBusiness(can, 'BUS')
         self.assertEqual(0., bus.ProfitMargin)
         mar = Market(can, 'GOOD', 'market')
         mod._GenerateFullSectorCodes()
@@ -160,12 +189,22 @@ class TestCapitalists(TestCase):
         bus._GenerateEquations()
         self.assertEqual('CA_BUS__PROF', cap.EquationBlock['DIV'].RHS())
 
+    def test_generate_eqn(self):
+        mod = Model()
+        ca = Country(mod, 'CA')
+        cap = Capitalists(ca, 'CAP')
+        cap.AlphaIncome = 0.99
+        cap.AlphaFin = 0.11
+        cap._GenerateEquations()
+        self.assertEqual('0.9900', cap.EquationBlock['AlphaIncome'].RHS())
+        self.assertEqual('0.1100', cap.EquationBlock['AlphaFin'].RHS())
+
 
 class TestMoneyMarket(TestCase):
     def test_all(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        gov = DoNothingGovernment(can, 'GOV', 'Government')
+        gov = ConsolidatedGovernment(can, 'GOV', 'Government')
         hou = Household(can, 'HH', 'Household', .5)
         hou2 = Household(can, 'HH2', 'Household2', .5)
         mm = MoneyMarket(can)
@@ -184,7 +223,7 @@ class TestDepositMarket(TestCase):
     def test_all(self):
         mod = Model()
         can = Country(mod, 'Eh', 'Canada')
-        gov = DoNothingGovernment(can, 'GOV', 'Government')
+        gov = ConsolidatedGovernment(can, 'GOV', 'Government')
         hou = Household(can, 'HH', 'Household', .5)
         dummy = Sector(can, 'DUM', 'Dummy')
         mm = MoneyMarket(can)

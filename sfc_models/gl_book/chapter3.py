@@ -29,7 +29,7 @@ limitations under the License.
 """
 
 from sfc_models.gl_book import GL_book_model
-from sfc_models.sector_definitions import DoNothingGovernment, Household, FixedMarginBusiness, TaxFlow, HouseholdWithExpectations
+from sfc_models.sector_definitions import ConsolidatedGovernment, Household, FixedMarginBusiness, TaxFlow, HouseholdWithExpectations
 from sfc_models.sector import Market
 
 
@@ -41,7 +41,7 @@ class SIM(GL_book_model):
 
     def build_model(self):
         country = self.Country
-        gov = DoNothingGovernment(country, 'GOV', 'Government')
+        gov = ConsolidatedGovernment(country, 'GOV', 'Government')
         hh = Household(country, 'HH', 'Household', alpha_income=.6, alpha_fin=.4)
         # A literally non-profit business sector
         bus = FixedMarginBusiness(country, 'BUS', 'Business Sector')
@@ -95,7 +95,7 @@ class SIMEX1(GL_book_model):
 
     def build_model(self):
         country = self.Country
-        gov = DoNothingGovernment(country, 'GOV', 'Government')
+        gov = ConsolidatedGovernment(country, 'GOV', 'Government')
         hh = HouseholdWithExpectations(country, 'HH', 'Household', alpha_income=.6, alpha_fin=.4)
         # A literally non-profit business sector
         bus = FixedMarginBusiness(country, 'BUS', 'Business Sector')

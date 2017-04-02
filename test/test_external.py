@@ -149,11 +149,11 @@ class TestExternalSector(TestCase):
         ext = ExternalSector(mod)
         ca = Country(mod, 'CA', 'Canada', currency='CAD')
         us = Country(mod, 'US', 'United States', currency='USD')
-        gov_us = GoldStandardGovernment(us, 'GOV', 'US Gov')
+        gov_us = GoldStandardGovernment(us, 'GOV')
 
         # gov_ca = GoldStandardGovernment(ca, 'CA Gov', 'GOV', 200.)
         tre_ca = Treasury(ca, 'TRE', 'Ministry of Finance')
-        cb_ca = GoldStandardCentralBank(ca, 'CB', 'BoC', tre_ca)
+        cb_ca = GoldStandardCentralBank(ca, 'CB', treasury=tre_ca)
         mon = MoneyMarket(ca, issuer_short_code='CB')
         dep = DepositMarket(ca, issuer_short_code='TRE')
         gov_us.AddVariable('T', 'Government Taxes', '0.')

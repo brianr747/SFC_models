@@ -24,14 +24,14 @@ from sfc_models.utils import register_standard_logs
 from sfc_models.models import Model, Country
 from sfc_models.sector import Market
 from sfc_models.utils import Logger, get_file_base
-from sfc_models.sector_definitions import Household, DoNothingGovernment, TaxFlow, FixedMarginBusiness, Capitalists
+from sfc_models.sector_definitions import Household, ConsolidatedGovernment, TaxFlow, FixedMarginBusiness, Capitalists
 
 
 def CreateCountry(mod, name, code):
     # Create the country.
     cntry = Country(mod, code, name)
     # Create sectors
-    DoNothingGovernment(cntry, 'GOV', 'Government')
+    ConsolidatedGovernment(cntry, 'GOV', 'Government')
     Household(cntry, 'HH', 'Household')
     Capitalists(cntry, 'CAP', 'Capitalists')
     # A literally non-profit business sector
