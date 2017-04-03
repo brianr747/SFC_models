@@ -50,7 +50,7 @@ class TimeSeriesHolder(dict):
     def __init__(self, time_series):
         dict.__init__(self)
         self.TimeSeriesName = time_series
-        self.SortPriority = ('iteration', 'iteration_error', 'k', 't')
+        self.SortPriority = ('iteration', 'iteration_error', 'iteration_abs_change', 'k', 't')
 
     def GetSeriesList(self):
         serlist = list(self.keys())

@@ -299,6 +299,7 @@ class EquationSolver(object):
             self.TimeSeriesStepTrace = TimeSeriesHolder('iteration')
             self.TimeSeriesStepTrace['iteration'] = []
             self.TimeSeriesStepTrace['iteration_error'] = []
+            self.TimeSeriesStepTrace['iteration_abs_change'] = []
             Logger("""
         Values at beginning of step. (Only includes variables that are solved within
         iteration. Decorative variables calculated later).""", log='step')
@@ -344,8 +345,13 @@ class EquationSolver(object):
                 #       log='step')
                 self.TimeSeriesStepTrace['iteration'].append(float(num_tries))
                 self.TimeSeriesStepTrace['iteration_error'].append(relative_error)
+                abs_err = 0.0
                 for k in trace_keys:
+                    if num_tries > 0:
+                        abs_err += abs(initial[k] - self.TimeSeriesStepTrace[k][-1])
                     self.TimeSeriesStepTrace.AppendValue(k, initial[k])
+                self.TimeSeriesStepTrace.AppendValue('iteration_abs_change', abs_err)
+
             # Need to create a copy of the dictionary; saying new_value = initial means that they are
             # the same object.
             new_value = dict()

@@ -29,7 +29,7 @@ instead of (old syntax)::
 ca = Country(model_object, 'Canada', 'CA')
 
 This change will first show up in a new branch, and the code base within sfc_models will be
-refactored. Once done, it will be merged into the development/master branches.
+refactored. The change is completed; the merge will be done with a new version release.
 
 In my view, this is a major quality of life improvement for future users, at the cost of breaking
 what I assume is still a small base of external user's code.
@@ -73,7 +73,7 @@ renamed if they are obviously not following a standard pattern.
 Sub-package: gl_book
 --------------------
 
-The subpackage sfc_models.gl_book contains code to generate models from the text "Monetary Economics"
+The sub-package sfc_models.gl_book contains code to generate models from the text "Monetary Economics"
 by Wynne Godley and Marc Lavoie. The test process uses target output calculated elsewhere to
 validate that *sfc_models* generates effectively the same outcome. It should be noted that
 *sfc_models* has to approach equation-building differently than humans, and so there are more
@@ -87,7 +87,7 @@ Models implemented (objects here generally use the same name name as Monetary Ec
 
 - **Chapter 3** Model SIM, SIMEX
 - **Chapter 4** Model PC
-- **Chapter 6** Model REG (two versions here; REG and REG2).
+- **Chapter 6** Model REG (two versions here; REG and REG2). (I have a variant of model OPENG as well.)
 
 Solution Method
 ---------------
@@ -99,7 +99,8 @@ At present, the machine-generated code uses an iterative approach to solve *x = 
 We just passing an initial guess vector through *f(x)* and hope it converges.
 
 This works for the simple models tested so far. The objective is to augment this by a brute-force search technique that
-relies upon economic intuition to reduce the dimension of the search space.
+relies upon economic intuition to reduce the dimension of the search space. This will be needed for flexible
+currency models.
 
 Dependencies
 ------------
@@ -138,7 +139,7 @@ Change Log
 License/Disclaimer
 ------------------
 
-Copyright 2016 Brian Romanchuk
+Copyright 2016-2017 Brian Romanchuk
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

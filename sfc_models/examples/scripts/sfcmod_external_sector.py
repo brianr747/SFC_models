@@ -109,6 +109,7 @@ def build_model():
     model.AddGlobalEquation('N_trade_balance', 'North trade balance',
                             'S_GOOD__SUP_N_BUS - N_GOOD__SUP_S_BUS')
     model.EquationSolver.MaxTime = 40
+    model.EquationSolver.TraceStep = 5
     # model.EquationSolver.ParameterSolveInitialSteadyState = True
     # model.EquationSolver.ParameterErrorTolerance = 1e-4
     return model
