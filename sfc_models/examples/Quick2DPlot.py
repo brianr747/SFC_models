@@ -112,8 +112,8 @@ class Quick2DPlot(object):
             return
         if type(self.X[0]) == list:
             fig, ax = plt.subplots()
-            ax.plot(self.X[0], self.Y[0], marker='o')
-            ax.plot(self.X[1], self.Y[1], marker='^')
+            ax.plot(self.X[0], self.Y[0], marker='o', markersize=4)
+            ax.plot(self.X[1], self.Y[1], marker='^', markersize=4.5)
             # plt.plot(self.X[0], self.Y[0], self.X[1], self.Y[1], marker='o')
         else:
             plt.plot(self.X, self.Y, marker='o')
