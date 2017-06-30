@@ -26,6 +26,7 @@ spend = mod.GetTimeSeries('GOV__DEM_GOOD')
 
 p = Quick2DPlot([k, k], [spend, Def], title='Spending and Deficit', filename='intro_X_XX_multiplier_deficit.png',
                 run_now=False)
-p.Legend = ['Goverment Consumption', 'Deficit']
+p.Legend = ['G', 'Deficit']
+p.LegendPos = 'center left'
 p.DoPlot()
 Quick2DPlot(k, Rat, title='Debt-to-GDP Ratio', filename='intro_X_XX_multiplier_debt_gdp.png')

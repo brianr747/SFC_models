@@ -16,6 +16,8 @@ def build_model(government_consumption):
     mod.AddGlobalEquation('DEBT_GDP', 'DEBT-TO-GDP RATIO', '-100.*GOV__F/BUS__SUP_GOOD')
     mod.AddGlobalEquation('DEFICIT', 'DEFICIT-TO-GDP RATIO', '-100.*GOV__INC/BUS__SUP_GOOD')
     mod.EquationSolver.MaxTime = 40
+    print(mod.EquationSolver.ParameterErrorTolerance)
+    # mod.EquationSolver.ParameterErrorTolerance = 1e-8
     mod.EquationSolver.ParameterSolveInitialSteadyState = True
     return mod
 

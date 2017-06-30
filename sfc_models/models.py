@@ -665,7 +665,7 @@ class Model(EconomicObject):
         endo = [formatter % x for x in endo]
         exo = [formatter % x for x in exo]
         s = '\n'.join(endo) + '\n\n# Exogenous Variables\n\n' + '\n'.join(exo)
-        s += '\n\nMaxTime = {0}\nErr_Tolerance=0.001'.format(self.MaxTime)
+        s += '\n\nMaxTime = {0}\nErr_Tolerance=1e-6'.format(self.MaxTime)
         return s
 
     def __getitem__(self, item):

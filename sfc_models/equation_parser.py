@@ -37,7 +37,7 @@ class EquationParser(object):
         self.AllEquations = {}
         self.Tokens = {}
         self.MaxTime = 0
-        self.Err_Tolerance = '.001'
+        self.Err_Tolerance = '1e-8'
 
     def ParseString(self, equation_string):
         """
@@ -60,7 +60,7 @@ class EquationParser(object):
         self.InitialConditions = {}
         self.Tokens = {}
         self.MaxTime = 0
-        self.Err_Tolerance = '.001'
+        self.Err_Tolerance = '1e-8'
         equation_list = equation_string.split('\n')
         mode = 'endogenous'
         found_t = False
