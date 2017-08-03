@@ -48,4 +48,5 @@ mod.main()
 CUT = 10
 k = mod.GetTimeSeries('k', cutoff=CUT)
 goods_produced = mod.GetTimeSeries('BUS__SUP_GOOD', cutoff=CUT)
-Quick2DPlot(k, goods_produced, 'Goods Produced (National Output)')
+Quick2DPlot(k, goods_produced, 'Goods Produced (National Output)',
+            filename='intro_5_03_SIM_no_tax_GDP.png')
