@@ -44,6 +44,14 @@ sfc_models.equation_solver module
     :undoc-members:
     :show-inheritance:
 
+sfc_models.external module
+--------------------------
+
+.. automodule:: sfc_models.external
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 sfc_models.models module
 ------------------------
 

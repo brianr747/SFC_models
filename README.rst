@@ -15,11 +15,22 @@ For another take on SFC models in Python see: https://github.com/kennt/monetary-
 
 Developed under Python 3.4, and is compatible with Python 2.7.
 
-Description Syntax Change
--------------------------
+Status: Version 0.5.0
+---------------------
 
-In Version 0.5, the constructor order for Country and Sector objects will be changed.
-The long_name (or description) variable is going to be demoted to optional. It will now
+(Section added on 2017-08-03.)
+
+No major new functionality is expected to be added before Version 1.0. The only planned changes are beefing up
+example code, and any fixes that need to be put into place.
+
+An introductory text is nearing completion. This document is aimed to be the user documentation; the code documentation
+embedded in the code base is just reference and implementation details.
+
+Version 0.5.0 Description Syntax Change
+---------------------------------------
+
+In Version 0.5, the constructor order for Country and Sector objects has been changed.
+The long_name (or description) variable was demoted to optional. It will now
 be possible to create objects with just two arguments::
 
 ca = Country(model_object, 'CA')
@@ -27,9 +38,6 @@ ca = Country(model_object, 'CA')
 instead of (old syntax)::
 
 ca = Country(model_object, 'Canada', 'CA')
-
-This change will first show up in a new branch, and the code base within sfc_models will be
-refactored. The change is completed; the merge will be done with a new version release.
 
 In my view, this is a major quality of life improvement for future users, at the cost of breaking
 what I assume is still a small base of external user's code.
@@ -121,6 +129,7 @@ as being marked as unreached; they have been eliminated with::
 Change Log
 ----------
 
+- **0.5.0** Change to sector constructor order, examples development.
 - **0.4.3** install_examples() GUI added. Python 2.7 fixes.
 - **0.4.2** Small changes, import from *sfc_models.objects* supported.
 - **0.4.1** Fixed packaging problem from Version 0.4.0.

@@ -10,6 +10,8 @@ This document outlines what is expected to be implemented for Version 1.0 of
 that the *sfc_models* will evolve considerably as it used by others, but this
 Version 1.0 will act as a base implementation that matches the book documentation.
 
+As will be seen, very few features will be added.
+
 There will be a "book" branch created for the source code. In this book branch,
 functionality will be frozen to match what is within the book. User code developed
 against the code in this branch will see a frozen *sfc_models* API. The only
@@ -17,37 +19,24 @@ developments that might occur may be an improvement of documentation and example
 This code may be released as versions 1.0.x; e.g., 1.0.3 is the third update
 on the book branch.
 
-This document outlines the economic functionality that will be added, and
-then the code functionality. The list of features to be added is viewed as frozen;
-ideas that may be useful for the future will be added to the TODO document, but
-development will occur in versions 1.1 and later.
-
 Economic Functionality
 ----------------------
 
-The following models from *Monetary Economics* (Godley and Lavoie) are hoped to
-be implemented.
+No more economic functionality will be added ahead of Version 1.0.
 
-- *Model REG* from Chapter 6. **[DONE]**
-- *Model REG2* = *Model REG* with sectors in two Country objects. **[DONE]**
-- *Model OPEN* from Chapter 6. *[Started]*
-- *Model DIS* from Chapter 9.
-- Possibly: *Model DISINF* from Chapter 9.
-- Possibly: *Model INSOUT* from Chapter 10.
+Examples
+--------
 
-Furthermore, a SFC model from the literature may be implemented.
-
-The implementation of these models will require more work on international models
-(*Model OPEN*) and prices and inventories (*DIS*, *DISINF*).
+Examples will be looked at, and set to match what will appear in *Introduction to SFC Models Using Python*.
 
 Code Cleanup
 ------------
 
-The following are the areas of code that will be examined.
+Some code cleanup may be done ahead of the Version 1.0 release, but this is expected to be minor.
 
-- Sanity checks of model output. (Do balance sheets balance?)
+- Sanity checks of model output. (Do balance sheets balance?) **[Deferred]**
 - Logging will be back-filled throughout the code base. The user should be able
-  to see what is happening by looking at the log. **[Started.]**
+  to see what is happening by looking at the log. **[Done]**
 - An Equation class may be added. Previously, equations were just lists of
   strings (str). Only limited functionality is expected to be embedded in
   Version 1.0; the main feature is ensure that the user operations are safe. **[DONE]**
