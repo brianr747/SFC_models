@@ -241,7 +241,7 @@ class TestModel(TestCase):
         # Remove spaces; what matters is the content
         out = out.replace(' ', '').split('\n')
         target = ['x=y+1#comment_x', 'z=d#comment_z', '', '#ExogenousVariables', '', 'y=20#comment_y',
-                  '', 'MaxTime=100', 'Err_Tolerance=0.001']
+                  '', 'MaxTime=100', 'Err_Tolerance=1e-6']
         self.assertEqual(target, out)
 
     def test_dumpequations(self):
