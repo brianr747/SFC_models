@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>sfc_models package &#8212; sfc_models 0.2.0 documentation</title>
+    <title>sfc_models package &#8212; sfc_models 0.5.0 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2.0',
+        VERSION:     '0.5.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="sfc_models 0.2.0 documentation" href="index.html" />
+    <link rel="top" title="sfc_models 0.5.0 documentation" href="index.html" />
     <link rel="next" title="sfc_models.examples package" href="sfc_models.examples.html" />
     <link rel="prev" title="sfc_models Package Documentation" href="index.html" />
    
@@ -611,7 +611,7 @@ Parameters.InitialEquilibriumExcludedVariables</dd>
 <dl class="class">
 <dt id="sfc_models.external.ExchangeRates">
 <em class="property">class </em><code class="descclassname">sfc_models.external.</code><code class="descname">ExchangeRates</code><span class="sig-paren">(</span><em>external_sector</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/external.html#ExchangeRates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.external.ExchangeRates" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
 <p>Object that handles all exchange rate information. Automatically created by
 ExternalSector; users should never need to create one independently.</p>
 <dl class="method">
@@ -651,7 +651,7 @@ country.)</p>
 <dl class="class">
 <dt id="sfc_models.external.ExternalSector">
 <em class="property">class </em><code class="descclassname">sfc_models.external.</code><code class="descname">ExternalSector</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/external.html#ExternalSector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.external.ExternalSector" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.models.Country" title="sfc_models.models.Country"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.Country</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.models.Country" title="sfc_models.models.Country"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.Country</span></code></a></p>
 <p>All international concepts live within an &#8220;ExternalSector&#8221;</p>
 <p>It is a Country, with code = EXT (default)</p>
 <p>The &#8220;currency&#8221; of ExternalSector is &#8216;NUMERAIRE&#8217; (by default).</p>
@@ -703,7 +703,7 @@ implies a stronger local currency versus the foreign.</p>
 <dl class="class">
 <dt id="sfc_models.external.ForexTransations">
 <em class="property">class </em><code class="descclassname">sfc_models.external.</code><code class="descname">ForexTransations</code><span class="sig-paren">(</span><em>external_sector</em>, <em>code='FX'</em>, <em>long_name='Foreign Exchange Transactions'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/external.html#ForexTransations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.external.ForexTransations" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
 <p>Class that holds the equations detailing foreign exchange transactions.</p>
 <p>Object is automatically created by the ExternalSector; default code is &#8220;FX&#8221;</p>
 <p>Since the convention is that all balance sheet items in a Sector object are in the
@@ -719,7 +719,7 @@ ensure that the net transactions for each currency versus &#8220;NUMERAIRE&#8221
 <dl class="class">
 <dt id="sfc_models.external.InternationalGold">
 <em class="property">class </em><code class="descclassname">sfc_models.external.</code><code class="descname">InternationalGold</code><span class="sig-paren">(</span><em>external_sector</em>, <em>code='GOLD'</em>, <em>long_name='International Gold Market'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/external.html#InternationalGold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.external.InternationalGold" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
 <dl class="method">
 <dt id="sfc_models.external.InternationalGold.GetVariableName">
 <code class="descname">GetVariableName</code><span class="sig-paren">(</span><em>varname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/external.html#InternationalGold.GetVariableName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.external.InternationalGold.GetVariableName" title="Permalink to this definition">¶</a></dt>
@@ -763,7 +763,7 @@ limitations under the License.</p>
 <dl class="class">
 <dt id="sfc_models.models.Country">
 <em class="property">class </em><code class="descclassname">sfc_models.models.</code><code class="descname">Country</code><span class="sig-paren">(</span><em>model</em>, <em>code</em>, <em>long_name=''</em>, <em>currency=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Country"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Country" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.models.EconomicObject" title="sfc_models.models.EconomicObject"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.EconomicObject</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.models.EconomicObject" title="sfc_models.models.EconomicObject"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.EconomicObject</span></code></a></p>
 <p>Country class. Somewhat redundant in a closed economy model, but we need for multi-region models.</p>
 <dl class="method">
 <dt id="sfc_models.models.Country.GetSectors">
@@ -786,7 +786,7 @@ limitations under the License.</p>
 <dl class="class">
 <dt id="sfc_models.models.CurrencyZone">
 <em class="property">class </em><code class="descclassname">sfc_models.models.</code><code class="descname">CurrencyZone</code><span class="sig-paren">(</span><em>model</em>, <em>currency</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#CurrencyZone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.CurrencyZone" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.models.EconomicObject" title="sfc_models.models.EconomicObject"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.EconomicObject</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.models.EconomicObject" title="sfc_models.models.EconomicObject"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.EconomicObject</span></code></a></p>
 <p>CurrencyZone: A set of Country {region} objects that share a currency.</p>
 <p>Created automatically by the Model as Country objects are added.</p>
 <dl class="method">
@@ -837,7 +837,7 @@ and so an EconomicObject can exclude itself when iterating through a list of Sec
 <dl class="class">
 <dt id="sfc_models.models.Model">
 <em class="property">class </em><code class="descclassname">sfc_models.models.</code><code class="descname">Model</code><a class="reference internal" href="_modules/sfc_models/models.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.models.EconomicObject" title="sfc_models.models.EconomicObject"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.EconomicObject</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.models.EconomicObject" title="sfc_models.models.EconomicObject"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.EconomicObject</span></code></a></p>
 <p>Model class.</p>
 <p>All other entities live within a model.</p>
 <dl class="method">
@@ -1101,7 +1101,7 @@ calculated.)</p>
 <dl class="class">
 <dt id="sfc_models.models.Region">
 <em class="property">class </em><code class="descclassname">sfc_models.models.</code><code class="descname">Region</code><span class="sig-paren">(</span><em>model</em>, <em>code</em>, <em>long_name=''</em>, <em>currency=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Region"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Region" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.models.Country" title="sfc_models.models.Country"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.Country</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.models.Country" title="sfc_models.models.Country"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.Country</span></code></a></p>
 <p>Region object. Almost same thing as a Country, but it may make some pedantic people happier.</p>
 <p>If currency is not specified, uses the default currency.</p>
 </dd></dl>
@@ -1139,7 +1139,7 @@ limitations under the License.</p>
 <dl class="class">
 <dt id="sfc_models.sector.FinancialAssetMarket">
 <em class="property">class </em><code class="descclassname">sfc_models.sector.</code><code class="descname">FinancialAssetMarket</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>issuer_short_code='GOV'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#FinancialAssetMarket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.FinancialAssetMarket" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Market" title="sfc_models.sector.Market"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Market</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector.Market" title="sfc_models.sector.Market"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Market</span></code></a></p>
 <p>Handles the interactions for a market in a financial asset.
 Must be a single issuer.</p>
 </dd></dl>
@@ -1147,7 +1147,7 @@ Must be a single issuer.</p>
 <dl class="class">
 <dt id="sfc_models.sector.Market">
 <em class="property">class </em><code class="descclassname">sfc_models.sector.</code><code class="descname">Market</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Market"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Market" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
 <p>Market Not really a sector, but keep it in the same list.</p>
 <dl class="method">
 <dt id="sfc_models.sector.Market.AddSupplier">
@@ -1201,7 +1201,7 @@ out = &#8220;SUP_{FullCode}&#8221;</p>
 <dl class="class">
 <dt id="sfc_models.sector.Sector">
 <em class="property">class </em><code class="descclassname">sfc_models.sector.</code><code class="descname">Sector</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>has_F=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Sector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Sector" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.models.EconomicObject" title="sfc_models.models.EconomicObject"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.EconomicObject</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.models.EconomicObject" title="sfc_models.models.EconomicObject"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.EconomicObject</span></code></a></p>
 <p>All sectors derive from this class.</p>
 <dl class="method">
 <dt id="sfc_models.sector.Sector.AddCashFlow">
@@ -1397,26 +1397,26 @@ limitations under the License.</p>
 <dl class="class">
 <dt id="sfc_models.sector_definitions.BaseHousehold">
 <em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">BaseHousehold</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>alpha_income=0.6</em>, <em>alpha_fin=0.4</em>, <em>consumption_good_name='GOOD'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#BaseHousehold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.BaseHousehold" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
 <p>Base class for all household sectors</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="sfc_models.sector_definitions.Capitalists">
 <em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">Capitalists</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>alpha_income=0.7</em>, <em>alpha_fin=0.3</em>, <em>consumption_good_name='GOOD'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#Capitalists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.Capitalists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector_definitions.BaseHousehold" title="sfc_models.sector_definitions.BaseHousehold"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.BaseHousehold</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector_definitions.BaseHousehold" title="sfc_models.sector_definitions.BaseHousehold"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.BaseHousehold</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="sfc_models.sector_definitions.CentralBank">
 <em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">CentralBank</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>treasury=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#CentralBank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.CentralBank" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="sfc_models.sector_definitions.ConsolidatedGovernment">
 <em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">ConsolidatedGovernment</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#ConsolidatedGovernment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.ConsolidatedGovernment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
 <p>Consolidated government sector. Use this if you do not want to have to deal with
 financial asset holdings; otherwise, you need to decompose into Treasury and CentralBank.</p>
 </dd></dl>
@@ -1424,7 +1424,7 @@ financial asset holdings; otherwise, you need to decompose into Treasury and Cen
 <dl class="class">
 <dt id="sfc_models.sector_definitions.DepositMarket">
 <em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">DepositMarket</code><span class="sig-paren">(</span><em>country</em>, <em>code='DEP'</em>, <em>long_name=''</em>, <em>issuer_short_code='GOV'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#DepositMarket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.DepositMarket" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.FinancialAssetMarket" title="sfc_models.sector.FinancialAssetMarket"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.FinancialAssetMarket</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector.FinancialAssetMarket" title="sfc_models.sector.FinancialAssetMarket"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.FinancialAssetMarket</span></code></a></p>
 <p>An interest-bearing deposit. This will act as a stand-in for Treasury bills for now. The price is fixed at 1,
 and pays interest based on the lagged interest rate and lagged holdings.</p>
 <p>Interest rate convention: 0.01 = 1% interest. The variable name is &#8216;r&#8217;; defaults to 0%. In simpler models, will be
@@ -1440,20 +1440,20 @@ issuer.</p>
 <dl class="class">
 <dt id="sfc_models.sector_definitions.DoNothingGovernment">
 <em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">DoNothingGovernment</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#DoNothingGovernment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.DoNothingGovernment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector_definitions.ConsolidatedGovernment" title="sfc_models.sector_definitions.ConsolidatedGovernment"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.ConsolidatedGovernment</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector_definitions.ConsolidatedGovernment" title="sfc_models.sector_definitions.ConsolidatedGovernment"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.ConsolidatedGovernment</span></code></a></p>
 <p>Just another name for ConsolidatedGovernment.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="sfc_models.sector_definitions.FixedMarginBusiness">
 <em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">FixedMarginBusiness</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>profit_margin=0.0</em>, <em>labour_input_name='LAB'</em>, <em>output_name='GOOD'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#FixedMarginBusiness"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.FixedMarginBusiness" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="sfc_models.sector_definitions.FixedMarginBusinessMultiOutput">
 <em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">FixedMarginBusinessMultiOutput</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>profit_margin=0.0</em>, <em>labour_input_name='LAB'</em>, <em>market_list=()</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#FixedMarginBusinessMultiOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.FixedMarginBusinessMultiOutput" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
 <p>Create a business that supplies multiple markets.
 The market objects must exist before creation (so we cannot create Market classes
 that assume the supply objects exist first!).</p>
@@ -1470,7 +1470,7 @@ that assume the supply objects exist first!).</p>
 <dl class="class">
 <dt id="sfc_models.sector_definitions.GoldStandardCentralBank">
 <em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">GoldStandardCentralBank</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>treasury=None</em>, <em>initial_gold_stock=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#GoldStandardCentralBank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.GoldStandardCentralBank" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector_definitions.CentralBank" title="sfc_models.sector_definitions.CentralBank"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.CentralBank</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector_definitions.CentralBank" title="sfc_models.sector_definitions.CentralBank"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.CentralBank</span></code></a></p>
 <p>Central bank that undertakes Gold purchases/sales to balance the foreign exchange
 market.</p>
 <p>Must create an ExternalSector object in the model.</p>
@@ -1479,7 +1479,7 @@ market.</p>
 <dl class="class">
 <dt id="sfc_models.sector_definitions.GoldStandardGovernment">
 <em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">GoldStandardGovernment</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>initial_gold_stock=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#GoldStandardGovernment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.GoldStandardGovernment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector_definitions.ConsolidatedGovernment" title="sfc_models.sector_definitions.ConsolidatedGovernment"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.ConsolidatedGovernment</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector_definitions.ConsolidatedGovernment" title="sfc_models.sector_definitions.ConsolidatedGovernment"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.ConsolidatedGovernment</span></code></a></p>
 <p>Central bank that undertakes Gold purchases/sales to balance the foreign exchange
 market.</p>
 <p>Must create an ExternalSector object in the model.</p>
@@ -1488,13 +1488,13 @@ market.</p>
 <dl class="class">
 <dt id="sfc_models.sector_definitions.Household">
 <em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">Household</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>alpha_income=0.6</em>, <em>alpha_fin=0.4</em>, <em>consumption_good_name='GOOD'</em>, <em>labour_name='LAB'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#Household"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.Household" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector_definitions.BaseHousehold" title="sfc_models.sector_definitions.BaseHousehold"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.BaseHousehold</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector_definitions.BaseHousehold" title="sfc_models.sector_definitions.BaseHousehold"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.BaseHousehold</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="sfc_models.sector_definitions.HouseholdWithExpectations">
 <em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">HouseholdWithExpectations</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>alpha_income=0.7</em>, <em>alpha_fin=0.3</em>, <em>consumption_good_name='GOOD'</em>, <em>labour_name='LAB'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#HouseholdWithExpectations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.HouseholdWithExpectations" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector_definitions.Household" title="sfc_models.sector_definitions.Household"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.Household</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector_definitions.Household" title="sfc_models.sector_definitions.Household"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.Household</span></code></a></p>
 <p>Household sector where consumption is based on expected income.</p>
 <p>The default functionality is that the expected after tax income equals the previous value
 of realised after tax income.</p>
@@ -1503,7 +1503,7 @@ of realised after tax income.</p>
 <dl class="class">
 <dt id="sfc_models.sector_definitions.MoneyMarket">
 <em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">MoneyMarket</code><span class="sig-paren">(</span><em>country</em>, <em>code='MON'</em>, <em>long_name=''</em>, <em>issuer_short_code='GOV'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#MoneyMarket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.MoneyMarket" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.FinancialAssetMarket" title="sfc_models.sector.FinancialAssetMarket"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.FinancialAssetMarket</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector.FinancialAssetMarket" title="sfc_models.sector.FinancialAssetMarket"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.FinancialAssetMarket</span></code></a></p>
 <p>The class that handles &#8220;money&#8221; within the model. The assumption is that the rate of interest is zero, and so this
 is really government money (currency). It probably should be labelled &#8220;currency,&#8221; but that might be confusing.</p>
 <p>(Note from Brian R: The name of this class is painful, as I am currently finishing off &#8220;Abolish Money (From
@@ -1521,7 +1521,7 @@ has a open-ended supply, like other markets.)</p>
 <dl class="class">
 <dt id="sfc_models.sector_definitions.TaxFlow">
 <em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">TaxFlow</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>taxrate=0.0</em>, <em>taxes_paid_to='GOV'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#TaxFlow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.TaxFlow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
 <p>TaxFlow: Not really a sector, but keep it in the same list</p>
 <p>Uses the TaxRate of this object, or the TaxRate of the sector (if it is defined).</p>
 </dd></dl>
@@ -1529,7 +1529,7 @@ has a open-ended supply, like other markets.)</p>
 <dl class="class">
 <dt id="sfc_models.sector_definitions.Treasury">
 <em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">Treasury</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#Treasury"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.Treasury" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="tmp/sfc_models.html#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
 </dd></dl>
 
 </div>
@@ -1989,7 +1989,7 @@ limitations under the License.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2016, Brian Romanchuk.
+      &copy;2017, Brian Romanchuk.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.8</a>
