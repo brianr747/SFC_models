@@ -1,0 +1,2007 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>sfc_models package &#8212; sfc_models 0.2.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="sfc_models 0.2.0 documentation" href="index.html" />
+    <link rel="next" title="sfc_models.examples package" href="sfc_models.examples.html" />
+    <link rel="prev" title="sfc_models Package Documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sfc-models-package">
+<h1>sfc_models package<a class="headerlink" href="#sfc-models-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sfc_models.examples.html">sfc_models.examples package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sfc_models.examples.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sfc_models.examples.html#module-sfc_models.examples.Quick2DPlot">sfc_models.examples.Quick2DPlot module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sfc_models.examples.html#module-sfc_models.examples.install_example_scripts">sfc_models.examples.install_example_scripts module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sfc_models.examples.html#module-sfc_models.examples.install_examples">sfc_models.examples.install_examples module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sfc_models.examples.html#license-disclaimer">License/Disclaimer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sfc_models.examples.html#module-sfc_models.examples">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sfc_models.examples.html#id1">sfc_models.examples package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sfc_models.gl_book.html">sfc_models.gl_book package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sfc_models.gl_book.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sfc_models.gl_book.html#module-sfc_models.gl_book.chapter3">sfc_models.gl_book.chapter3 module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sfc_models.gl_book.html#chapter3-py">chapter3.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sfc_models.gl_book.html#module-sfc_models.gl_book.chapter4">sfc_models.gl_book.chapter4 module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sfc_models.gl_book.html#chapter4-py">chapter4.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sfc_models.gl_book.html#module-sfc_models.gl_book.chapter6">sfc_models.gl_book.chapter6 module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sfc_models.gl_book.html#chapter6-py">chapter6.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sfc_models.gl_book.html#module-sfc_models.gl_book.model_SIM_iterative">sfc_models.gl_book.model_SIM_iterative module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sfc_models.gl_book.html#module-sfc_models.gl_book">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-sfc_models.base_solver">
+<span id="sfc-models-base-solver-module"></span><h2>sfc_models.base_solver module<a class="headerlink" href="#module-sfc_models.base_solver" title="Permalink to this headline">¶</a></h2>
+<p>base_solver.py</p>
+<p>Copyright 2016 Brian Romanchuk</p>
+<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+<dl class="class">
+<dt id="sfc_models.base_solver.BaseSolver">
+<em class="property">class </em><code class="descclassname">sfc_models.base_solver.</code><code class="descname">BaseSolver</code><span class="sig-paren">(</span><em>variable_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/base_solver.html#BaseSolver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.base_solver.BaseSolver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="sfc_models.base_solver.BaseSolver.CreateCsvString">
+<code class="descname">CreateCsvString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/base_solver.html#BaseSolver.CreateCsvString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.base_solver.BaseSolver.CreateCsvString" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.base_solver.BaseSolver.WriteCSV">
+<code class="descname">WriteCSV</code><span class="sig-paren">(</span><em>f_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/base_solver.html#BaseSolver.WriteCSV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.base_solver.BaseSolver.WriteCSV" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-sfc_models.equation">
+<span id="sfc-models-equation-module"></span><h2>sfc_models.equation module<a class="headerlink" href="#module-sfc_models.equation" title="Permalink to this headline">¶</a></h2>
+<p>equation.py</p>
+<p>Classes to implement equation handling.</p>
+<p>The key class is Equation. It allows us to build up simple equations by adding Term objects.
+This is used to create the financial asset and income (&#8216;INC&#8217;) equations.</p>
+<p>{Unfortunately being back-fit into code.}</p>
+<p>Copyright 2017 Brian Romanchuk</p>
+<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+<dl class="class">
+<dt id="sfc_models.equation.Equation">
+<em class="property">class </em><code class="descclassname">sfc_models.equation.</code><code class="descname">Equation</code><span class="sig-paren">(</span><em>lhs</em>, <em>desc=''</em>, <em>rhs=()</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation.html#Equation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation.Equation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>An equation object</p>
+<dl class="method">
+<dt id="sfc_models.equation.Equation.AddTerm">
+<code class="descname">AddTerm</code><span class="sig-paren">(</span><em>term</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation.html#Equation.AddTerm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation.Equation.AddTerm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a term to the equation. May be a string or Term object.
+:param term: Term
+:return: None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation.Equation.GetRightHandSide">
+<code class="descname">GetRightHandSide</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation.html#Equation.GetRightHandSide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation.Equation.GetRightHandSide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the string representation of the right hand side.
+:return: str</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="sfc_models.equation.Equation.ParseString">
+<em class="property">static </em><code class="descname">ParseString</code><span class="sig-paren">(</span><em>eqn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation.html#Equation.ParseString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation.Equation.ParseString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a string, and return a list of Term objects.
+The first Term may be a &#8220;blob&#8221;.
+:param eqn: str
+:return: list</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation.Equation.RHS">
+<code class="descname">RHS</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation.html#Equation.RHS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation.Equation.RHS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience alias for GetRightHandSide()
+:return: str</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation.Equation.ReplaceTokensFromLookup">
+<code class="descname">ReplaceTokensFromLookup</code><span class="sig-paren">(</span><em>lookup</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation.html#Equation.ReplaceTokensFromLookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation.Equation.ReplaceTokensFromLookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace tokens based on lookup dict values.
+:param lookup: dict
+:return:</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.equation.EquationBlock">
+<em class="property">class </em><code class="descclassname">sfc_models.equation.</code><code class="descname">EquationBlock</code><a class="reference internal" href="_modules/sfc_models/equation.html#EquationBlock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation.EquationBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Holds a bloc of equations.</p>
+<p>You can refer to existing equations by using the [] operator.</p>
+<dl class="method">
+<dt id="sfc_models.equation.EquationBlock.AddEquation">
+<code class="descname">AddEquation</code><span class="sig-paren">(</span><em>eqn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation.html#EquationBlock.AddEquation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation.EquationBlock.AddEquation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an Equation object to the block.
+:param eqn: Equation
+:return: None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation.EquationBlock.GetEquationList">
+<code class="descname">GetEquationList</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation.html#EquationBlock.GetEquationList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation.EquationBlock.GetEquationList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a sorted list of equations in the block.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation.EquationBlock.ReplaceTokensFromLookup">
+<code class="descname">ReplaceTokensFromLookup</code><span class="sig-paren">(</span><em>lookup</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation.html#EquationBlock.ReplaceTokensFromLookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation.EquationBlock.ReplaceTokensFromLookup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.equation.Term">
+<em class="property">class </em><code class="descclassname">sfc_models.equation.</code><code class="descname">Term</code><span class="sig-paren">(</span><em>term</em>, <em>is_blob=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation.html#Term"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation.Term" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Term object; only simple ones are supported by now.</p>
+<p>A simple term consists of a variable name plus a sign. The sign is typically +1. or -1.,
+but if the same variable is added to an equation, the sign is additive.</p>
+<p>May be a &#8220;blob,&#8221; which are complex operations that are left untouched.</p>
+<p>Expected additions:
+[1] Constant term
+[2] one variable times (divided by) another.</p>
+<dl class="method">
+<dt id="sfc_models.equation.Term.ReplaceTokensFromLookup">
+<code class="descname">ReplaceTokensFromLookup</code><span class="sig-paren">(</span><em>lookup</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation.html#Term.ReplaceTokensFromLookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation.Term.ReplaceTokensFromLookup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-sfc_models.equation_parser">
+<span id="sfc-models-equation-parser-module"></span><h2>sfc_models.equation_parser module<a class="headerlink" href="#module-sfc_models.equation_parser" title="Permalink to this headline">¶</a></h2>
+<p>equation_parser.py</p>
+<p>Code to parse text blocks of equations.</p>
+<p>Copyright 2017 Brian Romanchuk</p>
+<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+<dl class="class">
+<dt id="sfc_models.equation_parser.EquationParser">
+<em class="property">class </em><code class="descclassname">sfc_models.equation_parser.</code><code class="descname">EquationParser</code><a class="reference internal" href="_modules/sfc_models/equation_parser.html#EquationParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_parser.EquationParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="staticmethod">
+<dt id="sfc_models.equation_parser.EquationParser.CleanupRightHandSide">
+<em class="property">static </em><code class="descname">CleanupRightHandSide</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_parser.html#EquationParser.CleanupRightHandSide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_parser.EquationParser.CleanupRightHandSide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove spaces, leading +</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">EquationParser</span><span class="o">.</span><span class="n">CleanupRightHandSide</span><span class="p">(</span><span class="s1">&#39; +x&#39;</span><span class="p">)</span>
+<span class="go">&#39;x&#39;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation_parser.EquationParser.DumpEquations">
+<code class="descname">DumpEquations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_parser.html#EquationParser.DumpEquations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_parser.EquationParser.DumpEquations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used for logging
+:return: str</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation_parser.EquationParser.EquationReduction">
+<code class="descname">EquationReduction</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_parser.html#EquationParser.EquationReduction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_parser.EquationParser.EquationReduction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduces the difficulty of equations by reducing the number of &#8220;non-decorative&#8221; endogenous variables.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation_parser.EquationParser.FindExactMatches">
+<code class="descname">FindExactMatches</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_parser.html#EquationParser.FindExactMatches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_parser.EquationParser.FindExactMatches" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find cases where one variable is defined to equal another variable. Replace all usages the first variable by the
+second equations, making the first decorative.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">EquationParser</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">ParseString</span><span class="p">(</span><span class="s1">&#39;x = t</span><span class="se">\n</span><span class="s1">t = z*1</span><span class="se">\n</span><span class="s1">z=x+1&#39;</span><span class="p">)</span>
+<span class="go">&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">Endogenous</span>
+<span class="go">[(&#39;x&#39;, &#39;t&#39;), (&#39;t&#39;, &#39;z*1&#39;), (&#39;z&#39;, &#39;x+1&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">GenerateTokenList</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">FindExactMatches</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">Endogenous</span>  <span class="c1"># Instead of z = x, we short-circuit to z=t+1</span>
+<span class="go">[(&#39;x&#39;, &#39;t&#39;), (&#39;t&#39;, &#39;z*1&#39;), (&#39;z&#39;, &#39;t+1&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># this means that x is now decorative</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">MoveDecorative</span><span class="p">()</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">Decoration</span>
+<span class="go">[(&#39;x&#39;, &#39;t&#39;)]</span>
+</pre></div>
+</div>
+<p>The user must avoid creating loops of equality statements; the system will not converge, as it is heavily
+under-determined.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">EquationParser</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">ParseString</span><span class="p">(</span><span class="s1">&#39;x = t</span><span class="se">\n</span><span class="s1">t = x&#39;</span><span class="p">)</span>
+<span class="go">&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">Endogenous</span>
+<span class="go">[(&#39;x&#39;, &#39;t&#39;), (&#39;t&#39;, &#39;x&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">GenerateTokenList</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">FindExactMatches</span><span class="p">()</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">Equality loop between t and x</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation_parser.EquationParser.GenerateTokenList">
+<code class="descname">GenerateTokenList</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_parser.html#EquationParser.GenerateTokenList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_parser.EquationParser.GenerateTokenList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the tokens in all equations, puts then into a dictionary (with the variable as key).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">EquationParser</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">ParseString</span><span class="p">(</span><span class="s1">&#39;x = y + 2*z&#39;</span><span class="p">)</span>
+<span class="go">&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">GenerateTokenList</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">Tokens</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+<span class="go">[&#39;y&#39;, &#39;z&#39;]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation_parser.EquationParser.MoveDecorative">
+<code class="descname">MoveDecorative</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_parser.html#EquationParser.MoveDecorative"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_parser.EquationParser.MoveDecorative" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move endogenous variables to the &#8220;decorative&#8221; category if there is no dependence upon them.
+Returns the number of variables moved.
+:return: int</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">EquationParser</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eq</span> <span class="o">=</span> <span class="s1">&#39;x=t+1</span><span class="se">\n</span><span class="s1">y=4*x</span><span class="se">\n</span><span class="s1">t=5&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">ParseString</span><span class="p">(</span><span class="n">eq</span><span class="p">)</span>
+<span class="go">&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">Endogenous</span>
+<span class="go">[(&#39;x&#39;, &#39;t+1&#39;), (&#39;y&#39;, &#39;4*x&#39;), (&#39;t&#39;, &#39;5&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">GenerateTokenList</span><span class="p">()</span>  <span class="c1"># Need to run before MoveDecorative()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># We see that neither x or t depend upon y.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">MoveDecorative</span><span class="p">()</span>  <span class="c1"># Returns 1 since 1 variable was moved...</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">Decoration</span>
+<span class="go">[(&#39;y&#39;, &#39;4*x&#39;)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">Endogenous</span>
+<span class="go">[(&#39;x&#39;, &#39;t+1&#39;), (&#39;t&#39;, &#39;5&#39;)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation_parser.EquationParser.ParseString">
+<code class="descname">ParseString</code><span class="sig-paren">(</span><em>equation_string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_parser.html#EquationParser.ParseString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_parser.EquationParser.ParseString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses equations, and breaks them up into logical blocks. All comment information is lost.</p>
+<p>Returns a string with warning information.</p>
+<p>By default, always adds the variables &#8216;t&#8217; and &#8216;lag_t&#8217; as a time axis, unless the user specifies an
+equation for those variables.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>equation_string</strong> &#8211; str</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation_parser.EquationParser.RebuildEquations">
+<code class="descname">RebuildEquations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_parser.html#EquationParser.RebuildEquations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_parser.EquationParser.RebuildEquations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace endogenous equations from the AllEquations dict.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation_parser.EquationParser.ValidateInputs">
+<code class="descname">ValidateInputs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_parser.html#EquationParser.ValidateInputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_parser.EquationParser.ValidateInputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Are the equations valid? Currently, only looks for reserved words, and built-in names.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">EquationParser</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">ParseString</span><span class="p">(</span><span class="s1">&#39;yield = .05&#39;</span><span class="p">)</span>
+<span class="go">&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">ValidateInputs</span><span class="p">()</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">NameError</span>: <span class="n">Cannot use variable name: yield, as it is reserved.</span>
+<span class="go">Call sfc_models.utils.get_invalid_variable_names() to get full list.</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">EquationParser</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">ParseString</span><span class="p">(</span><span class="s1">&#39;inc = 2 * import&#39;</span><span class="p">)</span>
+<span class="go">&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">ValidateInputs</span><span class="p">()</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">NameError</span>: <span class="n">Cannot use token in equation: import, as it is reserved.</span>
+<span class="go">Call sfc_models.utils.get_invalid_tokens() to get full list.</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-sfc_models.equation_solver">
+<span id="sfc-models-equation-solver-module"></span><h2>sfc_models.equation_solver module<a class="headerlink" href="#module-sfc_models.equation_solver" title="Permalink to this headline">¶</a></h2>
+<p>equation_solver.py</p>
+<p>Take in a system of equations, and solve.</p>
+<p>Copyright 2017 Brian Romanchuk</p>
+<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+<dl class="exception">
+<dt id="sfc_models.equation_solver.ConvergenceError">
+<em class="property">exception </em><code class="descclassname">sfc_models.equation_solver.</code><code class="descname">ConvergenceError</code><a class="reference internal" href="_modules/sfc_models/equation_solver.html#ConvergenceError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_solver.ConvergenceError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">ValueError</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.equation_solver.EquationSolver">
+<em class="property">class </em><code class="descclassname">sfc_models.equation_solver.</code><code class="descname">EquationSolver</code><span class="sig-paren">(</span><em>equation_string=''</em>, <em>run_equation_reduction=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_solver.html#EquationSolver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_solver.EquationSolver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>EquationSolver - Object to solve equations.</p>
+<dl class="method">
+<dt id="sfc_models.equation_solver.EquationSolver.AddFunction">
+<code class="descname">AddFunction</code><span class="sig-paren">(</span><em>function_name</em>, <em>function_object</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_solver.html#EquationSolver.AddFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_solver.EquationSolver.AddFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a function with the given name so that it can be used when solving equations.
+:param function_name: str
+:param function_object: function
+:return: None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation_solver.EquationSolver.CalculateInitialSteadyState">
+<code class="descname">CalculateInitialSteadyState</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_solver.html#EquationSolver.CalculateInitialSteadyState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_solver.EquationSolver.CalculateInitialSteadyState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempt to calculate initial conditions. Very little guarantee
+the system will converge.</p>
+<p>Methodology:
+[1] Create a (deep) copy of this solver object.
+[2] Set the exogenous variables to be constants, equal to their</p>
+<blockquote>
+<div>k = 0 value.</div></blockquote>
+<p>[3] Set k to be [-T, T-1, ... 0]
+[3] Solve the copied system normally.</p>
+<blockquote>
+<div>Number of time steps = Parameters.InitialEquilbriumMaxTime</div></blockquote>
+<dl class="docutils">
+<dt>[4] If variables are essentially constant in the last time point,</dt>
+<dd>we treat that as equilibrium.
+If they are not constant, throw a NoEquilibriumError.
+Tolerance for error is Parameters.InitialEquilibriumErrorTolerance
+The algorithm ignores variables listed in
+Parameters.InitialEquilibriumExcludedVariables</dd>
+<dt>[5] Copy equilibrium values into the initial values (endogenous,</dt>
+<dd>decoration, lagged.)</dd>
+</dl>
+<p>Returns the new solver for inspection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">EquationSolver</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation_solver.EquationSolver.ExtractVariableList">
+<code class="descname">ExtractVariableList</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_solver.html#EquationSolver.ExtractVariableList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_solver.EquationSolver.ExtractVariableList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation_solver.EquationSolver.GenerateCSVtext">
+<code class="descname">GenerateCSVtext</code><span class="sig-paren">(</span><em>format_str='%.5g'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_solver.html#EquationSolver.GenerateCSVtext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_solver.EquationSolver.GenerateCSVtext" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Format_str:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+<p>Generates the text that goes into the csv.</p>
+<p>Implementation has migrated to the TimeSeriesHolder class.
+:return: str</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation_solver.EquationSolver.ParseString">
+<code class="descname">ParseString</code><span class="sig-paren">(</span><em>equation_string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_solver.html#EquationSolver.ParseString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_solver.EquationSolver.ParseString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read in a mutliline string to populate variable and equation lists.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>equation_string</strong> &#8211; str</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation_solver.EquationSolver.SetInitialConditions">
+<code class="descname">SetInitialConditions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_solver.html#EquationSolver.SetInitialConditions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_solver.EquationSolver.SetInitialConditions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation_solver.EquationSolver.SolveEquation">
+<code class="descname">SolveEquation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_solver.html#EquationSolver.SolveEquation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_solver.EquationSolver.SolveEquation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation_solver.EquationSolver.SolveStep">
+<code class="descname">SolveStep</code><span class="sig-paren">(</span><em>step</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_solver.html#EquationSolver.SolveStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_solver.EquationSolver.SolveStep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve a step. (Assumed to be called in order.)
+:param step: int
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.equation_solver.EquationSolver.WriteCSV">
+<code class="descname">WriteCSV</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/equation_solver.html#EquationSolver.WriteCSV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_solver.EquationSolver.WriteCSV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write time series to a tab-delimited text file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fname</strong> &#8211; str</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="sfc_models.equation_solver.NoEquilibriumError">
+<em class="property">exception </em><code class="descclassname">sfc_models.equation_solver.</code><code class="descname">NoEquilibriumError</code><a class="reference internal" href="_modules/sfc_models/equation_solver.html#NoEquilibriumError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.equation_solver.NoEquilibriumError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">ValueError</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-sfc_models.external">
+<span id="sfc-models-external-module"></span><h2>sfc_models.external module<a class="headerlink" href="#module-sfc_models.external" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="sfc_models.external.ExchangeRates">
+<em class="property">class </em><code class="descclassname">sfc_models.external.</code><code class="descname">ExchangeRates</code><span class="sig-paren">(</span><em>external_sector</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/external.html#ExchangeRates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.external.ExchangeRates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<p>Object that handles all exchange rate information. Automatically created by
+ExternalSector; users should never need to create one independently.</p>
+<dl class="method">
+<dt id="sfc_models.external.ExchangeRates.GetCrossRate">
+<code class="descname">GetCrossRate</code><span class="sig-paren">(</span><em>local</em>, <em>foreign</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/external.html#ExchangeRates.GetCrossRate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.external.ExchangeRates.GetCrossRate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the variable name for a cross rate.
+(May also pass CurrencyZone objects.)</p>
+<p>Convention:
+Number of foreign units to buy 1 local. So an increase in the cross rate variable
+implies a stronger local currency versus the foreign.</p>
+<p>In standard Forex terms, this would be quoted as LOCAL/FOREIGN (local currency is base
+currency), or an &#8220;indirect quote&#8221;.</p>
+<p>Reference: <a class="reference external" href="http://www.investopedia.com/university/forexmarket/forex2.asp">http://www.investopedia.com/university/forexmarket/forex2.asp</a></p>
+<p>The variable is created the first time the GetCrossRate method is called. That is,
+if it is never referenced, it will never appear in the equation block. (This would
+probably only show up if we have &gt; 2 countries, and trade is all with a central hub
+country.)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>local</strong> &#8211; str</li>
+<li><strong>foreign</strong> &#8211; str</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.external.ExternalSector">
+<em class="property">class </em><code class="descclassname">sfc_models.external.</code><code class="descname">ExternalSector</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/external.html#ExternalSector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.external.ExternalSector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.models.Country" title="sfc_models.models.Country"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.Country</span></code></a></p>
+<p>All international concepts live within an &#8220;ExternalSector&#8221;</p>
+<p>It is a Country, with code = EXT (default)</p>
+<p>The &#8220;currency&#8221; of ExternalSector is &#8216;NUMERAIRE&#8217; (by default).</p>
+<p>All currency values are expressed relative to this numéraire (that is,
+the value of NUMERAIRE=1 by definition). In practice,
+at least one real currency will always have a value of 1.0 as well.</p>
+<p>It would probably be a bad idea to define another Country`s currency as NUMERAIRE;
+the assumption within the code is that the ExternalSector lives within its own
+CurrencyZone.</p>
+<p>Since it is assumed that the supply of each real currency is netted out to
+zero, we should never get &#8216;NUMERAIRE&#8217; financial assets created. If this happens,
+the equation set up is incorrect. The framework allows such an incoherent state;
+it is up to the user to tune their equations to keep the net NUMERAIRE financial
+assets at zero. (A sanity check may later be imposed.)</p>
+<p>A Model can only have one ExternalSector; the object registers itself as the
+Model.ExternalSector when created.</p>
+<dl class="method">
+<dt id="sfc_models.external.ExternalSector.GetCrossRate">
+<code class="descname">GetCrossRate</code><span class="sig-paren">(</span><em>local</em>, <em>foreign</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/external.html#ExternalSector.GetCrossRate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.external.ExternalSector.GetCrossRate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function; just calls the XR Sector.
+(May also pass CurrencyZone objects.)</p>
+<p>Convention:
+Number of foreign units to buy 1 local. So an increase in the cross rate variable
+implies a stronger local currency versus the foreign.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>local</strong> &#8211; str</li>
+<li><strong>foreign</strong> &#8211; str</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.external.ExternalSector.RegisterCurrency">
+<code class="descname">RegisterCurrency</code><span class="sig-paren">(</span><em>currency</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/external.html#ExternalSector.RegisterCurrency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.external.ExternalSector.RegisterCurrency" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.external.ForexTransations">
+<em class="property">class </em><code class="descclassname">sfc_models.external.</code><code class="descname">ForexTransations</code><span class="sig-paren">(</span><em>external_sector</em>, <em>code='FX'</em>, <em>long_name='Foreign Exchange Transactions'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/external.html#ForexTransations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.external.ForexTransations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<p>Class that holds the equations detailing foreign exchange transactions.</p>
+<p>Object is automatically created by the ExternalSector; default code is &#8220;FX&#8221;</p>
+<p>Since the convention is that all balance sheet items in a Sector object are in the
+local currency, we need to be able to find a way to intermediate transactions
+between sectors in different CurrencyZone objects.</p>
+<p>We could create multinational bank objects that are two linked Sector objects.
+The ForexTransaction object is a simpler alternative: both sides of a transaction face
+off against a &#8220;Foreign Exchange Market&#8221; that is &#8220;out there somewhere&#8221;.</p>
+<p>The convention is that each sector exchanges for units of &#8220;NUMERAIRE&#8221;; we just have to
+ensure that the net transactions for each currency versus &#8220;NUMERAIRE&#8221; are nil.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.external.InternationalGold">
+<em class="property">class </em><code class="descclassname">sfc_models.external.</code><code class="descname">InternationalGold</code><span class="sig-paren">(</span><em>external_sector</em>, <em>code='GOLD'</em>, <em>long_name='International Gold Market'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/external.html#InternationalGold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.external.InternationalGold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<dl class="method">
+<dt id="sfc_models.external.InternationalGold.GetVariableName">
+<code class="descname">GetVariableName</code><span class="sig-paren">(</span><em>varname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/external.html#InternationalGold.GetVariableName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.external.InternationalGold.GetVariableName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.external.InternationalGold.SetGoldPurchases">
+<code class="descname">SetGoldPurchases</code><span class="sig-paren">(</span><em>sector</em>, <em>flow_variable_name</em>, <em>initial_stock</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/external.html#InternationalGold.SetGoldPurchases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.external.InternationalGold.SetGoldPurchases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does all the set up for Gold purchases, including setting the initial stock.</p>
+<p>Creates the gold PRICE variable if does not already exist.
+:param sector: Sector
+:param flow_variable_name: str
+:param initial_stock: float
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.external.InternationalGold.SetUpVariables">
+<code class="descname">SetUpVariables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/external.html#InternationalGold.SetUpVariables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.external.InternationalGold.SetUpVariables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-sfc_models.models">
+<span id="sfc-models-models-module"></span><h2>sfc_models.models module<a class="headerlink" href="#module-sfc_models.models" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="models-py">
+<h3>models.py<a class="headerlink" href="#models-py" title="Permalink to this headline">¶</a></h3>
+<p>Core classes for machine-generated equations.</p>
+<p>Copyright 2016 Brian Romanchuk</p>
+<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+<dl class="class">
+<dt id="sfc_models.models.Country">
+<em class="property">class </em><code class="descclassname">sfc_models.models.</code><code class="descname">Country</code><span class="sig-paren">(</span><em>model</em>, <em>code</em>, <em>long_name=''</em>, <em>currency=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Country"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Country" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.models.EconomicObject" title="sfc_models.models.EconomicObject"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.EconomicObject</span></code></a></p>
+<p>Country class. Somewhat redundant in a closed economy model, but we need for multi-region models.</p>
+<dl class="method">
+<dt id="sfc_models.models.Country.GetSectors">
+<code class="descname">GetSectors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Country.GetSectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Country.GetSectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>What Sectors are in the Country?
+:return: list</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.models.Country.LookupSector">
+<code class="descname">LookupSector</code><span class="sig-paren">(</span><em>code</em>, <em>is_full_code=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Country.LookupSector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Country.LookupSector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the sector object via code or fullcode or ID (if you pass an int).
+:param code: str
+:param is_full_code: bool
+:return: Sector</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.models.CurrencyZone">
+<em class="property">class </em><code class="descclassname">sfc_models.models.</code><code class="descname">CurrencyZone</code><span class="sig-paren">(</span><em>model</em>, <em>currency</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#CurrencyZone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.CurrencyZone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.models.EconomicObject" title="sfc_models.models.EconomicObject"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.EconomicObject</span></code></a></p>
+<p>CurrencyZone: A set of Country {region} objects that share a currency.</p>
+<p>Created automatically by the Model as Country objects are added.</p>
+<dl class="method">
+<dt id="sfc_models.models.CurrencyZone.GetSectors">
+<code class="descname">GetSectors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#CurrencyZone.GetSectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.CurrencyZone.GetSectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>What Sector objects are in the CurrenzyZone?
+:return: list</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.models.CurrencyZone.LookupSector">
+<code class="descname">LookupSector</code><span class="sig-paren">(</span><em>short_code</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#CurrencyZone.LookupSector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.CurrencyZone.LookupSector" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.models.EconomicObject">
+<em class="property">class </em><code class="descclassname">sfc_models.models.</code><code class="descname">EconomicObject</code><span class="sig-paren">(</span><em>parent=None</em>, <em>code=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#EconomicObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.EconomicObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>EconomicObject class
+Base class for model entities. Gives them a unique numeric id to make debugging and
+some coding tasks easier. For example, if two EconomicObject&#8217;s have a different ID, they are distinct,
+and so an EconomicObject can exclude itself when iterating through a list of Sector objects.</p>
+<p>Can create function for displaying, etc.</p>
+<dl class="method">
+<dt id="sfc_models.models.EconomicObject.GetModel">
+<code class="descname">GetModel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#EconomicObject.GetModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.EconomicObject.GetModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the base object of the hierarchy (which should be a Model).
+:return: Model</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sfc_models.models.EconomicObject.ID">
+<code class="descname">ID</code><em class="property"> = 0</em><a class="headerlink" href="#sfc_models.models.EconomicObject.ID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.models.EconomicObject.ShareParent">
+<code class="descname">ShareParent</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#EconomicObject.ShareParent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.EconomicObject.ShareParent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does this entity have the same parent?
+:param other:  EconomicObject
+:return: bool</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.models.Model">
+<em class="property">class </em><code class="descclassname">sfc_models.models.</code><code class="descname">Model</code><a class="reference internal" href="_modules/sfc_models/models.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.models.EconomicObject" title="sfc_models.models.EconomicObject"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.EconomicObject</span></code></a></p>
+<p>Model class.</p>
+<p>All other entities live within a model.</p>
+<dl class="method">
+<dt id="sfc_models.models.Model.AddCashFlowIncomeExclusion">
+<code class="descname">AddCashFlowIncomeExclusion</code><span class="sig-paren">(</span><em>sector</em>, <em>cash_flow_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Model.AddCashFlowIncomeExclusion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Model.AddCashFlowIncomeExclusion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify that a cash flow is to be excluded from the list of flows that go into
+income.</p>
+<p>Examples of such flows within economics:
+- Household consumption of goods.
+- Business investment.
+- Dividend outflows for business (inflow is income for household).
+- (Financing flows - do not really appear?)</p>
+<p>Note that these exclusions are generally implemented at the sector code level.
+:param sector: Sector
+:param cash_flow_name: str
+:return: None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.models.Model.AddExogenous">
+<code class="descname">AddExogenous</code><span class="sig-paren">(</span><em>sector_fullcode</em>, <em>varname</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Model.AddExogenous"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Model.AddExogenous" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an exogenous variable to the model. Overwrites an existing variable definition.
+Need to use the full sector code.</p>
+<p>Exogenous variables are sepcified as time series, which are implemented as list variables ([1, 2, 3,...])
+The exogenous variable can either be specified as a string (which can be evaluated to a list), or else
+as a list object. The list object will be converted into a string representation using repr(), which
+means that it may be much longer than using something like &#8216;[20,] * 100&#8217;.</p>
+<p>At present, does not support the usage of specifying a constant value. For example value=&#8216;20.&#8217; does
+not work, you need &#8216;[20.]*100.&#8217;</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sector_fullcode</strong> &#8211; str</li>
+<li><strong>varname</strong> &#8211; str</li>
+<li><strong>value</strong> &#8211; str</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.models.Model.AddGlobalEquation">
+<code class="descname">AddGlobalEquation</code><span class="sig-paren">(</span><em>var</em>, <em>description</em>, <em>eqn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Model.AddGlobalEquation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Model.AddGlobalEquation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a variable that is not associated with a sector.
+Typical example: &#8216;t&#8217;</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>var</strong> &#8211; str</li>
+<li><strong>description</strong> &#8211; str</li>
+<li><strong>eqn</strong> &#8211; str</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.models.Model.AddInitialCondition">
+<code class="descname">AddInitialCondition</code><span class="sig-paren">(</span><em>sector_fullcode</em>, <em>varname</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Model.AddInitialCondition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Model.AddInitialCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the initial condition for a variable. Need to use the full code of the sector -
+or its ID (int).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sector_fullcode</strong> &#8211; str</li>
+<li><strong>varname</strong> &#8211; str</li>
+<li><strong>value</strong> &#8211; float</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.models.Model.DumpEquations">
+<code class="descname">DumpEquations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Model.DumpEquations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Model.DumpEquations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string with basic information about the entities within this Model.
+Output is primitive, and aimed at debugging purposes. In other words, the format
+will change without warning.</p>
+<p>If you want information of a specific format, please create a specific reporting
+function for your needs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="sfc_models.models.Model.GetSectorCodeWithCountry">
+<em class="property">static </em><code class="descname">GetSectorCodeWithCountry</code><span class="sig-paren">(</span><em>sector</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Model.GetSectorCodeWithCountry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Model.GetSectorCodeWithCountry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the sector code including the country information.
+Need to use this if we want the FullCode before the model information
+is bound in main().</p>
+<p>We should not need to use this function often; generally only when we need
+FullCodes in constructors. For example, the multi-supply business sector
+needs the full codes of markets passed into the constructor.
+:param sector: Sector
+:return: str</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.models.Model.GetSectors">
+<code class="descname">GetSectors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Model.GetSectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Model.GetSectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of Sector objects held within this Model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.models.Model.GetTimeSeries">
+<code class="descname">GetTimeSeries</code><span class="sig-paren">(</span><em>series</em>, <em>cutoff=None</em>, <em>group_of_series='main'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Model.GetTimeSeries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Model.GetTimeSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to retrieve time series from the EquationSolver.</p>
+<p>Use cutoff to truncate the length of the output.</p>
+<p>If self.TimeSeriesSupressZero is True, the first point is removed (the initial
+conditions period).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>group_of_series</strong> &#8211; </li>
+<li><strong>series</strong> &#8211; str</li>
+<li><strong>cutoff</strong> &#8211; int</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.models.Model.LogInfo">
+<code class="descname">LogInfo</code><span class="sig-paren">(</span><em>generate_full_codes=True</em>, <em>ex=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Model.LogInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Model.LogInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write information to a file; if there is an exception, dump the trace.
+The log will normally generate the full sector codes; set generate_full_codes=False
+to leave the Model full codes untouched.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>generate_full_codes</strong> &#8211; bool</li>
+<li><strong>ex</strong> &#8211; Exception</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.models.Model.LookupSector">
+<code class="descname">LookupSector</code><span class="sig-paren">(</span><em>fullcode</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Model.LookupSector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Model.LookupSector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a sector based on its FullCode.
+:param fullcode: str
+:return: Sector</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.models.Model.RegisterCashFlow">
+<code class="descname">RegisterCashFlow</code><span class="sig-paren">(</span><em>source_sector</em>, <em>target_sector</em>, <em>amount_variable</em>, <em>is_income_source=True</em>, <em>is_income_dest=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Model.RegisterCashFlow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Model.RegisterCashFlow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a cash flow between two sectors.</p>
+<p>The amount_variable is the name of the local variable within the source sector.</p>
+<p>Only allowed across currency zones if an ExternalSector object has been defined;
+otherwise throws a LogicError.</p>
+<p>The currency value of the amount_variable is assumed to be in the source currency.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>is_income_dest</strong> &#8211; </li>
+<li><strong>is_income_source</strong> &#8211; </li>
+<li><strong>source_sector</strong> &#8211; Sector</li>
+<li><strong>target_sector</strong> &#8211; Sector</li>
+<li><strong>amount_variable</strong> &#8211; str</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.models.Model.main">
+<code class="descname">main</code><span class="sig-paren">(</span><em>base_file_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Model.main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Model.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Routine that does most of the work of model building. The model is build based upon
+the Sector objects that have been registered as children of this Model.</p>
+<p>The base_file_name is the base filename that is used for Logging operations; just used
+to call Logger.register_standard_logs(base_file_name). It is recommended that you call
+Logger.register_standard_logs() before main, so that Sector creation can be logged.</p>
+<p>The major operations:
+[1] Call GenerateEquations() on all Sectors. The fact that GenerateEquations() is only</p>
+<blockquote>
+<div>called now at the Sector level means that Sectors can be created independently, and the</div></blockquote>
+<p>GenerateEquations() call which ties it to other sectors is only called after all other sectors
+are created. (There is at least one exception where Sectors have to be created in a specific
+order, which we want to avoid.)</p>
+<dl class="docutils">
+<dt>[2] Cleanup work: processing initial conditions, exogenous variables, replacing</dt>
+<dd>aliases in equations.</dd>
+<dt>[3] Tie the sector level equations into a single block of equations. (Currently strings, not</dt>
+<dd>Equation objects.)</dd>
+</dl>
+<p>[4] The equations are passed to self.EquationSolver, and they are solved.</p>
+<p>The user can then use GetTimeSeries() to access the output time series (if they can be
+calculated.)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>base_file_name</strong> &#8211; str</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.models.Region">
+<em class="property">class </em><code class="descclassname">sfc_models.models.</code><code class="descname">Region</code><span class="sig-paren">(</span><em>model</em>, <em>code</em>, <em>long_name=''</em>, <em>currency=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/models.html#Region"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.models.Region" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.models.Country" title="sfc_models.models.Country"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.Country</span></code></a></p>
+<p>Region object. Almost same thing as a Country, but it may make some pedantic people happier.</p>
+<p>If currency is not specified, uses the default currency.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-sfc_models.objects">
+<span id="sfc-models-objects-module"></span><h2>sfc_models.objects module<a class="headerlink" href="#module-sfc_models.objects" title="Permalink to this headline">¶</a></h2>
+<p>objects.py</p>
+<p>&#8220;Convenience module&#8221; that imports the high level objects into the name space.</p>
+<p>Users can use:</p>
+<p>from sfc_models.objects import *</p>
+<p>to load up the standard objects.</p>
+<p>This could have been done inside sfc_models, but that seemed somewhat riskier (and currently
+does not work, as circular imports are created).</p>
+<p>Note that syntax like &#8220;from sfc_models.objects import <a href="#id1"><span class="problematic" id="id2">*</span></a>&#8221; is frowned upon as being dangerous.
+I have just added this in to avoid bloated import statements in example code.</p>
+<div class="section" id="copyright-license">
+<h3>Copyright/License<a class="headerlink" href="#copyright-license" title="Permalink to this headline">¶</a></h3>
+<p>Copyright 2017 Brian Romanchuk</p>
+<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+</div>
+</div>
+<div class="section" id="module-sfc_models.sector">
+<span id="sfc-models-sector-module"></span><h2>sfc_models.sector module<a class="headerlink" href="#module-sfc_models.sector" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="sfc_models.sector.FinancialAssetMarket">
+<em class="property">class </em><code class="descclassname">sfc_models.sector.</code><code class="descname">FinancialAssetMarket</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>issuer_short_code='GOV'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#FinancialAssetMarket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.FinancialAssetMarket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Market" title="sfc_models.sector.Market"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Market</span></code></a></p>
+<p>Handles the interactions for a market in a financial asset.
+Must be a single issuer.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.sector.Market">
+<em class="property">class </em><code class="descclassname">sfc_models.sector.</code><code class="descname">Market</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Market"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Market" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<p>Market Not really a sector, but keep it in the same list.</p>
+<dl class="method">
+<dt id="sfc_models.sector.Market.AddSupplier">
+<code class="descname">AddSupplier</code><span class="sig-paren">(</span><em>supplier</em>, <em>supply_eqn=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Market.AddSupplier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Market.AddSupplier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a supply. If the supply_eqn is empty (or None), becomes the ResidualSupplier
+:param supplier: Sector
+:param supply_eqn: str
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.sector.Market.GetSupplierTerm">
+<code class="descname">GetSupplierTerm</code><span class="sig-paren">(</span><em>supplier</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Market.GetSupplierTerm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Market.GetSupplierTerm" title="Permalink to this definition">¶</a></dt>
+<dd><p>What is the local variable name within a supplier for supply to this
+market?</p>
+<p>If same Country,
+out = &#8220;SUP_{code}&#8221;</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mod</span> <span class="o">=</span> <span class="n">Model</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ca</span> <span class="o">=</span> <span class="n">Country</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s1">&#39;CA&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mar</span> <span class="o">=</span> <span class="n">Market</span><span class="p">(</span><span class="n">ca</span><span class="p">,</span> <span class="s1">&#39;GOOD&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">supplier</span> <span class="o">=</span> <span class="n">Sector</span><span class="p">(</span><span class="n">ca</span><span class="p">,</span> <span class="s1">&#39;BUS&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mar</span><span class="o">.</span><span class="n">GetSupplierTerm</span><span class="p">(</span><span class="n">supplier</span><span class="p">)</span>
+<span class="go">&#39;SUP_GOOD&#39;</span>
+</pre></div>
+</div>
+<p>Howevever, if we are in a different country, must use the full code.
+out = &#8220;SUP_{FullCode}&#8221;</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mod</span> <span class="o">=</span> <span class="n">Model</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ca</span> <span class="o">=</span> <span class="n">Country</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s1">&#39;CA&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">us</span> <span class="o">=</span> <span class="n">Country</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s1">&#39;US&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mar</span> <span class="o">=</span> <span class="n">Market</span><span class="p">(</span><span class="n">ca</span><span class="p">,</span> <span class="s1">&#39;GOOD&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">supplier</span> <span class="o">=</span> <span class="n">Sector</span><span class="p">(</span><span class="n">us</span><span class="p">,</span> <span class="s1">&#39;BUS&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mar</span><span class="o">.</span><span class="n">GetSupplierTerm</span><span class="p">(</span><span class="n">supplier</span><span class="p">)</span>
+<span class="go">&#39;SUP_CA_GOOD&#39;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>supplier</strong> &#8211; Sector</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.sector.Sector">
+<em class="property">class </em><code class="descclassname">sfc_models.sector.</code><code class="descname">Sector</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>has_F=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Sector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Sector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.models.EconomicObject" title="sfc_models.models.EconomicObject"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.models.EconomicObject</span></code></a></p>
+<p>All sectors derive from this class.</p>
+<dl class="method">
+<dt id="sfc_models.sector.Sector.AddCashFlow">
+<code class="descname">AddCashFlow</code><span class="sig-paren">(</span><em>term</em>, <em>eqn=None</em>, <em>desc=None</em>, <em>is_income=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Sector.AddCashFlow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Sector.AddCashFlow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a cash flow to the sector. Will add to the financial asset equation (F), and
+the income equation (INC) if is_income is True.</p>
+<p>Except: There is a list of exclusions to which cash flows are not considered income.
+That setting will override the is_income parameter. This allows us to carve out exceptions
+to the standard behaviour, which generally is to assume that cash flows are associated with
+income.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>term</strong> &#8211; str</li>
+<li><strong>eqn</strong> &#8211; str</li>
+<li><strong>desc</strong> &#8211; str</li>
+<li><strong>is_income</strong> &#8211; bool</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.sector.Sector.AddInitialCondition">
+<code class="descname">AddInitialCondition</code><span class="sig-paren">(</span><em>variable_name</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Sector.AddInitialCondition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Sector.AddInitialCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an initial condition for a variable associated with this sector.
+:param variable_name: str
+:param value: float
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.sector.Sector.AddTermToEquation">
+<code class="descname">AddTermToEquation</code><span class="sig-paren">(</span><em>varname</em>, <em>term</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Sector.AddTermToEquation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Sector.AddTermToEquation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new term to an existing equation.</p>
+<p>The term variable may be either a string or (non-Blob) Term object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>varname</strong> &#8211; str</li>
+<li><strong>term</strong> &#8211; Term</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.sector.Sector.AddVariable">
+<code class="descname">AddVariable</code><span class="sig-paren">(</span><em>varname</em>, <em>desc=''</em>, <em>eqn=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Sector.AddVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Sector.AddVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a variable to the sector.
+The variable name (varname) is the local name; it will be decorated to create a
+full name. Equations within a sector can use the local name; other sectors need to
+use GetVariableName to get the full name.
+:param varname: str
+:param desc: str
+:param eqn: str
+:return: None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.sector.Sector.AddVariableFromEquation">
+<code class="descname">AddVariableFromEquation</code><span class="sig-paren">(</span><em>eqn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Sector.AddVariableFromEquation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Sector.AddVariableFromEquation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to be used until the Equation member is replaced...
+:param eqn: Equation
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.sector.Sector.Dump">
+<code class="descname">Dump</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Sector.Dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Sector.Dump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a string with information about this object. This is for debugging
+purposes, and the format will change over time. In other words, do not rely on
+this output if you want specific information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.sector.Sector.GenerateAssetWeighting">
+<code class="descname">GenerateAssetWeighting</code><span class="sig-paren">(</span><em>asset_weighting_dict</em>, <em>residual_asset_code</em>, <em>is_absolute_weighting=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Sector.GenerateAssetWeighting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Sector.GenerateAssetWeighting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the asset weighting/allocation equations. If there are N assets, pass N-1 in the list, the residual
+gets the rest.</p>
+<p>The variable asset_weighting_list is a
+dictionary, of the form:
+{&#8216;asset1code&#8217;: &#8216;weighting equation&#8217;,
+&#8216;asset2code&#8217;: &#8216;weighting2&#8217;)}</p>
+<p>The is_absolute_weighting parameter is a placeholder; if set to true, asset demands are
+absolute. There is a TODO marking where code should be added.</p>
+<p>Note that weightings are (normally) from 0-1.
+:param asset_weighting_dict: dict
+:param residual_asset_code: str
+:param is_absolute_weighting: bool
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.sector.Sector.GetVariableName">
+<code class="descname">GetVariableName</code><span class="sig-paren">(</span><em>varname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Sector.GetVariableName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Sector.GetVariableName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the full variable name associated with a local variable.</p>
+<p>Standard convention:
+{sector_fullcode}__{local variable name}.
+NOTE: that is is double-underscore &#8216;_&#8217;. The use of double underscores in
+variable names (or sector codes) is now verboten!
+This means that the presence of double underscore means that this is a full variable name.</p>
+<p>NOTE: If the sector FullCode is not defined, a temporary alias is created and registered.
+The Model object will ensure that all registered aliases are cleaned up.]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>varname</strong> &#8211; str</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.sector.Sector.GetVariables">
+<code class="descname">GetVariables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Sector.GetVariables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Sector.GetVariables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a sorted list of variables.</p>
+<p>(Need to sort to make testing easier; dict&#8217;s store in &#8220;random&#8221; hash order.</p>
+<p>This is a convenience function; it just passes along self.EquationBlock.GetEquationList()
+:return: list</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.sector.Sector.IsSharedCurrencyZone">
+<code class="descname">IsSharedCurrencyZone</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Sector.IsSharedCurrencyZone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Sector.IsSharedCurrencyZone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is a sector in the same CurrencyZone as the other?
+:param other: Sector
+:return: bool</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.sector.Sector.SetEquationRightHandSide">
+<code class="descname">SetEquationRightHandSide</code><span class="sig-paren">(</span><em>varname</em>, <em>rhs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Sector.SetEquationRightHandSide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Sector.SetEquationRightHandSide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the right hand side of the equation for an existing variable.
+:param varname: str
+:param rhs: str
+:return: None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.sector.Sector.SetExogenous">
+<code class="descname">SetExogenous</code><span class="sig-paren">(</span><em>varname</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector.html#Sector.SetExogenous"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector.Sector.SetExogenous" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set an exogenous variable for a sector. The variable must already be defined (by AddVariable()).
+:param varname: str
+:param val: str
+:return: None</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-sfc_models.sector_definitions">
+<span id="sfc-models-sector-definitions-module"></span><h2>sfc_models.sector_definitions module<a class="headerlink" href="#module-sfc_models.sector_definitions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="sectors-py">
+<h3>sectors.py<a class="headerlink" href="#sectors-py" title="Permalink to this headline">¶</a></h3>
+<p>Models for standard sectors.</p>
+<p>Copyright 2016 Brian Romanchuk</p>
+<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+<dl class="class">
+<dt id="sfc_models.sector_definitions.BaseHousehold">
+<em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">BaseHousehold</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>alpha_income=0.6</em>, <em>alpha_fin=0.4</em>, <em>consumption_good_name='GOOD'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#BaseHousehold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.BaseHousehold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<p>Base class for all household sectors</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.sector_definitions.Capitalists">
+<em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">Capitalists</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>alpha_income=0.7</em>, <em>alpha_fin=0.3</em>, <em>consumption_good_name='GOOD'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#Capitalists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.Capitalists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector_definitions.BaseHousehold" title="sfc_models.sector_definitions.BaseHousehold"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.BaseHousehold</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.sector_definitions.CentralBank">
+<em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">CentralBank</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>treasury=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#CentralBank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.CentralBank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.sector_definitions.ConsolidatedGovernment">
+<em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">ConsolidatedGovernment</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#ConsolidatedGovernment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.ConsolidatedGovernment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<p>Consolidated government sector. Use this if you do not want to have to deal with
+financial asset holdings; otherwise, you need to decompose into Treasury and CentralBank.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.sector_definitions.DepositMarket">
+<em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">DepositMarket</code><span class="sig-paren">(</span><em>country</em>, <em>code='DEP'</em>, <em>long_name=''</em>, <em>issuer_short_code='GOV'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#DepositMarket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.DepositMarket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.FinancialAssetMarket" title="sfc_models.sector.FinancialAssetMarket"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.FinancialAssetMarket</span></code></a></p>
+<p>An interest-bearing deposit. This will act as a stand-in for Treasury bills for now. The price is fixed at 1,
+and pays interest based on the lagged interest rate and lagged holdings.</p>
+<p>Interest rate convention: 0.01 = 1% interest. The variable name is &#8216;r&#8217;; defaults to 0%. In simpler models, will be
+an exogenous variable.</p>
+<p>Assumed to be a single issuer; the supply equation is filled in automatically (always meets demand).</p>
+<p>Unlike MoneyMarket, no demand is filled in. In order to use this market, need to set up a demand variable in one
+sector (at least).</p>
+<p>This class will automatically create interest income variables and cash flows in affected sectors.</p>
+<p>Note that since SUP and DEM are always realised (for now), the amount oustanding is equal to the supply by the
+issuer.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.sector_definitions.DoNothingGovernment">
+<em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">DoNothingGovernment</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#DoNothingGovernment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.DoNothingGovernment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector_definitions.ConsolidatedGovernment" title="sfc_models.sector_definitions.ConsolidatedGovernment"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.ConsolidatedGovernment</span></code></a></p>
+<p>Just another name for ConsolidatedGovernment.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.sector_definitions.FixedMarginBusiness">
+<em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">FixedMarginBusiness</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>profit_margin=0.0</em>, <em>labour_input_name='LAB'</em>, <em>output_name='GOOD'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#FixedMarginBusiness"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.FixedMarginBusiness" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.sector_definitions.FixedMarginBusinessMultiOutput">
+<em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">FixedMarginBusinessMultiOutput</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>profit_margin=0.0</em>, <em>labour_input_name='LAB'</em>, <em>market_list=()</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#FixedMarginBusinessMultiOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.FixedMarginBusinessMultiOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<p>Create a business that supplies multiple markets.
+The market objects must exist before creation (so we cannot create Market classes
+that assume the supply objects exist first!).</p>
+<dl class="method">
+<dt id="sfc_models.sector_definitions.FixedMarginBusinessMultiOutput.AddMarket">
+<code class="descname">AddMarket</code><span class="sig-paren">(</span><em>market</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#FixedMarginBusinessMultiOutput.AddMarket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.FixedMarginBusinessMultiOutput.AddMarket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a market to the list of suppliers
+:param market: Market
+:return:</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.sector_definitions.GoldStandardCentralBank">
+<em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">GoldStandardCentralBank</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>treasury=None</em>, <em>initial_gold_stock=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#GoldStandardCentralBank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.GoldStandardCentralBank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector_definitions.CentralBank" title="sfc_models.sector_definitions.CentralBank"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.CentralBank</span></code></a></p>
+<p>Central bank that undertakes Gold purchases/sales to balance the foreign exchange
+market.</p>
+<p>Must create an ExternalSector object in the model.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.sector_definitions.GoldStandardGovernment">
+<em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">GoldStandardGovernment</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>initial_gold_stock=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#GoldStandardGovernment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.GoldStandardGovernment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector_definitions.ConsolidatedGovernment" title="sfc_models.sector_definitions.ConsolidatedGovernment"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.ConsolidatedGovernment</span></code></a></p>
+<p>Central bank that undertakes Gold purchases/sales to balance the foreign exchange
+market.</p>
+<p>Must create an ExternalSector object in the model.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.sector_definitions.Household">
+<em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">Household</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>alpha_income=0.6</em>, <em>alpha_fin=0.4</em>, <em>consumption_good_name='GOOD'</em>, <em>labour_name='LAB'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#Household"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.Household" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector_definitions.BaseHousehold" title="sfc_models.sector_definitions.BaseHousehold"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.BaseHousehold</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.sector_definitions.HouseholdWithExpectations">
+<em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">HouseholdWithExpectations</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>alpha_income=0.7</em>, <em>alpha_fin=0.3</em>, <em>consumption_good_name='GOOD'</em>, <em>labour_name='LAB'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#HouseholdWithExpectations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.HouseholdWithExpectations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector_definitions.Household" title="sfc_models.sector_definitions.Household"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector_definitions.Household</span></code></a></p>
+<p>Household sector where consumption is based on expected income.</p>
+<p>The default functionality is that the expected after tax income equals the previous value
+of realised after tax income.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.sector_definitions.MoneyMarket">
+<em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">MoneyMarket</code><span class="sig-paren">(</span><em>country</em>, <em>code='MON'</em>, <em>long_name=''</em>, <em>issuer_short_code='GOV'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#MoneyMarket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.MoneyMarket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.FinancialAssetMarket" title="sfc_models.sector.FinancialAssetMarket"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.FinancialAssetMarket</span></code></a></p>
+<p>The class that handles &#8220;money&#8221; within the model. The assumption is that the rate of interest is zero, and so this
+is really government money (currency). It probably should be labelled &#8220;currency,&#8221; but that might be confusing.</p>
+<p>(Note from Brian R: The name of this class is painful, as I am currently finishing off &#8220;Abolish Money (From
+Economics)!&#8221;, but this is meant to be an open source project, and ease of use trumps my analytical biases.</p>
+<p>In order to transition cleanly simpler models that do not specify financial markets, the default behaviour is to
+emulate the behaviour of a model without any FinancialAssetMarket classes created. This is done by creating a
+default &#8220;demand for money&#8221; equation in each sector that is:</p>
+<blockquote>
+<div>DEM_{MONEY} = F,</div></blockquote>
+<p>that is, money holdings at time t = financial asset holdings at time t. (The supplier, by default = &#8216;GOV&#8217;, just
+has a open-ended supply, like other markets.)</p>
+<p>Note that since SUP and DEM are always realised (for now), the money stock is equal to the supply by the issuer.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.sector_definitions.TaxFlow">
+<em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">TaxFlow</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em>, <em>taxrate=0.0</em>, <em>taxes_paid_to='GOV'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#TaxFlow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.TaxFlow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+<p>TaxFlow: Not really a sector, but keep it in the same list</p>
+<p>Uses the TaxRate of this object, or the TaxRate of the sector (if it is defined).</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.sector_definitions.Treasury">
+<em class="property">class </em><code class="descclassname">sfc_models.sector_definitions.</code><code class="descname">Treasury</code><span class="sig-paren">(</span><em>country</em>, <em>code</em>, <em>long_name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/sector_definitions.html#Treasury"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.sector_definitions.Treasury" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sfc_models.sector.Sector" title="sfc_models.sector.Sector"><code class="xref py py-class docutils literal"><span class="pre">sfc_models.sector.Sector</span></code></a></p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-sfc_models.utils">
+<span id="sfc-models-utils-module"></span><h2>sfc_models.utils module<a class="headerlink" href="#module-sfc_models.utils" title="Permalink to this headline">¶</a></h2>
+<p>utils.py</p>
+<p>Utility functions for the <em>sfc_models</em> package.</p>
+<p>Copyright 2016 Brian Romanchuk</p>
+<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+<dl class="class">
+<dt id="sfc_models.utils.Logger">
+<em class="property">class </em><code class="descclassname">sfc_models.utils.</code><code class="descname">Logger</code><span class="sig-paren">(</span><em>txt</em>, <em>log='log'</em>, <em>priority=1</em>, <em>data_to_format=None</em>, <em>endline=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#Logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.Logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Class to handle logging.</p>
+<p>Just use the constructor to write. Logging within code just looks like</p>
+<p>Logger(&#8220;hello!&#8221;)</p>
+<p>Logger(&#8220;low level debugging&#8221;, priority=9)</p>
+<p>If the priority &gt; cutoff, ignore. Hence - level 1 are top level comments.</p>
+<p>To switch the file logged to, specify the log=&#8217;&lt;name&gt;&#8217; parameter.
+The &lt;name&gt; is a short code used to identify the file. BY default, it equals
+&#8216;log&#8217; (main log).</p>
+<p>This allows us to centralise logging and file handling at a high level.</p>
+<dl class="staticmethod">
+<dt id="sfc_models.utils.Logger.cleanup">
+<em class="property">static </em><code class="descname">cleanup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#Logger.cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.Logger.cleanup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="sfc_models.utils.Logger.get_handle">
+<em class="property">static </em><code class="descname">get_handle</code><span class="sig-paren">(</span><em>log='log'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#Logger.get_handle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.Logger.get_handle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the file handle associated with the log.</p>
+<p>If the file was not yet opened, it is opened for writing.</p>
+<p>Throws a KeyError
+:param log: str
+:return:</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sfc_models.utils.Logger.log_file_handles">
+<code class="descname">log_file_handles</code><em class="property"> = {}</em><a class="headerlink" href="#sfc_models.utils.Logger.log_file_handles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="sfc_models.utils.Logger.priority_cutoff">
+<code class="descname">priority_cutoff</code><em class="property"> = 10</em><a class="headerlink" href="#sfc_models.utils.Logger.priority_cutoff" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="sfc_models.utils.Logger.register_log">
+<em class="property">static </em><code class="descname">register_log</code><span class="sig-paren">(</span><em>fname</em>, <em>log='log'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#Logger.register_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.Logger.register_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a file for logging. The fname is the full file path to be
+written. The log parameter is the short code used to specify which log file
+is used.</p>
+<p>The file is only created (overwriting previous contents) when the file handle
+is accessed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname</strong> &#8211; str</li>
+<li><strong>log</strong> &#8211; str</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="sfc_models.utils.Logger.register_standard_logs">
+<em class="property">static </em><code class="descname">register_standard_logs</code><span class="sig-paren">(</span><em>base_file_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#Logger.register_standard_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.Logger.register_standard_logs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="sfc_models.utils.LogicError">
+<em class="property">exception </em><code class="descclassname">sfc_models.utils.</code><code class="descname">LogicError</code><a class="reference internal" href="_modules/sfc_models/utils.html#LogicError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.LogicError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">ValueError</span></code></p>
+<p>Throw this when code logic is broken.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.utils.TimeSeriesHolder">
+<em class="property">class </em><code class="descclassname">sfc_models.utils.</code><code class="descname">TimeSeriesHolder</code><span class="sig-paren">(</span><em>time_series</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#TimeSeriesHolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.TimeSeriesHolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">dict</span></code></p>
+<p>As the name implies, holds time series.
+Currently using lists for time series.</p>
+<dl class="method">
+<dt id="sfc_models.utils.TimeSeriesHolder.AppendValue">
+<code class="descname">AppendValue</code><span class="sig-paren">(</span><em>series_name</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#TimeSeriesHolder.AppendValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.TimeSeriesHolder.AppendValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a value to an existing series; if it does not exist, create empty list and add.
+:param series_name: str
+:param val: float
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.utils.TimeSeriesHolder.GenerateCSVtext">
+<code class="descname">GenerateCSVtext</code><span class="sig-paren">(</span><em>format_str='%.5g'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#TimeSeriesHolder.GenerateCSVtext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.TimeSeriesHolder.GenerateCSVtext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the text for a tab-delimited file.
+:param format_str: str
+:return: str</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.utils.TimeSeriesHolder.GetSeriesList">
+<code class="descname">GetSeriesList</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#TimeSeriesHolder.GetSeriesList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.TimeSeriesHolder.GetSeriesList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="sfc_models.utils.create_equation_from_terms">
+<code class="descclassname">sfc_models.utils.</code><code class="descname">create_equation_from_terms</code><span class="sig-paren">(</span><em>terms</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#create_equation_from_terms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.create_equation_from_terms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a string equation (right hand side) from a list of terms.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">create_equation_from_terms</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;y&#39;</span><span class="p">])</span>
+<span class="go">&#39;x+y&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">create_equation_from_terms</span><span class="p">([</span><span class="s1">&#39;-x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;-z&#39;</span><span class="p">])</span>
+<span class="go">&#39;-x+y-z&#39;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>terms</strong> &#8211; list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="sfc_models.utils.get_file_base">
+<code class="descclassname">sfc_models.utils.</code><code class="descname">get_file_base</code><span class="sig-paren">(</span><em>fullfile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#get_file_base"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.get_file_base" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the base name of a file
+:param fullfile: str
+:return:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sfc_models.utils.get_invalid_tokens">
+<code class="descclassname">sfc_models.utils.</code><code class="descname">get_invalid_tokens</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#get_invalid_tokens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.get_invalid_tokens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of invalid tokens that can be used inside sfc_model equations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="sfc_models.utils.get_invalid_variable_names">
+<code class="descclassname">sfc_models.utils.</code><code class="descname">get_invalid_variable_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#get_invalid_variable_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.get_invalid_variable_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of invalid variable names for use in sfc_model equations.</p>
+<p>Includes mathematical operators in module &#8216;math&#8217;.</p>
+<p>Cannot use &#8216;k&#8217;, as that is the discrete time axis step variable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="sfc_models.utils.is_local_variable">
+<code class="descclassname">sfc_models.utils.</code><code class="descname">is_local_variable</code><span class="sig-paren">(</span><em>variable_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#is_local_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.is_local_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is a variable name a local or fully qualified?</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_local_variable</span><span class="p">(</span><span class="s1">&#39;FOO&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_local_variable</span><span class="p">(</span><span class="s1">&#39;HH__FOO&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>variable_name</strong> &#8211; str</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="sfc_models.utils.list_tokens">
+<code class="descclassname">sfc_models.utils.</code><code class="descname">list_tokens</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#list_tokens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.list_tokens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all NAME tokens (which can be variables, or function names) in a string.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_tokens</span><span class="p">(</span><span class="s1">&#39;x = foo + cat()&#39;</span><span class="p">)</span>
+<span class="go">[&#39;x&#39;, &#39;foo&#39;, &#39;cat&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_tokens</span><span class="p">(</span><span class="s1">&#39;2 + 3&#39;</span><span class="p">)</span>
+<span class="go">[]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s</strong> &#8211; str</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="sfc_models.utils.register_standard_logs">
+<code class="descclassname">sfc_models.utils.</code><code class="descname">register_standard_logs</code><span class="sig-paren">(</span><em>output_dir</em>, <em>base_file_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#register_standard_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.register_standard_logs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to stick logs in a directory, based base_file_name.</p>
+<p>Typical usage: In examples/scripts, use register_standard_logs(&#8216;output&#8217;, __FILE__)
+- Puts the files in the output subdirectory.
+- Uses the code file name (__FILE__) as the base. [The .py will be stripped]</p>
+<p>Operation is operating system safe (as long the output_dir is safe).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>output_dir</strong> &#8211; str</li>
+<li><strong>base_file_name</strong> &#8211; str</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="sfc_models.utils.replace_token">
+<code class="descclassname">sfc_models.utils.</code><code class="descname">replace_token</code><span class="sig-paren">(</span><em>s</em>, <em>target</em>, <em>replacement</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#replace_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.replace_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces NAME tokens (variables, functions) in a string (assumed to be equivalent to Python code with a new token.)</p>
+<p>Much safer than string replacement, as it does not hit cases where the target string is a part
+of a different variable (token).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">replace_token</span><span class="p">(</span><span class="s1">&#39;m_x =(x - x_1)&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<span class="go">&#39;m_x =(b -x_1 )&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">replace_token</span><span class="p">(</span><span class="s1">&#39;Little Bunny Foofoo says foo to you&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;hello&#39;</span><span class="p">)</span>
+<span class="go">&#39;Little Bunny Foofoo says hello to you &#39;</span>
+</pre></div>
+</div>
+<p>Note that the function looks at tokens that could be variables; the contents of strings are not touched.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">replace_token</span><span class="p">(</span><span class="s1">&#39;a = &quot;a fool and his money&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="go">&#39;x =&quot;a fool and his money&quot;&#39;</span>
+</pre></div>
+</div>
+<p>(Note that spacing can be affected, as seen in these examples. Do not rely upon any particular behaviour for
+spaces.)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> &#8211; str</li>
+<li><strong>target</strong> &#8211; str</li>
+<li><strong>replacement</strong> &#8211; str</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="sfc_models.utils.replace_token_from_lookup">
+<code class="descclassname">sfc_models.utils.</code><code class="descname">replace_token_from_lookup</code><span class="sig-paren">(</span><em>s</em>, <em>lookup</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/utils.html#replace_token_from_lookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.utils.replace_token_from_lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace tokens using a lookup dictionary.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">replace_token_from_lookup</span><span class="p">(</span><span class="s1">&#39;y = x&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;H_y&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;H_x&#39;</span><span class="p">})</span>
+<span class="go">&#39;H_y =H_x &#39;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> &#8211; str</li>
+<li><strong>lookup</strong> &#8211; dict</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-sfc_models">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-sfc_models" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="sfc-models">
+<h3>sfc_models<a class="headerlink" href="#sfc-models" title="Permalink to this headline">¶</a></h3>
+<p>Python package to generate Stock-Flow Consistent Models, with equations generated automatically by high-level code.</p>
+<div class="section" id="overview">
+<h4>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h4>
+<p>The class <em>IterativeMachineGenerator</em> is used to solve the equations generated.</p>
+<p>The high level logic is embedded within the <em>sfc_models.models.py</em> module. The bulk of the model logic is found within
+the various  economic sectors (for example, government, household, business  sectors). Such sectors are
+implemented by creating a subclass of the Sector class. (These sublasses are within <em>sfc_models.sectors</em>.)</p>
+<p>In order to deal with the complexity of multi-country models, the sectors lie within a Country object, and there is a
+single Model object that contains all countries.</p>
+<ul class="simple">
+<li>Model</li>
+</ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><a href="#id3"><span class="problematic" id="id4">|</span></a>- Country A
+|     |
+|     <a href="#id5"><span class="problematic" id="id6">|</span></a>- Sector1
+|     |
+|     <a href="#id7"><span class="problematic" id="id8">|</span></a>- Sector2
+|
+<a href="#id9"><span class="problematic" id="id10">|</span></a>- Country B</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><a href="#id11"><span class="problematic" id="id12">|</span></a>- Sector 3</p>
+</div></blockquote>
+<p>The user first creates all of the sectors, and sets the associated parameters. Additionally, certain variables are set
+externally (&#8220;exogenous&#8221;) and must be specified at the model level.</p>
+<p>Once all the sectors are created, the main() function is called on the Model object, and it ties all of the sectors
+together, and creates the model equations. These model equations are put into a text block, which can be passed into
+a IterativeMachineGenerator object to solve.</p>
+</div>
+<div class="section" id="codes-and-fullcodes">
+<h4>Codes and FullCodes<a class="headerlink" href="#codes-and-fullcodes" title="Permalink to this headline">¶</a></h4>
+<p>All sectors have a code associated with them; for example, &#8216;GOV&#8217; for government. Within a country, sectors can specify
+relations using this code.</p>
+<p>However, in order to be able to support multi-country models, a country code needs to be prepended to create the
+<em>full code</em>. For example, the Canadian &#8216;GOV&#8217; sector will have a full code of &#8216;CA_GOV&#8217; if we have defined the country
+code for the Canadian Country object as &#8220;CA&#8221;. This makes it possible to distinguish &#8216;US_GOV&#8217; from &#8216;CA_GOV&#8217;.</p>
+<p>If sectors want to have equations that link to other sectors, the linkage has to come after the Model object has
+generated the full codes.</p>
+</div>
+<div class="section" id="id13">
+<h4>Copyright/License<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
+<p>Copyright 2016 Brian Romanchuk</p>
+<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">sfc_models package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-sfc_models.base_solver">sfc_models.base_solver module</a></li>
+<li><a class="reference internal" href="#module-sfc_models.equation">sfc_models.equation module</a></li>
+<li><a class="reference internal" href="#module-sfc_models.equation_parser">sfc_models.equation_parser module</a></li>
+<li><a class="reference internal" href="#module-sfc_models.equation_solver">sfc_models.equation_solver module</a></li>
+<li><a class="reference internal" href="#module-sfc_models.external">sfc_models.external module</a></li>
+<li><a class="reference internal" href="#module-sfc_models.models">sfc_models.models module</a><ul>
+<li><a class="reference internal" href="#models-py">models.py</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-sfc_models.objects">sfc_models.objects module</a><ul>
+<li><a class="reference internal" href="#copyright-license">Copyright/License</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-sfc_models.sector">sfc_models.sector module</a></li>
+<li><a class="reference internal" href="#module-sfc_models.sector_definitions">sfc_models.sector_definitions module</a><ul>
+<li><a class="reference internal" href="#sectors-py">sectors.py</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-sfc_models.utils">sfc_models.utils module</a></li>
+<li><a class="reference internal" href="#module-sfc_models">Module contents</a><ul>
+<li><a class="reference internal" href="#sfc-models">sfc_models</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#codes-and-fullcodes">Codes and FullCodes</a></li>
+<li><a class="reference internal" href="#id13">Copyright/License</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">sfc_models Package Documentation</a></li>
+      <li>Next: <a href="sfc_models.examples.html" title="next chapter">sfc_models.examples package</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/sfc_models.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Brian Romanchuk.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/sfc_models.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

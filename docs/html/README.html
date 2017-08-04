@@ -1,0 +1,255 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>SFC Models Package Introduction &#8212; sfc_models 0.2.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="sfc_models 0.2.0 documentation" href="index.html" />
+    <link rel="next" title="Road To Version 1.0" href="road2version1.html" />
+    <link rel="prev" title="sfc_models.gl_book package" href="sfc_models.gl_book.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sfc-models-package-introduction">
+<h1>SFC Models Package Introduction<a class="headerlink" href="#sfc-models-package-introduction" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Creation and solution of stock-flow consistent (SFC) models. Currently under construction.</p>
+<p>This framework generates equations algorithmically based on the connections between Sector and
+Model objects. These equations are then solved using an iterative solution. The objective is that
+complex models with dozens of equations can be generated with a few lines of high level code. The
+user can then see how the equations arise from the sector behaviour.</p>
+<p>For another take on SFC models in Python see: <a class="reference external" href="https://github.com/kennt/monetary-economics">https://github.com/kennt/monetary-economics</a></p>
+<p>Developed under Python 3.4, and is compatible with Python 2.7.</p>
+</div>
+<div class="section" id="status-version-0-5-0">
+<h2>Status: Version 0.5.0<a class="headerlink" href="#status-version-0-5-0" title="Permalink to this headline">¶</a></h2>
+<p>(Section added on 2017-08-03.)</p>
+<p>No major new functionality is expected to be added before Version 1.0. The only planned changes are beefing up
+example code, and any fixes that need to be put into place.</p>
+<p>An introductory text is nearing completion. This document is aimed to be the user documentation; the code documentation
+embedded in the code base is just reference and implementation details.</p>
+</div>
+<div class="section" id="version-0-5-0-description-syntax-change">
+<h2>Version 0.5.0 Description Syntax Change<a class="headerlink" href="#version-0-5-0-description-syntax-change" title="Permalink to this headline">¶</a></h2>
+<p>In Version 0.5, the constructor order for Country and Sector objects has been changed.
+The long_name (or description) variable was demoted to optional. It will now
+be possible to create objects with just two arguments:</p>
+<p>ca = Country(model_object, &#8216;CA&#8217;)</p>
+<p>instead of (old syntax):</p>
+<p>ca = Country(model_object, &#8216;Canada&#8217;, &#8216;CA&#8217;)</p>
+<p>In my view, this is a major quality of life improvement for future users, at the cost of breaking
+what I assume is still a small base of external user&#8217;s code.</p>
+</div>
+<div class="section" id="road-to-version-1-0">
+<h2>Road To Version 1.0<a class="headerlink" href="#road-to-version-1-0" title="Permalink to this headline">¶</a></h2>
+<p>Another text file &#8220;RoadToVersion1.rst&#8221; describes the functionality that is aimed to be
+incorporated in Version 1.0 of <em>sfc_models</em>.</p>
+<p>Version 0.4.0 is being released on 2017-03-06. This version
+involves a major refactoring of the code, and has changed behaviour.</p>
+<ul class="simple">
+<li>The framework now injects a double underscore (&#8216;__&#8217;) instead of a single one (&#8216;_&#8217;) between
+the sector FullCode and the local variable name. For example, the household financial assets
+are now &#8216;HH__F&#8217; instead of &#8216;HH_F&#8217;. Furthermore, the creation of local variables with &#8216;__&#8217; is
+blocked. This means that the presence of &#8216;__&#8217; in a variable name means that it is the full name
+of a variable; otherwise it is a local variable. (Or perhaps a global variable like &#8216;t&#8217;.)</li>
+<li>An Equation class was created. It has replaced the strings held in the Equations member of
+the Sector class. It allows us to add terms to equations, so that the financial assets and
+income equations (see below) are always well-defined. This Equation class should be used by
+the solver, but it is not yet incorporated; there is no guarantee that such a change will be
+done before version 1.0 release.</li>
+<li>A pre-tax income variable (&#8216;INC&#8217;) was created. It is normally equal to cash inflows minus
+outflows, but there are some exceptions. (Household consumption, business dividends, etc.)
+The sectors in the framework do their best to classify cash flows as whether they affect income,
+but users may need to create exceptions (or additions) manually. (Previously, the income was
+ad hoc.)</li>
+<li>A new module - <em>sfc_models.sector</em> was created; it pulled the Sector class out of the models
+module. The existing <em>sectors.py</em> was renamed to <em>sector_definitions.py</em>. My old
+example code that did &#8220;import *&#8221; from <em>sfc_models.models</em> no longer works. (?)</li>
+</ul>
+<p>There are no <em>major</em> refactorings now expected to take place before version 1.0 release.
+<strong>(Update: the previous statement turned out to be dead wrong; see the discussion of
+the description change above.)</strong> As a result, the project status will be changed to
+&#8216;beta&#8217; in Version 0.4. Methods that are not expected to be used by people who are not
+creating new classes will have &#8216;_&#8217; added in front of their name (so they disappear from
+help()), but this is viewed as acceptable. Otherwise, variables and methods will only be
+renamed if they are obviously not following a standard pattern.</p>
+</div>
+<div class="section" id="sub-package-gl-book">
+<h2>Sub-package: gl_book<a class="headerlink" href="#sub-package-gl-book" title="Permalink to this headline">¶</a></h2>
+<p>The sub-package sfc_models.gl_book contains code to generate models from the text &#8220;Monetary Economics&#8221;
+by Wynne Godley and Marc Lavoie. The test process uses target output calculated elsewhere to
+validate that <em>sfc_models</em> generates effectively the same outcome. It should be noted that
+<em>sfc_models</em> has to approach equation-building differently than humans, and so there are more
+equations (and are labelled very differently). One needs to map the variables in &#8220;Monetary Economics&#8221;
+to those generated by <em>sfc_models</em> to validate that they get the same output.</p>
+<p>The previously mentioned GitHub package by &#8220;kennt&#8221; consists of well-documented solutions of those models in IPython
+notebooks.</p>
+<p>Models implemented (objects here generally use the same name name as Monetary Economics):</p>
+<ul class="simple">
+<li><strong>Chapter 3</strong> Model SIM, SIMEX</li>
+<li><strong>Chapter 4</strong> Model PC</li>
+<li><strong>Chapter 6</strong> Model REG (two versions here; REG and REG2). (I have a variant of model OPENG as well.)</li>
+</ul>
+</div>
+<div class="section" id="solution-method">
+<h2>Solution Method<a class="headerlink" href="#solution-method" title="Permalink to this headline">¶</a></h2>
+<p>The single-period solution of a SFC model relies on market-clearing (not necessarily relying on price adjustments,
+unlike mainstream models). Market clearing relies on solving many simultaneous equations.</p>
+<p>At present, the machine-generated code uses an iterative approach to solve <em>x = f(x)</em> (where <em>x</em> is a vector).
+We just passing an initial guess vector through <em>f(x)</em> and hope it converges.</p>
+<p>This works for the simple models tested so far. The objective is to augment this by a brute-force search technique that
+relies upon economic intuition to reduce the dimension of the search space. This will be needed for flexible
+currency models.</p>
+</div>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><em>matplotlib</em>: for plots in <em>examples</em>. (Essentially optional, may be required later
+if the solver algorithm needs beefing up.)</li>
+</ul>
+<p>Documentation will be placed in the &#8220;docs&#8221; directory.</p>
+<p>Examples are in the <em>examples</em> sub-package. Currently, in the form of scripts in <em>examples.scripts</em>; will develop a
+deployment function later.</p>
+<p>The test coverage on the &#8220;master&#8221; branch is 100%, and the objective is to hold that standard. There are some
+sections that are effectively untestable, and there appears to be issues with some lines that are undoubtedly hit
+as being marked as unreached; they have been eliminated with::
+#  pragma: no cover</p>
+</div>
+<div class="section" id="change-log">
+<h2>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><strong>0.5.0</strong> Change to sector constructor order, examples development.</li>
+<li><strong>0.4.3</strong> install_examples() GUI added. Python 2.7 fixes.</li>
+<li><strong>0.4.2</strong> Small changes, import from <em>sfc_models.objects</em> supported.</li>
+<li><strong>0.4.1</strong> Fixed packaging problem from Version 0.4.0.</li>
+<li><strong>0.4.0</strong> <em>Packaged incorrectly</em> Multi-file Logger, initial (constant) equilibrium calculation, markets
+with multiple supply sources, custom functions. Equation objects used in model creation.
+<strong>Changed variable naming convention, eliminated the Sector.Equations member.</strong> Considerable
+refactoring, methods for developer use have been hidden with leading underscore. Example code
+cleanup.</li>
+<li><strong>0.3.0</strong> Rebuilt the solver, heavy refactoring, example installation, Godley &amp; Lavoie example framework.</li>
+<li><strong>0.2.1</strong> Cleaned up examples layout.</li>
+<li><strong>Version 0.2</strong>  (Should have been 0.2.0 - oops)
+First deployment of package to PyPi. Base functionality operational, little documentation.</li>
+<li>Earlier versions: Only available as source on Github.</li>
+</ul>
+</div>
+<div class="section" id="license-disclaimer">
+<h2>License/Disclaimer<a class="headerlink" href="#license-disclaimer" title="Permalink to this headline">¶</a></h2>
+<p>Copyright 2016-2017 Brian Romanchuk</p>
+<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">SFC Models Package Introduction</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#status-version-0-5-0">Status: Version 0.5.0</a></li>
+<li><a class="reference internal" href="#version-0-5-0-description-syntax-change">Version 0.5.0 Description Syntax Change</a></li>
+<li><a class="reference internal" href="#road-to-version-1-0">Road To Version 1.0</a></li>
+<li><a class="reference internal" href="#sub-package-gl-book">Sub-package: gl_book</a></li>
+<li><a class="reference internal" href="#solution-method">Solution Method</a></li>
+<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li><a class="reference internal" href="#change-log">Change Log</a></li>
+<li><a class="reference internal" href="#license-disclaimer">License/Disclaimer</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="sfc_models.gl_book.html" title="previous chapter">sfc_models.gl_book package</a></li>
+      <li>Next: <a href="road2version1.html" title="next chapter">Road To Version 1.0</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/README.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Brian Romanchuk.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/README.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

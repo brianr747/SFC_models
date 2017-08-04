@@ -1,0 +1,315 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>sfc_models.examples package &#8212; sfc_models 0.2.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="sfc_models 0.2.0 documentation" href="index.html" />
+    <link rel="up" title="sfc_models package" href="sfc_models.html" />
+    <link rel="next" title="sfc_models.gl_book package" href="sfc_models.gl_book.html" />
+    <link rel="prev" title="sfc_models package" href="sfc_models.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sfc-models-examples-package">
+<h1>sfc_models.examples package<a class="headerlink" href="#sfc-models-examples-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-sfc_models.examples.Quick2DPlot">
+<span id="sfc-models-examples-quick2dplot-module"></span><h2>sfc_models.examples.Quick2DPlot module<a class="headerlink" href="#module-sfc_models.examples.Quick2DPlot" title="Permalink to this headline">¶</a></h2>
+<p>extras.py</p>
+<p>Plotting class to generate 2-D charts for examples. This file is the only one (other than another example)
+that depends upon matplotlib. If matplotlib is not imported (that is, not installed), does
+a fall back operation (dump to console, and eventually, a csv). The user can either find a plotting
+function that works, or import the csv data.</p>
+<p>I have isolated this so that it is possible to run examples with no external dependencies.</p>
+<p>To install matplotlib, running &#8220;pip install matplotlib&#8221; in the approppriate Python &#8220;Scripts&#8221; directory
+should do the job. Unfortunately, it can sometimes fail. There is up-to-date documentation on the internet;
+I do not want to attempt to cover the details here.</p>
+<p>This nodule is largely uncovered by unit tests, as it is interactive. It should be moved elsewhere, but
+putting it within sfc_models makes installation instructions simpler. (Users will still need to install matlibplot,
+which can be a tricky install.)</p>
+<p>Copyright 2016 Brian Romanchuk</p>
+<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+<dl class="class">
+<dt id="sfc_models.examples.Quick2DPlot.Quick2DPlot">
+<em class="property">class </em><code class="descclassname">sfc_models.examples.Quick2DPlot.</code><code class="descname">Quick2DPlot</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>title=''</em>, <em>run_now=True</em>, <em>output_directory=None</em>, <em>filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/examples/Quick2DPlot.html#Quick2DPlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.examples.Quick2DPlot.Quick2DPlot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="sfc_models.examples.Quick2DPlot.Quick2DPlot.DoPlot">
+<code class="descname">DoPlot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/examples/Quick2DPlot.html#Quick2DPlot.DoPlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.examples.Quick2DPlot.Quick2DPlot.DoPlot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sfc_models.examples.Quick2DPlot.Quick2DPlotParams">
+<em class="property">class </em><code class="descclassname">sfc_models.examples.Quick2DPlot.</code><code class="descname">Quick2DPlotParams</code><a class="reference internal" href="_modules/sfc_models/examples/Quick2DPlot.html#Quick2DPlotParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.examples.Quick2DPlot.Quick2DPlotParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="sfc_models.examples.Quick2DPlot.Quick2DPlotParams.FileRead">
+<code class="descname">FileRead</code><em class="property"> = False</em><a class="headerlink" href="#sfc_models.examples.Quick2DPlot.Quick2DPlotParams.FileRead" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="sfc_models.examples.Quick2DPlot.Quick2DPlotParams.FontSize">
+<code class="descname">FontSize</code><em class="property"> = 11</em><a class="headerlink" href="#sfc_models.examples.Quick2DPlot.Quick2DPlotParams.FontSize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="sfc_models.examples.Quick2DPlot.Quick2DPlotParams.Height">
+<code class="descname">Height</code><em class="property"> = 3</em><a class="headerlink" href="#sfc_models.examples.Quick2DPlot.Quick2DPlotParams.Height" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="sfc_models.examples.Quick2DPlot.Quick2DPlotParams.OutputDirectory">
+<code class="descname">OutputDirectory</code><em class="property"> = None</em><a class="headerlink" href="#sfc_models.examples.Quick2DPlot.Quick2DPlotParams.OutputDirectory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="sfc_models.examples.Quick2DPlot.Quick2DPlotParams.ParamFileName">
+<code class="descname">ParamFileName</code><em class="property"> = 'Quick2DPlot_params.txt'</em><a class="headerlink" href="#sfc_models.examples.Quick2DPlot.Quick2DPlotParams.ParamFileName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sfc_models.examples.Quick2DPlot.Quick2DPlotParams.ReadFile">
+<code class="descname">ReadFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/examples/Quick2DPlot.html#Quick2DPlotParams.ReadFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.examples.Quick2DPlot.Quick2DPlotParams.ReadFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="sfc_models.examples.Quick2DPlot.Quick2DPlotParams.Width">
+<code class="descname">Width</code><em class="property"> = 4.5</em><a class="headerlink" href="#sfc_models.examples.Quick2DPlot.Quick2DPlotParams.Width" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="sfc_models.examples.Quick2DPlot.Quick2DPlotParams.dpi">
+<code class="descname">dpi</code><em class="property"> = 90</em><a class="headerlink" href="#sfc_models.examples.Quick2DPlot.Quick2DPlotParams.dpi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-sfc_models.examples.install_example_scripts">
+<span id="sfc-models-examples-install-example-scripts-module"></span><h2>sfc_models.examples.install_example_scripts module<a class="headerlink" href="#module-sfc_models.examples.install_example_scripts" title="Permalink to this headline">¶</a></h2>
+<p>install_example_scripts.py</p>
+<p>Run &#8220;install([path])&#8221; to install all of the example scripts into a directory.  If a file already exists, the
+script throws an error. The user has to clean existing code out of the way, even if it is not modified.</p>
+<p>This is somewhat clumsy, but this is a stop-gap installation measure. There is support for installation of
+&#8220;data files&#8221; within the installation framework, but I want to make sure the users know where the
+scripts are.</p>
+<p>Copyright 2017 Brian Romanchuk</p>
+<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+<dl class="function">
+<dt id="sfc_models.examples.install_example_scripts.install">
+<code class="descclassname">sfc_models.examples.install_example_scripts.</code><code class="descname">install</code><span class="sig-paren">(</span><em>target_dir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/examples/install_example_scripts.html#install"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.examples.install_example_scripts.install" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install all the example Python files into a target directory (and create an &#8220;output&#8221; subdirectory).</p>
+<p>If a file already exists, the script will fail. You need to copy existing files out of the way.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>target_dir</strong> &#8211; str</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-sfc_models.examples.install_examples">
+<span id="sfc-models-examples-install-examples-module"></span><h2>sfc_models.examples.install_examples module<a class="headerlink" href="#module-sfc_models.examples.install_examples" title="Permalink to this headline">¶</a></h2>
+<p>install_examples.py</p>
+<p>Dialogs that installs scripts to a desired directory. Simple front end to
+sfc_models.examples.install_example_scripts</p>
+<p>Migrated to sfc_models.examples</p>
+<div class="section" id="license-disclaimer">
+<h3>License/Disclaimer<a class="headerlink" href="#license-disclaimer" title="Permalink to this headline">¶</a></h3>
+<p>Copyright 2017 Brian Romanchuk</p>
+<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+<dl class="function">
+<dt id="sfc_models.examples.install_examples.install_examples">
+<code class="descclassname">sfc_models.examples.install_examples.</code><code class="descname">install_examples</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/examples/install_examples.html#install_examples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.examples.install_examples.install_examples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pops up windows to allow the user to choose a directory for installation
+of sfc_models examples.</p>
+<p>Uses tkinter, which is installed in base Python (modern versions).
+:return:</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-sfc_models.examples">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-sfc_models.examples" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>sfc_models.examples package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Example code is deployed here.; currently only in the form of scripts in the &#8220;scripts&#8221; sub-package. Eventually,
+will develop a deployment function to push the examples to a directory specified by the user.</p>
+<p>The Quick2DPlot() function uses matlibplot, which is the only non-base library used. If matlibplot is
+not installed, the plotting fails and gives the user a warning. The user can replace matlibplot with
+another plotting package fairly easily, by replacing Quick2DPlot code with replacement code.</p>
+<p>Copyright 2016 Brian Romanchuk</p>
+<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+<dl class="function">
+<dt id="sfc_models.examples.install_scripts">
+<code class="descclassname">sfc_models.examples.</code><code class="descname">install_scripts</code><span class="sig-paren">(</span><em>target_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sfc_models/examples.html#install_scripts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sfc_models.examples.install_scripts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install all the example Python files into a target directory (and create an &#8220;output&#8221; subdirectory).</p>
+<p>If a file already exists, the script will fail. You need to copy existing files out of the way.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>target_dir</strong> &#8211; str</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">sfc_models.examples package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-sfc_models.examples.Quick2DPlot">sfc_models.examples.Quick2DPlot module</a></li>
+<li><a class="reference internal" href="#module-sfc_models.examples.install_example_scripts">sfc_models.examples.install_example_scripts module</a></li>
+<li><a class="reference internal" href="#module-sfc_models.examples.install_examples">sfc_models.examples.install_examples module</a><ul>
+<li><a class="reference internal" href="#license-disclaimer">License/Disclaimer</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-sfc_models.examples">Module contents</a><ul>
+<li><a class="reference internal" href="#id1">sfc_models.examples package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="sfc_models.html">sfc_models package</a><ul>
+      <li>Previous: <a href="sfc_models.html" title="previous chapter">sfc_models package</a></li>
+      <li>Next: <a href="sfc_models.gl_book.html" title="next chapter">sfc_models.gl_book package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/sfc_models.examples.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Brian Romanchuk.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/sfc_models.examples.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

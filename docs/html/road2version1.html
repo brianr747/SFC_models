@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Road To Version 1.0 &#8212; sfc_models 0.2.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="sfc_models 0.2.0 documentation" href="index.html" />
+    <link rel="prev" title="SFC Models Package Introduction" href="README.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="road-to-version-1-0">
+<h1>Road To Version 1.0<a class="headerlink" href="#road-to-version-1-0" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>This document outlines what is expected to be implemented for Version 1.0 of
+<em>sfc_models</em>. This version is what will be described in the to-be-published
+<em>Introduction to SFC Models Using Python</em> (by Brian Romanchuk). It seems likely
+that the <em>sfc_models</em> will evolve considerably as it used by others, but this
+Version 1.0 will act as a base implementation that matches the book documentation.</p>
+<p>As will be seen, very few features will be added.</p>
+<p>There will be a &#8220;book&#8221; branch created for the source code. In this book branch,
+functionality will be frozen to match what is within the book. User code developed
+against the code in this branch will see a frozen <em>sfc_models</em> API. The only
+developments that might occur may be an improvement of documentation and examples.
+This code may be released as versions 1.0.x; e.g., 1.0.3 is the third update
+on the book branch.</p>
+</div>
+<div class="section" id="economic-functionality">
+<h2>Economic Functionality<a class="headerlink" href="#economic-functionality" title="Permalink to this headline">¶</a></h2>
+<p>No more economic functionality will be added ahead of Version 1.0.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Examples will be looked at, and set to match what will appear in <em>Introduction to SFC Models Using Python</em>.</p>
+</div>
+<div class="section" id="code-cleanup">
+<h2>Code Cleanup<a class="headerlink" href="#code-cleanup" title="Permalink to this headline">¶</a></h2>
+<p>Some code cleanup may be done ahead of the Version 1.0 release, but this is expected to be minor.</p>
+<ul class="simple">
+<li>Sanity checks of model output. (Do balance sheets balance?) <strong>[Deferred]</strong></li>
+<li>Logging will be back-filled throughout the code base. The user should be able
+to see what is happening by looking at the log. <strong>[Done]</strong></li>
+<li>An Equation class may be added. Previously, equations were just lists of
+strings (str). Only limited functionality is expected to be embedded in
+Version 1.0; the main feature is ensure that the user operations are safe. <strong>[DONE]</strong></li>
+<li>Methods that are viewed as &#8220;private&#8221; will be renamed with &#8220;_&#8221; in their
+names; they will not show up in help <strong>[Started.]</strong></li>
+<li>Refactoring to ensure greater consistency of naming and parameter usage.</li>
+<li>Allow users to define functions to be used within equations. <strong>[DONE]</strong></li>
+<li>Example scripts will either be updated or moved to the &#8220;deprecated&#8221; folder. <strong>[DONE]</strong></li>
+</ul>
+</div>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<p>The main documentation work will revolve around adding doc strings to all
+methods. Example scripts are expected to provide more context. Of course, there
+will be a book available for sale explaining the high level working of the library.</p>
+<p>The book will include a technical description of the solver, as well as an
+explanation of the object hierarchy.</p>
+<p>Excerpts of the book will be placed on the BondEconomics blog
+(<a class="reference external" href="http://bondeconomics.com">http://bondeconomics.com</a> ), and may be incorporated within the documentation base.</p>
+<p>Since it is expected  that the library will evolve once others start to use it,
+placing too much high level documentation within the library early on may be
+counter-productive. The book is aimed to work against the fixed Version 1.0 of the
+code base, but the library documentation needs to be compatible with Versions
+2.0, etc.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Road To Version 1.0</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#economic-functionality">Economic Functionality</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#code-cleanup">Code Cleanup</a></li>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="README.html" title="previous chapter">SFC Models Package Introduction</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/road2version1.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Brian Romanchuk.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/road2version1.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
