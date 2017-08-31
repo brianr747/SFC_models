@@ -2,7 +2,6 @@ build_SIM_model.py
 ex20161103_SIM_2_country.py
 ex20161128_tax_cut_comparison.py
 ex20161206_SIM_with_deposits.py
-ex20170209_SIMEX1.py
 ex20170221_Model_PC.py
 ex20170225_Model_REG.py
 ex20170307_Model_REG2.py
@@ -11,6 +10,16 @@ intro_3_03_hello_world_1.py
 intro_3_03_hello_world_2.py
 intro_3_03_hello_world_3.py
 intro_3_03_hello_world_4.py
+intro_3_05_variable_names_1.py
+intro_3_05_variable_names_2.py
+intro_5_03_no_tax_SIM.py
+intro_5_04_SIMEX1.py
+intro_6_04_externalsector.py
+intro_6_06_gold_standard_G.py
+intro_X_XX_sim_fiscal.py
+intro_X_XX_sim_growing_fiscal.py
+intro_X_XX_sim_multiplier.py
+sfcmod_external_sector.py
 sfcmod_FX.py
 sfcmod_OPENG.py
 sfcmod_REG2.py

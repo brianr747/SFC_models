@@ -15,6 +15,18 @@ For another take on SFC models in Python see: https://github.com/kennt/monetary-
 
 Developed under Python 3.4, and is compatible with Python 2.7.
 
+Status Version 1.0.0
+--------------------
+
+This version of *sfc_models* is the one that is associated with the upcoming guide (estimated
+release date is October 2017). The framework is hardly complete, but it is possible to use
+it to create some relatively complex models. Further extensions will probably have to be
+aimed at extending towards research topics of interest. The existing set of examples (and
+the guide) should offer a solid starting point for other researchers.
+
+There have been very few changes from version 0.5.0. Code cleanup may show up in minor
+versions 1.0.x.
+
 Status: Version 0.5.0
 ---------------------
 
@@ -129,6 +141,7 @@ as being marked as unreached; they have been eliminated with::
 Change Log
 ----------
 
+- **1.0.0** Locking down the version associated with the guide.
 - **0.5.0** Change to sector constructor order, examples development.
 - **0.4.3** install_examples() GUI added. Python 2.7 fixes.
 - **0.4.2** Small changes, import from *sfc_models.objects* supported.

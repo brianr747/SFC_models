@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-intro_gold_standard_G.py
+intro_6_06_gold_standard_G.py
 
 Model similar to model OPENG from Godley and Lavoie's "Monetary Economics."
 

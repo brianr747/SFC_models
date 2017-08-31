@@ -30,11 +30,6 @@ if "main" in dir(ex20161206_SIM_with_deposits):
     ex20161206_SIM_with_deposits.main()
 
 
-import ex20170209_SIMEX1
-if "main" in dir(ex20170209_SIMEX1):
-    ex20170209_SIMEX1.main()
-
-
 import ex20170221_Model_PC
 if "main" in dir(ex20170221_Model_PC):
     ex20170221_Model_PC.main()
@@ -73,6 +68,56 @@ if "main" in dir(intro_3_03_hello_world_3):
 import intro_3_03_hello_world_4
 if "main" in dir(intro_3_03_hello_world_4):
     intro_3_03_hello_world_4.main()
+
+
+import intro_3_05_variable_names_1
+if "main" in dir(intro_3_05_variable_names_1):
+    intro_3_05_variable_names_1.main()
+
+
+import intro_3_05_variable_names_2
+if "main" in dir(intro_3_05_variable_names_2):
+    intro_3_05_variable_names_2.main()
+
+
+import intro_5_03_no_tax_SIM
+if "main" in dir(intro_5_03_no_tax_SIM):
+    intro_5_03_no_tax_SIM.main()
+
+
+import intro_5_04_SIMEX1
+if "main" in dir(intro_5_04_SIMEX1):
+    intro_5_04_SIMEX1.main()
+
+
+import intro_6_04_externalsector
+if "main" in dir(intro_6_04_externalsector):
+    intro_6_04_externalsector.main()
+
+
+import intro_6_06_gold_standard_G
+if "main" in dir(intro_6_06_gold_standard_G):
+    intro_6_06_gold_standard_G.main()
+
+
+import intro_X_XX_sim_fiscal
+if "main" in dir(intro_X_XX_sim_fiscal):
+    intro_X_XX_sim_fiscal.main()
+
+
+import intro_X_XX_sim_growing_fiscal
+if "main" in dir(intro_X_XX_sim_growing_fiscal):
+    intro_X_XX_sim_growing_fiscal.main()
+
+
+import intro_X_XX_sim_multiplier
+if "main" in dir(intro_X_XX_sim_multiplier):
+    intro_X_XX_sim_multiplier.main()
+
+
+import sfcmod_external_sector
+if "main" in dir(sfcmod_external_sector):
+    sfcmod_external_sector.main()
 
 
 import sfcmod_FX
