@@ -15,6 +15,8 @@ For another take on SFC models in Python see: https://github.com/kennt/monetary-
 
 Developed under Python 3.4, and is compatible with Python 2.7.
 
+There are some installation instructions found in "InstallationNotes.rst"
+
 Status Version 1.0.0
 --------------------
 
