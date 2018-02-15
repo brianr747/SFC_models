@@ -26,6 +26,7 @@ def generate_model(eqns, use_control=False):
     exogenous
     u = [1.] * 10 + [2.]*21
         """
+    print(eqns)
     out = EquationSolver(eqns)
     out.Parser.MaxTime = 30
     out.SolveEquation()
@@ -78,13 +79,17 @@ def main():
     plt.plot(k, x_0, 'bo', k, x_1, 'b+', k, x_2, 'b--')
     plt.title('Assumed Model Output, Plus Perturbed Systems')
     plt.grid()
+    plt.savefig('robust_1.png', dpi=90)
     plt.show()
+
 
 
     plt.plot(k, x_act, '-ro', k, x_0, 'bo', k, x_1, 'b+', k, x_2, 'b--')
     plt.title('True Model, Plus Assumed Outputs')
     plt.grid()
+    plt.savefig('robust_2.png', dpi=90)
     plt.show()
+
 
     mod_0 = generate_base_model(.05, use_control=True)
     k = mod_0.TimeSeries['k']
@@ -99,13 +104,17 @@ def main():
     plt.plot(k, x_0, 'bo', k, x_1, 'b+', k, x_2, 'b--')
     plt.title('Assumed Feedback Control Response')
     plt.grid()
+    plt.savefig('robust_3.png', dpi=90)
     plt.show()
+
 
 
     plt.plot(k, x_act, '-ro', k, x_0, 'bo', k, x_1, 'b+', k, x_2, 'b--')
     plt.title('Actual Feedback Response')
     plt.grid()
+    plt.savefig('robust4.png', dpi=90)
     plt.show()
+
 
 
     # plt.plot(k, x_act, 'ro', k, x_1, 'b+', k, x_2, 'b--')

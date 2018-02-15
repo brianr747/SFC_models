@@ -45,6 +45,11 @@ if "main" in dir(ex20170307_Model_REG2):
     ex20170307_Model_REG2.main()
 
 
+import ex20171127_equations_state_space_models
+if "main" in dir(ex20171127_equations_state_space_models):
+    ex20171127_equations_state_space_models.main()
+
+
 import intro_3_02_example
 if "main" in dir(intro_3_02_example):
     intro_3_02_example.main()
@@ -115,24 +120,14 @@ if "main" in dir(intro_X_XX_sim_multiplier):
     intro_X_XX_sim_multiplier.main()
 
 
+import scratch2
+if "main" in dir(scratch2):
+    scratch2.main()
+
+
 import sfcmod_external_sector
 if "main" in dir(sfcmod_external_sector):
     sfcmod_external_sector.main()
-
-
-import sfcmod_FX
-if "main" in dir(sfcmod_FX):
-    sfcmod_FX.main()
-
-
-import sfcmod_OPENG
-if "main" in dir(sfcmod_OPENG):
-    sfcmod_OPENG.main()
-
-
-import sfcmod_REG2
-if "main" in dir(sfcmod_REG2):
-    sfcmod_REG2.main()
 
 
 import SIM_Model_With_Capitalists
