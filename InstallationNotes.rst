@@ -4,6 +4,15 @@ Installation Notes
 
 These installation notes are very preliminary.
 
+If you are an experienced Python user, *sfc_models* is a standard Python package,
+
+If you are new to Python, it is not enough to just download the source code
+from GitHub and then run example scripts. Python would need to know how
+to find the the package files, and you would need to set the PYTHONPATH.
+
+If you are unfamiliar with how the PYTHONPATH works, the built-in Python 
+*pip* installer, described next, is the simplest solution.
+
 Simplest: pip
 -------------
 
