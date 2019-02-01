@@ -316,14 +316,17 @@ class Term(object):
         return lead + self.Term
 
     def ReplaceTokensFromLookup(self, lookup):
-        if self.IsBlob:
-            self.Term = replace_token_from_lookup(self.Term, lookup)
-            return
-        if self.IsSimple:
-            self.Term = replace_token_from_lookup(self.Term, lookup)
-            #if self.Term in lookup:
-            #    self.Term = lookup[self.Term]
-            return
+        try:
+            if self.IsBlob:
+                self.Term = replace_token_from_lookup(self.Term, lookup)
+                return
+            if self.IsSimple:
+                self.Term = replace_token_from_lookup(self.Term, lookup)
+                #if self.Term in lookup:
+                #    self.Term = lookup[self.Term]
+                return
+        except tokenize.TokenError:
+            raise ValueError('Failure in parsing for token in: ("{0}", "{1}")'.format(self.Term, lookup))
         raise NotImplementedError('Need to handle non-simple terms somehow...') # pragma: no cover
 
 

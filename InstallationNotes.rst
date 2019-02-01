@@ -33,7 +33,7 @@ author's machine).
 In a Python interpreter, you can do
 
 from sfc_models.objects import *
-install_examples
+install_examples()
 
 This function is found in the "examples" directory, which is outside the "sfc_models" package
 directory.
