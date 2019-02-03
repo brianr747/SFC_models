@@ -52,17 +52,17 @@ expected_income = model.GetTimeSeries('HH__EXP_AfterTax')
 F_SIMEX = model.GetTimeSeries('HH__F')
 F_SIM = model_SIM.GetTimeSeries('HH__F')
 
-Quick2DPlot(time, Y_SIMEX, 'Output (Y) - Model SIMEX')
+Quick2DPlot(time, Y_SIMEX, 'Output (Y) - Model SIMEX', filename='intro_5_4_1.png')
 
 q = Quick2DPlot([time, time], [expected_income, income], 'Household Income in Model SIMEX', run_now=False,
-                filename='SIMEX1_output.png')
+                filename='intro_5_4_2.png')
 q.Legend = ['Expected', 'Realised']
 q.DoPlot()
 
-q = Quick2DPlot([time, time], [Y_SIMEX, Y_SIM], 'Output (Y)', run_now=False)
+q = Quick2DPlot([time, time], [Y_SIMEX, Y_SIM], 'Output (Y)', run_now=False, filename='intro_5_4_3.png')
 q.Legend = ['Model SIMEX', 'Model SIM']
 q.DoPlot()
 
-q = Quick2DPlot([time, time], [F_SIMEX, F_SIM], 'Household Financial Assets', run_now=False)
+q = Quick2DPlot([time, time], [F_SIMEX, F_SIM], 'Household Financial Assets', run_now=False, filename='intro_5_4_4.png')
 q.Legend = ['Model SIMEX', 'Model SIM']
 q.DoPlot()
