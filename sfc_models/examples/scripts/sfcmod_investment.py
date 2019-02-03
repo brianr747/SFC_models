@@ -1,25 +1,12 @@
-"""
-Investment Accelerator Model
 
-Attempt at the simplest possible investment accelerator model. Has a number of
-simplifications; no attempt to reflect more standard models.
-
-Since we have a more advanced production function, need to add inventories. This was
-not done in the existing framework, so extending the business sector class
-locally.
-
-Uses a lot of lagged information to ensure solution stability.
-
-Base it off Model SIM, but beef up the business sector. By implication, all prices
-are fixed.
-"""
-
+from sfc_models import register_standard_logs
 from sfc_models.objects import *
-from sfc_models.examples.Quick2DPlot import Quick2DPlot
+from sfc_models.sector import Sector
+from sfc_gui.chart_plotter import ChartPlotterWindow2
+
 from sfc_models.sector import Sector
 from sfc_models.utils import Logger
 
-# Create the new business sector class
 
 class BusinessWithInvestment(FixedMarginBusiness):
     def __init__(self, country, code, long_name=''):
@@ -73,10 +60,11 @@ class BusinessWithInvestment(FixedMarginBusiness):
                 s.AddCashFlow('DIV', self.GetVariableName('DIVPAID'), 'Dividends received', is_income=True)
                 break
 
-def main():
-    # The next line of code sets the name of the output files based on the code file's name.
-    # This means that if you paste this code into a new file, get a new log name.
-    register_standard_logs('output', __file__)
+
+def get_description():
+    return "ModelInvestment"
+
+def build_model():
     # Create model, which holds all entities
     mod = Model()
     mod.EquationSolver.TraceStep = 10
@@ -110,49 +98,14 @@ def main():
     # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
     #mod.AddExogenous('GOV', 'DEM_GOOD', '[19.,] * 20 + [25.]*100')
     mod.AddExogenous('GOV', 'DEM_GOOD', '[19.,] * 105')
-    mod.AddExogenous('BUS', 'ALPHA_CAPITAL', '[1.,] * 5 + [1.1] * 100')
-
-    # Build the model
-    mod.main()
-
-    # First set of charts: short-term effects
-    CUT = 9
-    k = mod.GetTimeSeries('k', cutoff=CUT)
-    goods_produced = mod.GetTimeSeries('BUS__PROD', cutoff=CUT)
-    capital_ratio = mod.GetTimeSeries('BUS__CAPITAL_RATIO', cutoff=CUT)
-    investment = mod.GetTimeSeries('BUS__INVEST', cutoff=CUT)
-    dem_labour = mod.GetTimeSeries('BUS__DEM_LAB', cutoff=CUT)
-    inventory = mod.GetTimeSeries('BUS__INV', cutoff=CUT)
-    inventory_sales = mod.GetTimeSeries('BUS__INVSALES', cutoff=CUT)
-    profit = mod.GetTimeSeries('BUS__PROFORMA', cutoff=CUT)
-    # Fix initial condition
-    investment[0] = 5.
-    capital_ratio[0] = 1.
-    inventory_sales[0] = 1.
-    profit[0] = 14.
-    print(profit)
-    if False:
-        Quick2DPlot(k, investment, 'Gross Investment', filename='recession_investment_01.png')
-        Quick2DPlot(k, capital_ratio, 'Ratio of Capital to Target', filename='recession_investment_02.png')
-        Quick2DPlot(k, dem_labour, 'Wage Income', filename='recession_investment_03.png')
-        Quick2DPlot(k, inventory, 'Inventory', filename='recession_investment_04.png')
-        Quick2DPlot(k, inventory_sales, 'Inventory/Sales Ratio', filename='recession_investment_05.png')
-        Quick2DPlot(k, goods_produced, 'Goods Produced (National Output)', filename='recession_investment_06.png')
-    # Quick2DPlot(k, profit, 'Business Sector (Pro-Forma) Profit', filename='recession_investment_07.png')
-    CUT = 100
-    k = mod.GetTimeSeries('k', cutoff=CUT)
-    goods_produced = mod.GetTimeSeries('BUS__PROD', cutoff=CUT)
-    fisc_bal =  mod.GetTimeSeries('GOV__FISC_BAL', cutoff=CUT)
-    Quick2DPlot(k, goods_produced, 'Goods Produced (National Output) - Long Run', filename='recession_investment_07.png')
-    Quick2DPlot(k, fisc_bal, 'Government Fiscal Balance - Long Run',
-                filename='recession_investment_08.png')
-
-
-
-
-
+    mod.AddExogenous('BUS', 'ALPHA_CAPITAL', '[1.,] * 20 + [1.1] * 100')
+    return mod
 
 
 
 if __name__ == '__main__':
-    main()
+    # register_standard_logs('output', __file__)
+    mod2 = build_model()
+    mod2.main()
+    window = ChartPlotterWindow2(None, mod2)
+    window.mainloop()
