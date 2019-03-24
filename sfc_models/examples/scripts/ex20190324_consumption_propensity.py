@@ -1,12 +1,8 @@
 """
-Investment Accelerator Model
+Consumption Propensity Shock Model
 
-Attempt at the simplest possible investment accelerator model. Has a number of
-simplifications; no attempt to reflect more standard models.
-
-Since we have a more advanced production function, need to add inventories. This was
-not done in the existing framework, so extending the business sector class
-locally.
+A small riff on the previous Investment Accelerator Model. Only difference is that
+investment propensity is fixed, and propensity to consume changes.
 
 Uses a lot of lagged information to ensure solution stability.
 
@@ -110,7 +106,8 @@ def main():
     # Need to set the exogenous variable - Government demand for Goods ("G" in economist symbology)
     #mod.AddExogenous('GOV', 'DEM_GOOD', '[19.,] * 20 + [25.]*100')
     mod.AddExogenous('GOV', 'DEM_GOOD', '[19.,] * 105')
-    mod.AddExogenous('BUS', 'ALPHA_CAPITAL', '[1.,] * 5 + [1.1] * 100')
+    mod.AddExogenous('BUS', 'ALPHA_CAPITAL', '[1.,] * 105')
+    mod.AddExogenous('HH', 'AlphaIncome', [.6,] * 5 + [.55] * 100)
 
     # Build the model
     mod.main()
@@ -125,27 +122,39 @@ def main():
     inventory = mod.GetTimeSeries('BUS__INV', cutoff=CUT)
     inventory_sales = mod.GetTimeSeries('BUS__INVSALES', cutoff=CUT)
     profit = mod.GetTimeSeries('BUS__PROFORMA', cutoff=CUT)
+    consumption = mod.GetTimeSeries('HH__DEM_GOOD', cutoff=CUT)
     # Fix initial condition
     investment[0] = 5.
     capital_ratio[0] = 1.
     inventory_sales[0] = 1.
     profit[0] = 14.
+    consumption[0] = 76.
     print(profit)
-    if False:
-        Quick2DPlot(k, investment, 'Gross Investment', filename='recession_investment_01.png')
-        Quick2DPlot(k, capital_ratio, 'Ratio of Capital to Target', filename='recession_investment_02.png')
-        Quick2DPlot(k, dem_labour, 'Wage Income', filename='recession_investment_03.png')
-        Quick2DPlot(k, inventory, 'Inventory', filename='recession_investment_04.png')
-        Quick2DPlot(k, inventory_sales, 'Inventory/Sales Ratio', filename='recession_investment_05.png')
-        Quick2DPlot(k, goods_produced, 'Goods Produced (National Output)', filename='recession_investment_06.png')
+    if True:
+        p = Quick2DPlot([k,k], [goods_produced, consumption], title='Effect Of Shock',
+                    filename='consumption_propensity_01.png', run_now=False)
+        p.Legend = ['Production', 'Household Consumption']
+        p.DoPlot()
+        Quick2DPlot(k, inventory, 'Inventory', filename='consumption_propensity_02.png')
+        Quick2DPlot(k, investment, 'Gross Investment', filename='consumption_propensity_03.png')
+        # Quick2DPlot(k, inventory, 'Inventory', filename='consumption_propensity_02.png')
+        return
+        Quick2DPlot(k, capital_ratio, 'Ratio of Capital to Target', filename='consumption_02.png')
+        Quick2DPlot(k, dem_labour, 'Wage Income', filename='consumption_03.png')
+
+        Quick2DPlot(k, inventory_sales, 'Inventory/Sales Ratio', filename='consumption_05.png')
+        Quick2DPlot(k, goods_produced, 'Goods Produced (National Output)', filename='consumption_propensity_06.png')
     # Quick2DPlot(k, profit, 'Business Sector (Pro-Forma) Profit', filename='recession_investment_07.png')
     CUT = 100
     k = mod.GetTimeSeries('k', cutoff=CUT)
     goods_produced = mod.GetTimeSeries('BUS__PROD', cutoff=CUT)
     fisc_bal =  mod.GetTimeSeries('GOV__FISC_BAL', cutoff=CUT)
     profit = mod.GetTimeSeries('BUS__PROFORMA', cutoff=CUT)
+    consumption = mod.GetTimeSeries('HH__DEM_GOOD', cutoff=CUT)
+
     # Fix initial conditions
     profit[0] = 14.
+
     Quick2DPlot(k, goods_produced, 'Goods Produced (National Output) - Long Run', filename='recession_investment_07.png')
     Quick2DPlot(k, fisc_bal, 'Government Fiscal Balance - Long Run',
                 filename='recession_investment_08.png')
