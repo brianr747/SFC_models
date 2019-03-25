@@ -1,3 +1,4 @@
+import platform
 import doctest
 from unittest import TestCase
 
@@ -40,8 +41,13 @@ class TestGetValid(TestCase):
         self.assertIn('sqrt', bad)
 
     def test_examples_fn(self):
-        self.assertEqual('cat', sfc_models.utils.get_file_base('C:\\temp\\cat.txt'))
-        self.assertEqual('cat', sfc_models.utils.get_file_base('C:\\temp\\cat'))
+        dir = ""
+        if platform.system() == "Linux":
+            dir = "/tmp/"
+        elif platform.system() == "Windows":
+	    dir = "C:\\temp\\"
+        self.assertEqual('cat', sfc_models.utils.get_file_base(dir + 'cat.txt'))
+        self.assertEqual('cat', sfc_models.utils.get_file_base(dir + 'cat'))
 
     def test_token_list(self):
         bad = utils.get_invalid_tokens()
