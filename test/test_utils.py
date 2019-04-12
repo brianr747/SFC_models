@@ -45,7 +45,7 @@ class TestGetValid(TestCase):
         if platform.system() == "Linux":
             dir = "/tmp/"
         elif platform.system() == "Windows":
-	    dir = "C:\\temp\\"
+	        dir = "C:\\temp\\"
         self.assertEqual('cat', sfc_models.utils.get_file_base(dir + 'cat.txt'))
         self.assertEqual('cat', sfc_models.utils.get_file_base(dir + 'cat'))
 
