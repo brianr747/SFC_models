@@ -41,6 +41,8 @@ class TestGetValid(TestCase):
         self.assertIn('sqrt', bad)
 
     def test_examples_fn(self):
+        # Mac OSX support? Could possibly have done this without the drive,
+        # and use os.path.join()?
         dir = ""
         if platform.system() == "Linux":
             dir = "/tmp/"
