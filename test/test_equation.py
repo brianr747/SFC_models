@@ -48,11 +48,14 @@ class TestTerm(TestCase):
         self.assertEqual('x', t.Term)
 
     def test_simple_2(self):
-        # NOTE: constants not supported yet as "Simple"
-        with self.assertRaises(NotImplementedError):
-            t = Term('2')
-        # self.assertFalse(t.IsSimple)
-        # self.assertEqual('2', t.Term)
+        # Original comment: constants not supported yet as "Simple"
+        # 2019-05-04: Not sure why no support for constants?
+        t = Term('2')
+        self.assertTrue(t.IsSimple)
+        self.assertEqual('2', t.Term)
+        # with self.assertRaises(NotImplementedError):
+        #     t = Term('2')
+
 
     def test_simple_3(self):
         t = Term('x')

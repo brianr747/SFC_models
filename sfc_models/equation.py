@@ -29,7 +29,7 @@ import tokenize
 from io import BytesIO
 import copy
 if is_python_3:
-    from tokenize import untokenize, NAME, ENDMARKER, ENCODING, OP
+    from tokenize import untokenize, NAME, ENDMARKER, ENCODING, OP, NEWLINE, NUMBER
 else: # pragma: no cover
     from tokenize import untokenize, NAME, ENDMARKER, OP
 
@@ -256,24 +256,48 @@ class Term(object):
         self.IsSimple = True
         g = tuple(g)
         if is_python_3:
-            if not g[0][0] == ENCODING:  # pragma: no cover
-                raise LogicError('Internal error: tokenize behaviour changed')
-            if not g[-1][0] == ENDMARKER:  # pragma: no cover
-                raise LogicError('Internal error: tokenize behaviour changed')
-            if len(g) > 3:
-                if len(g) == 5:
-                    # Allow variable*variable as a "simple" Variable.
-                    if g[1][0] == NAME and g[3][0] == NAME and g[2][0] == OP:
-                        if g[2][1] in ('*', '/'):
-                            self.Term = term_s
-                            return
-                raise NotImplementedError('Non-simple parsing not done')
-                # self.IsSimple = False
-            else:
-                if not g[1][0] == NAME:
-                    raise NotImplementedError('Non-simple parsing not done')
-                    # self.IsSimple = False
-            self.Term = term_s
+            # Behaviour changed on me, so need to clean up logic.
+            # Remove "white space" tokens
+            cleaned = [x for x in g if x[0] not in (ENCODING, NEWLINE, ENDMARKER)]
+            if len(cleaned) == 1:
+                if cleaned[0][0] == NAME or cleaned[0][0] == NUMBER:
+                    self.Term = term_s
+                    return
+            elif len(cleaned) == 3:
+                # Allow
+                if ((cleaned[0][0] in (NAME,NUMBER)) and (cleaned[1][0] == OP) and (cleaned[2][0] in (NAME, NUMBER))
+                    and (cleaned[1][1] in ('*', '/'))):
+                    self.Term = term_s
+                    return
+            # Puke otherwise
+            raise NotImplementedError('Non-simple parsing not supported (or tokenize() changed...: '+ term_s)
+            #  Old code. Will delete once I know new code works...
+            # if not g[0][0] == ENCODING:  # pragma: no cover
+            #     raise LogicError('Internal error: tokenize behaviour changed')
+            # if not g[-1][0] == ENDMARKER:  # pragma: no cover
+            #     raise LogicError('Internal error: tokenize behaviour changed')
+            #
+            # if len(g) > 3:
+            #     if len(g) == 4:
+            #         # Behaviour changed in Version 3.7?
+            #         if (not g[2][0] == NEWLINE) or (not g[1][0] == NAME):
+            #             raise NotImplementedError('Non-simple parsing not done')
+            #         self.Term = term_s
+            #         return
+            #     elif len(g) in (5, 6):
+            #         # For some reason, getting a newline?
+            #         # Allow variable*variable as a "simple" Variable.
+            #         if g[1][0] == NAME and g[3][0] == NAME and g[2][0] == OP:
+            #             if g[2][1] in ('*', '/'):
+            #                 self.Term = term_s
+            #                 return
+            #     raise NotImplementedError('Non-simple parsing not done')
+            #     # self.IsSimple = False
+            # else:
+            #     if not g[1][0] == NAME:
+            #         raise NotImplementedError('Non-simple parsing not done')
+            #         # self.IsSimple = False
+            # self.Term = term_s
         else: # Python 2.7 # pragma: no cover
             # Missing the first term - augh
             if not g[-1][0] == ENDMARKER:  # pragma: no cover
