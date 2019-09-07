@@ -131,7 +131,7 @@ def main():
     inventory_sales[0] = 1.
     profit[0] = 14.
     print(profit)
-    if False:
+    if True:
         Quick2DPlot(k, investment, 'Gross Investment', filename='recession_investment_01.png')
         Quick2DPlot(k, capital_ratio, 'Ratio of Capital to Target', filename='recession_investment_02.png')
         Quick2DPlot(k, dem_labour, 'Wage Income', filename='recession_investment_03.png')

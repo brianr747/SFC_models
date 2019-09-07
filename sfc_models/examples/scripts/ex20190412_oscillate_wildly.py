@@ -41,7 +41,9 @@ def main():
     CUT = 10
     k = mod.GetTimeSeries('k', cutoff=CUT)
     goods_produced = mod.GetTimeSeries('BUS__SUP_GOOD', cutoff=CUT)
+    fisc_bal = mod.GetTimeSeries('GOV__FISC_BAL', cutoff=CUT)
     Quick2DPlot(k, goods_produced, 'National Output With Erratic Taxes', filename='oscillate_wildly.png')
+    Quick2DPlot(k, fisc_bal, 'Government Fiscal Balance Erratic Taxes', filename='oscillate_wildly_2.png')
 
 
 
