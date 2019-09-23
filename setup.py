@@ -1,3 +1,16 @@
+"""
+setup.py
+
+Notes to myself.
+
+- Update the version number here, as well as in README.rst.
+- Run "twine check <>" to test the upload.
+- Do the tag change last.
+- They have deprecated the windows installer types, so dont use old build script.
+
+"""
+
+
 from setuptools import setup
 
 with open('README.rst', 'r') as f:
@@ -32,6 +45,7 @@ setup(
                  'Programming Language :: Python :: 3.4',
                  'Programming Language :: Python :: 3.5',
                  'Programming Language :: Python :: 3.6',
+                 'Programming Language :: Python :: 3.7',
                  'Topic :: Other/Nonlisted Topic'
                  ],
     url='https://github.com/brianr747/SFC_models'
