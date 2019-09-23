@@ -6,7 +6,7 @@ with open('README.rst', 'r') as f:
 setup(
     name='sfc_models',
     packages=['sfc_models', 'sfc_models.gl_book', 'sfc_models.examples'],  # 'sfc_models.examples.scripts'],
-    version='1.0.2',
+    version='1.0.3',
     extras_require={'Charts': 'matplotlib >= 2.0'},
     package_data={'sfc_models.examples': ['scripts/*.py', 'scripts/script_list.txt']},
     description='Stock-Flow Consistent (SFC) model generation',

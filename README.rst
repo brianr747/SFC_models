@@ -147,7 +147,7 @@ as being marked as unreached; they have been eliminated with::
 Change Log
 ----------
 
-- **1.0.2** Fix to equation parsing for Python 3.7.
+- **1.0.3** Fix to equation parsing for Python 3.7.
 - **1.0.0** Locking down the version associated with the guide.
 - **0.5.0** Change to sector constructor order, examples development.
 - **0.4.3** install_examples() GUI added. Python 2.7 fixes.
