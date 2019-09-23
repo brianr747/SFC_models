@@ -45,13 +45,17 @@ Version 0.5.0 Description Syntax Change
 
 In Version 0.5, the constructor order for Country and Sector objects has been changed.
 The long_name (or description) variable was demoted to optional. It will now
-be possible to create objects with just two arguments::
+be possible to create objects with just two arguments
 
-ca = Country(model_object, 'CA')
+::
 
-instead of (old syntax)::
+    ca = Country(model_object, 'CA')
 
-ca = Country(model_object, 'Canada', 'CA')
+instead of (old syntax)
+
+::
+
+    ca = Country(model_object, 'Canada', 'CA')
 
 In my view, this is a major quality of life improvement for future users, at the cost of breaking
 what I assume is still a small base of external user's code.
