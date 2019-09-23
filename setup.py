@@ -11,6 +11,7 @@ setup(
     package_data={'sfc_models.examples': ['scripts/*.py', 'scripts/script_list.txt']},
     description='Stock-Flow Consistent (SFC) model generation',
     long_description=long_desc,
+    long_description_content_type='text/x-rst',
     author='Brian Romanchuk',
     author_email='brianr747@gmail.com',
     test_suite = 'test',
