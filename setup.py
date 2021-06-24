@@ -1,16 +1,30 @@
+"""
+setup.py
+
+Notes to myself.
+
+- Update the version number here, as well as in README.rst.
+- Run "twine check <>" to test the upload.
+- Do the tag change last.
+- They have deprecated the windows installer types, so dont use old build script.
+
+"""
+
+
 from setuptools import setup
 
-with open('README.rst', 'r') as f:
+with open('README.md', 'r') as f:
     long_desc = f.read()
 
 setup(
     name='sfc_models',
     packages=['sfc_models', 'sfc_models.gl_book', 'sfc_models.examples'],  # 'sfc_models.examples.scripts'],
-    version='1.0.1',
+    version='1.0.3',
     extras_require={'Charts': 'matplotlib >= 2.0'},
     package_data={'sfc_models.examples': ['scripts/*.py', 'scripts/script_list.txt']},
     description='Stock-Flow Consistent (SFC) model generation',
     long_description=long_desc,
+    long_description_content_type='text/markdown',
     author='Brian Romanchuk',
     author_email='brianr747@gmail.com',
     test_suite = 'test',
@@ -31,6 +45,7 @@ setup(
                  'Programming Language :: Python :: 3.4',
                  'Programming Language :: Python :: 3.5',
                  'Programming Language :: Python :: 3.6',
+                 'Programming Language :: Python :: 3.7',
                  'Topic :: Other/Nonlisted Topic'
                  ],
     url='https://github.com/brianr747/SFC_models'

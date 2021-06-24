@@ -256,8 +256,10 @@ class Term(object):
         self.IsSimple = True
         g = tuple(g)
         if is_python_3:
-            # Behaviour changed on me, so need to clean up logic.
+            # Behaviour changed on me, so needed to clean up logic.
             # Remove "white space" tokens
+            # Note: The change in behaviour happened between version 3.5 and 3.7. This new code
+            # worked for me on version 3.5 as well as 3.7.
             cleaned = [x for x in g if x[0] not in (ENCODING, NEWLINE, ENDMARKER)]
             if len(cleaned) == 1:
                 if cleaned[0][0] == NAME or cleaned[0][0] == NUMBER:
@@ -270,7 +272,8 @@ class Term(object):
                     self.Term = term_s
                     return
             # Puke otherwise
-            raise NotImplementedError('Non-simple parsing not supported (or tokenize() changed...: '+ term_s)
+            raise NotImplementedError('Non-simple parsing not supported ' +
+                                      '(Note: May fail for Python versions before 3.7 (?)): '+ term_s)
             #  Old code. Will delete once I know new code works...
             # if not g[0][0] == ENCODING:  # pragma: no cover
             #     raise LogicError('Internal error: tokenize behaviour changed')
