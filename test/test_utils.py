@@ -1,10 +1,11 @@
+import math
 import platform
 import doctest
 from unittest import TestCase
 
 import sfc_models.utils
 import sfc_models.utils as utils
-from sfc_models.utils import Logger
+from sfc_models.utils import Logger, run_bisection
 from sfc_models.equation_solver import EquationSolver
 import sfc_models.examples
 from sfc_models import Parameters
@@ -187,3 +188,73 @@ class TestTimeSeriesHolder(TestCase):
         obj['t'] = [3, ]
         obj['k'] = [2, ]
         self.assertEqual(['k', 't', 'a'], obj.GetSeriesList())
+
+
+class TestBisection(TestCase):
+    def test_run_bisection_1(self):
+        tested = []
+        def f(x):
+            tested.append(x)
+            return -.4 + x
+        x = run_bisection(f, 1., 1.2, .0001, .00001)
+        self.assertAlmostEqual(.4, x, 3)
+
+    def test_run_bisection_2(self):
+        tested = []
+        def f(x):
+            tested.append(x)
+            return -1. + x
+        x = run_bisection(f, 1., 1.2, .0001, .00001)
+        self.assertAlmostEqual(1., x, 3)
+        # Should have terminated after one evaluation
+        self.assertEqual([1.,], tested)
+
+    def test_run_bisection_3(self):
+        tested = []
+        def f(x):
+            tested.append(x)
+            return -1. + x
+        x = run_bisection(f, 1./1.2, 1.2, .0001, .00001)
+        self.assertAlmostEqual(1., x, 3)
+        # Should have terminated after second evaluation
+        self.assertEqual([1./1.2, 1.], tested)
+
+    def test_run_bisection_bad_search(self):
+        def f(x):
+            return -1. + x
+        with self.assertRaises(ValueError):
+            run_bisection(f, 1., .9, .001, .001)
+
+    def test_run_bisection_too_low_guess(self):
+        tested = []
+        def f(x):
+            tested.append(x)
+            return -.4 + x
+        x = run_bisection(f, .3, 1.2, .0001, .00001)
+        self.assertAlmostEqual(.4, x, 3)
+
+    def test_run_bisection_no_bracket(self):
+        # Not a monotonic function, bracketing will fail
+        tested = []
+        def f(x):
+            tested.append(x)
+            if len(tested) > 10:
+                print(tested)
+                raise ValueError('boom')
+            return (2. + math.sin(10*x))
+        with self.assertRaises(utils.BisectionCannotBracketError):
+            run_bisection(f, 1., 1.1, .001, .001)
+
+    def test_run_bisection_no_bracket_2(self):
+        # Not a monotonic function, bracketing will fail
+        tested = []
+        def f(x):
+            tested.append(x)
+            if len(tested) > 20:
+                print(tested)
+                raise ValueError('boom')
+            return x
+        with self.assertRaises(utils.BisectionCannotBracketError):
+            run_bisection(f, 1., 1.1, .001, .001)
+
+

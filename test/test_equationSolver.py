@@ -546,3 +546,64 @@ class TestEquationSolver(TestCase):
         # Note that equation does not hold at t=0
         self.assertEqual([0., 100.], obj.TimeSeries['z'])
         obj.SolveStep(2)
+
+    def test_flex_0(self):
+        """
+        Moving towards flexprice extension. Create supply/demand with mismatch
+        :return:
+        """
+        obj = EquationSolver()
+        obj.RunEquationReduction = False
+        # By forcing 't' into the variable list, no automatic creation of time variables
+        # flexprice tests: t=price
+        # s=supply
+        # d=demand
+        # b=supply-demand = balance. (Should be zero.)
+        obj.ParseString("""
+         s=sqrt(t)
+         d=1./t
+         b=s-d
+         exogenous
+         t=[4.]*4
+         MaxTime=3""")
+        obj.ExtractVariableList()
+        obj.SetInitialConditions()
+        obj.SolveStep(1)
+        obj.SolveStep(2)
+        self.assertAlmostEqual([2., 2., 2.], obj.TimeSeries['s'], 2)
+        self.assertAlmostEqual([0.25, .25, .25], obj.TimeSeries['d'], 2)
+        self.assertAlmostEqual([1.75, 1.75, 1.75], obj.TimeSeries['b'], 2)
+
+    def test_flex_1(self):
+        """
+        Moving towards flexprice extension. Create supply/demand with mismatch
+        :return:
+        """
+        obj = EquationSolver()
+        obj.RunEquationReduction = False
+        # By forcing 't' into the variable list, no automatic creation of time variables
+        # flexprice tests: t=price
+        # s=supply
+        # d=demand
+        # b=supply-demand = balance. (Should be zero.)
+        obj.ParseString("""
+         s=sqrt(t)
+         d=1./t
+         b=s-d
+         exogenous
+         t=[4.]*4
+         MaxTime=3""")
+        obj.ExtractVariableList()
+        obj.SetInitialConditions()
+        obj.FlexPrice['t'] = 'b'
+        obj.SolveStep(1)
+        obj.SolveStep(2)
+        for i in range(1, 3):
+            # supply = demand = 1.
+            # Note that initial value is wrong.
+            self.assertAlmostEqual(1., obj.TimeSeries['s'][i], 3)
+            self.assertAlmostEqual(1., obj.TimeSeries['d'][i], 3)
+            # balance = 0
+            self.assertAlmostEqual(0., obj.TimeSeries['b'][i], 3)
+            # matching price = 1.
+            self.assertAlmostEqual(1., obj.TimeSeries['t'][i], 3)

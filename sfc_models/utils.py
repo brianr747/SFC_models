@@ -441,3 +441,87 @@ def register_standard_logs(output_dir, base_file_name): # pragma: no cover
     """
     base_file_name = os.path.join(output_dir, get_file_base(base_file_name))
     Logger.register_standard_logs(base_file_name)
+
+class BisectionCannotBracketError(ValueError):
+    pass
+
+def run_bisection(f, initial_guess, search_factor, bisect_termination, search_tolerance, max_bracket=10):
+    """
+    Run a bisection on a arbitrary function. Used in the flexprice solution.
+    :param f: function
+    :param initial_guess: float
+    :param search_factor: float
+    :param bisect_termination: float
+    :param search_tolerance: float
+    :return: float
+    """
+    # Note: I think I could simplify this, but since each evaluation of f is
+    # expensive, making sure we don't waste function evaluations.
+    upper = None
+    lower = None
+    value_upper = None
+    value_lower = None
+    if search_factor <  1.:
+        raise ValueError('Search factor assumed to be greater than 1.')
+    guess = initial_guess
+    val_guess = f(guess)
+    if abs(val_guess) < search_tolerance:
+        return guess
+    bracketed = False
+    upper = None
+    lower = None
+    num_tries = 0
+    while not bracketed:
+        second_guess = guess * search_factor
+        val_second = f(second_guess)
+        if abs(val_second) < search_tolerance:
+            return second_guess
+        if val_guess * val_second < 0:
+            # Yay, bracketed
+            bracketed = True
+            if guess < second_guess:
+                lower = guess
+                upper = second_guess
+                val_lower = val_guess
+                val_upper = val_second
+            else:
+                lower = second_guess
+                upper = guess
+                val_lower = val_second
+                val_upper = val_guess
+        else:
+            # Not bracketed, boo! Value of both guesses have same sign.
+            num_tries += 1
+            if num_tries > max_bracket:
+                raise BisectionCannotBracketError('Cannot bracket within max_bracket tries')
+            if abs(val_guess) < abs(val_second):
+                # Second guess is going in the wrong direction.
+                search_factor = 1. / search_factor
+                if search_factor > 1.:
+                    raise BisectionCannotBracketError('Cannot bracket zero crossing in function')
+            else:
+                # Second guess improves the error - flip it to be the "first guess."
+                guess = second_guess
+                val_guess = val_second
+    # Now, just look at midpoints.
+    while True:
+        mid = (upper + lower)/2.
+        val_mid = f(mid)
+        if abs(val_mid) < search_tolerance:
+            return mid
+        if val_mid * val_lower < 0:
+            # Mid has opposite sign as lower; new high
+            upper = mid
+            val_upper = val_mid
+        else:
+            lower = mid
+            val_lower = val_mid
+        if (upper - lower) < bisect_termination:
+            return mid
+
+
+
+
+
+
+

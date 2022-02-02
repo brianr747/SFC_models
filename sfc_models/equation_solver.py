@@ -24,7 +24,7 @@ import warnings
 import copy
 
 import sfc_models.equation_parser
-from sfc_models.utils import Logger, TimeSeriesHolder
+from sfc_models.utils import Logger, TimeSeriesHolder, run_bisection
 from sfc_models import Parameters as Parameters
 
 
@@ -54,6 +54,9 @@ class EquationSolver(object):
         self.MaxIterations = 400
         self.MaxTime = None
         self.Functions = {}
+        self.FlexPrice = {}
+        # How large can the FlexPrice balance equations depart from 0?
+        self.FlexErrorTolerance = 1e-3
         self.ParameterErrorTolerance = None
         self.ParameterSolveInitialSteadyState = False
         self.ParameterInitialSteadyStateMaxTime = 200
@@ -310,6 +313,53 @@ class EquationSolver(object):
                 Logger(self.TimeSeriesStepTrace.GenerateCSVtext(), log='step')
 
     def _SolveStep(self, step, is_trace_step):
+        """
+        Solve a time step.
+        If there are flexprice variables, need to iterate over them.
+        """
+        flex_price_vars = list(self.FlexPrice.keys())
+        if len(flex_price_vars) == 0:
+            self._SolveStepWork(step, is_trace_step)
+        else:
+            # Flexprice algorithm. Need to add a search on top
+            # of the solution iteration.
+            # Use bisection as a first pass. Assume that we only have
+            # single flexprice variable for now.
+            if len(flex_price_vars) > 1:
+                raise NotImplementedError('Multiple flexprice variables not implemented')
+            # We need an initial guess. We either take what was
+            # put into the exogenous variable, or the previous value.
+            flex_var = flex_price_vars[0]
+            targ_var = self.FlexPrice[flex_var]
+            if step == 0:
+                guess = self.TimeSeries[flex_var][0]
+            else:
+                guess = self.TimeSeries[flex_var][step-1]
+            def f(x):
+                # Run the simulation for a step with the flex_var set to guess.
+                # This has the intended side effect of calculating all the variables
+                # with that value. The last time this "function" is called, it is
+                # the best estimate of the entire solution
+                self.TimeSeries[flex_var][step] = x
+                self._SolveStepWork(step, is_trace_step)
+                value_guess = self.TimeSeries[targ_var][step]
+                return value_guess
+            run_bisection(f, initial_guess=guess, search_factor=1.2,
+                              bisect_termination=.001, search_tolerance=self.FlexErrorTolerance)
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def _SolveStepWork(self, step, is_trace_step):
         # Set up starting condition (for step)
         initial = {}
         # Probably could just do a shallow copy...
@@ -408,8 +458,12 @@ class EquationSolver(object):
         # Then: append values to the time series
         varlist = [x[0] for x in self.Parser.Endogenous] + [x[0] for x in self.Parser.Lagged]
         for var in varlist:
-            assert (len(self.TimeSeries[var]) == step)
-            self.TimeSeries[var].append(initial[var])
+            # Change to support FlexPrice solution
+            if (len(self.TimeSeries[var]) == step):
+                self.TimeSeries[var].append(initial[var])
+            else:
+                # If value already exists, overwrite it.
+                self.TimeSeries[var][step] = initial[var]
         # Finally: augment with decorative variables
         # This is complicated as decorative variables may depend upon other decorative variables
         # Create a holding variable that lists the equations, and keep iterating through the list
@@ -419,11 +473,14 @@ class EquationSolver(object):
         while len(vars_to_compute) > 0:
             failed = []
             for var, eqn in vars_to_compute:
-                assert (len(self.TimeSeries[var]) == step)
+                # assert (len(self.TimeSeries[var]) == step)
                 try:
                     val = eval(eqn, globals(), initial)
                     initial[var] = val
-                    self.TimeSeries[var].append(val)
+                    if (len(self.TimeSeries[var]) == step):
+                        self.TimeSeries[var].append(val)
+                    else:
+                        self.TimeSeries[var][step] = val
                 except NameError:
                     failed.append((var, eqn))
             # If we failed on every single decoration variable, something is wrong.
