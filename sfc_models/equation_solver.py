@@ -55,8 +55,13 @@ class EquationSolver(object):
         self.MaxTime = None
         self.Functions = {}
         self.FlexPrice = {}
-        # How large can the FlexPrice balance equations depart from 0?
+        # If the flexprice is within this tolerance, terminate
+        # This should be set based on the "scaling" of the target variable.
         self.FlexErrorTolerance = 1e-3
+        # The gap between upper-lower to terminate the bisection (as a fraction of the upper bound)
+        # Since this is a fraction of the absolute size of the upper bound, should be invariant to
+        # the scaling of the target variable.
+        self.BisectionTerminate = 1e-4
         self.ParameterErrorTolerance = None
         self.ParameterSolveInitialSteadyState = False
         self.ParameterInitialSteadyStateMaxTime = 200
@@ -344,8 +349,12 @@ class EquationSolver(object):
                 self._SolveStepWork(step, is_trace_step)
                 value_guess = self.TimeSeries[targ_var][step]
                 return value_guess
+            Logger('Starting Bisection, step={0}, flexible_variable={1}, target_variable={2}',
+                   log='flexprice', data_to_format=(step, flex_var, targ_var))
             run_bisection(f, initial_guess=guess, search_factor=1.2,
-                              bisect_termination=.001, search_tolerance=self.FlexErrorTolerance)
+                              bisect_termination=self.BisectionTerminate,
+                          search_tolerance=self.FlexErrorTolerance,
+                          log_name='flexprice')
 
 
 

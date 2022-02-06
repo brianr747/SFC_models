@@ -301,9 +301,15 @@ class Model(EconomicObject):
                data_to_format=(alias, local_variable_name, sector.ID))
         self.Aliases[alias] = (sector, local_variable_name)
 
-    def AddGlobalEquation(self, var, description, eqn):
+    def AddGlobalEquation(self, var, description, eqn, is_exogenous=False):
         """
         Add a variable that is not associated with a sector.
+
+        Note: is_exogenous added after Version 1.0 of sfc_models.
+
+        If the variable is exogenous, will convert a non-string (e.g. [0, 1]) to
+        its string representation ('[0, 1]').
+
         Typical example: 't'
 
         :param var: str
@@ -312,6 +318,10 @@ class Model(EconomicObject):
         :return: None
         """
         Logger('Registering global equation: {0} = {1}', priority=5, data_to_format=(var, eqn))
+        if is_exogenous:
+            if type(eqn) is not str:
+                eqn = repr(eqn)
+            eqn = 'EXOGENOUS ' + eqn
         self.GlobalVariables.append((var, eqn, description))
 
     def GetSectors(self):

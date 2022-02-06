@@ -377,6 +377,7 @@ class Logger(object):
             'eqn': base_file_name + '_eqn.txt',
             'step': base_file_name + '_iteration.txt',
             'steadystate_0': base_file_name + '_steadystate.txt',
+            'flexprice': base_file_name + '_flexprice.txt'
         }
         for logname in loginfo:
             try:
@@ -445,18 +446,25 @@ def register_standard_logs(output_dir, base_file_name): # pragma: no cover
 class BisectionCannotBracketError(ValueError):
     pass
 
-def run_bisection(f, initial_guess, search_factor, bisect_termination, search_tolerance, max_bracket=10):
+def run_bisection(f, initial_guess, search_factor, bisect_termination, search_tolerance, max_bracket=10, log_name=None):
     """
     Run a bisection on a arbitrary function. Used in the flexprice solution.
+
+    Note: algorithm assumes that zero of function is strictly positive.
+
+    Pass in a log name to get logging information
+
     :param f: function
     :param initial_guess: float
     :param search_factor: float
     :param bisect_termination: float
     :param search_tolerance: float
+    :param log_name: str
     :return: float
     """
     # Note: I think I could simplify this, but since each evaluation of f is
     # expensive, making sure we don't waste function evaluations.
+    Logger('Starting bisection', log=log_name)
     upper = None
     lower = None
     value_upper = None
@@ -464,21 +472,30 @@ def run_bisection(f, initial_guess, search_factor, bisect_termination, search_to
     if search_factor <  1.:
         raise ValueError('Search factor assumed to be greater than 1.')
     guess = initial_guess
+
     val_guess = f(guess)
+    Logger('Initial Guess={0}', log=log_name, data_to_format=(guess,))
+    Logger('Remark\tGuess\tValue\tLower\tUpper\tGap', log=log_name)
+    Logger('\t{0}\t{1}', log=log_name, data_to_format=(guess, val_guess))
     if abs(val_guess) < search_tolerance:
+        Logger('Target within tolerance, terminating', log=log_name)
         return guess
     bracketed = False
     upper = None
     lower = None
     num_tries = 0
+    Logger('Attempting to bracket solution between positive, negative values of target.')
     while not bracketed:
         second_guess = guess * search_factor
         val_second = f(second_guess)
+        Logger('\t{0}\t{1}', log=log_name, data_to_format=(second_guess, val_second))
         if abs(val_second) < search_tolerance:
+            Logger('Target within tolerance, terminating', log=log_name)
             return second_guess
         if val_guess * val_second < 0:
             # Yay, bracketed
             bracketed = True
+            Logger('Bracketed', log=log_name)
             if guess < second_guess:
                 lower = guess
                 upper = second_guess
@@ -491,13 +508,16 @@ def run_bisection(f, initial_guess, search_factor, bisect_termination, search_to
                 val_upper = val_guess
         else:
             # Not bracketed, boo! Value of both guesses have same sign.
+            Logger('Target has same sign, reversing search direction', log=log_name)
             num_tries += 1
             if num_tries > max_bracket:
+                Logger('Too many attempts to bracket, terminating', log=log_name)
                 raise BisectionCannotBracketError('Cannot bracket within max_bracket tries')
             if abs(val_guess) < abs(val_second):
                 # Second guess is going in the wrong direction.
                 search_factor = 1. / search_factor
                 if search_factor > 1.:
+                    Logger('Reversing search direction, terminating', log=log_name)
                     raise BisectionCannotBracketError('Cannot bracket zero crossing in function')
             else:
                 # Second guess improves the error - flip it to be the "first guess."
@@ -507,7 +527,10 @@ def run_bisection(f, initial_guess, search_factor, bisect_termination, search_to
     while True:
         mid = (upper + lower)/2.
         val_mid = f(mid)
+        Logger('\t{0}\t{1}\t{2}\t{3}\t{4}', log=log_name, data_to_format=(mid, val_mid, lower, upper,
+                                                                          (upper-lower)/upper))
         if abs(val_mid) < search_tolerance:
+            Logger('Within tolerance, terminating\t{0}\t{1}', log=log_name, data_to_format=(mid, val_mid))
             return mid
         if val_mid * val_lower < 0:
             # Mid has opposite sign as lower; new high
@@ -516,7 +539,8 @@ def run_bisection(f, initial_guess, search_factor, bisect_termination, search_to
         else:
             lower = mid
             val_lower = val_mid
-        if (upper - lower) < bisect_termination:
+        # Dividing by upper is OK since we assume that we are searching over strictly positive values
+        if (upper - lower)/upper < bisect_termination:
             return mid
 
 
