@@ -10,6 +10,7 @@ production branch is changed.
 See discussion on my Substack post:
 https://bondeconomics.substack.com/p/new-sfc-models-feature-flexprice
 
+
 Short description: create a system with just global variables (for simplicity).
 
 The global variables rely on a variable called "price", and there is a variable "balance"

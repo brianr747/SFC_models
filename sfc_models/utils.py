@@ -454,6 +454,7 @@ def run_bisection(f, initial_guess, search_factor, bisect_termination, search_to
 
     Pass in a log name to get logging information
 
+
     :param f: function
     :param initial_guess: float
     :param search_factor: float
