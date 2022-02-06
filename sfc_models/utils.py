@@ -508,16 +508,16 @@ def run_bisection(f, initial_guess, search_factor, bisect_termination, search_to
                 val_upper = val_guess
         else:
             # Not bracketed, boo! Value of both guesses have same sign.
-            Logger('Target has same sign, reversing search direction', log=log_name)
             num_tries += 1
             if num_tries > max_bracket:
                 Logger('Too many attempts to bracket, terminating', log=log_name)
                 raise BisectionCannotBracketError('Cannot bracket within max_bracket tries')
             if abs(val_guess) < abs(val_second):
                 # Second guess is going in the wrong direction.
+                Logger('Target has same sign, reversing search direction', log=log_name)
                 search_factor = 1. / search_factor
                 if search_factor > 1.:
-                    Logger('Reversing search direction, terminating', log=log_name)
+                    Logger('Reversing search direction again, which should not happen, terminating', log=log_name)
                     raise BisectionCannotBracketError('Cannot bracket zero crossing in function')
             else:
                 # Second guess improves the error - flip it to be the "first guess."

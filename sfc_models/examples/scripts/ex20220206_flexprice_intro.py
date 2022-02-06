@@ -8,7 +8,7 @@ This code will not work on the version of sfc_models installed by pip, at least 
 production branch is changed.
 
 See discussion on my Substack post:
-
+https://bondeconomics.substack.com/p/new-sfc-models-feature-flexprice
 
 Short description: create a system with just global variables (for simplicity).
 
