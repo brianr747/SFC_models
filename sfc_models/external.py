@@ -33,7 +33,7 @@ class ExternalSector(Country):
         Country.__init__(self, model, code='EXT', long_name='External Sector', currency='NUMERAIRE')
         model.ExternalSector = self
         ExchangeRates(self)
-        ForexTransations(self)
+        ForexTransactions(self)
         InternationalGold(self)
         for czone in model.CurrencyZoneList:
             self.RegisterCurrency(czone.Currency)
@@ -126,7 +126,7 @@ class ExchangeRates(Sector):
             self.AddVariable(code, desc,  '{0}/{1}'.format(local, foreign))
         return self.GetVariableName(code)
 
-class ForexTransations(Sector):
+class ForexTransactions(Sector):
     """
     Class that holds the equations detailing foreign exchange transactions.
 

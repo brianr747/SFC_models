@@ -4,7 +4,7 @@ import unittest
 
 from sfc_models.models import Model, Country
 from sfc_models.sector import Sector, Market
-from sfc_models.external import ExternalSector, ExchangeRates, ForexTransations
+from sfc_models.external import ExternalSector, ExchangeRates, ForexTransactions
 from sfc_models.sector_definitions import GoldStandardCentralBank, GoldStandardGovernment, Treasury, MoneyMarket, DepositMarket
 from sfc_models.utils import LogicError
 
@@ -21,7 +21,7 @@ class TestExternalSector(TestCase):
         fx = ext['FX']
         self.assertIs(ExchangeRates, type(xr))
         self.assertIn('NUMERAIRE', xr.EquationBlock)
-        self.assertIs(ForexTransations, type(fx))
+        self.assertIs(ForexTransactions, type(fx))
 
     def test_GetCrossRate(self):
         mod = Model()
